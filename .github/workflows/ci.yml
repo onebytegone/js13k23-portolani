@@ -1,0 +1,35 @@
+name: CI
+
+on: [ push, pull_request ]
+
+jobs:
+   build:
+      runs-on: ubuntu-latest
+      steps:
+         -
+            uses: actions/checkout@v3
+            with:
+               fetch-depth: 0 # Fetch all history
+         -
+            uses: actions/setup-node@v3
+            with:
+               node-version-file: '.nvmrc'
+         - run: npm i -g npm@8.5.5
+         - run: npm ci
+         - run: npm run build
+         -
+            uses: actions/upload-artifact@v2
+            with:
+               name: minified.zip
+               path: .minified/index.zip
+         - run: unzip .minified/index.zip -d .gh-pages
+         -
+            uses: actions/upload-pages-artifact@v1
+            with:
+               path: '.gh-pages'
+   deploy:
+      if: github.ref == 'refs/heads/master'
+      needs: [ build ]
+      runs-on: ubuntu-latest
+      steps:
+         - uses: actions/deploy-pages@v2

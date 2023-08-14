@@ -1,0 +1,4 @@
+/node_modules/
+.build
+.minified
+.DS_Store
