@@ -2,7 +2,7 @@ import { ComponentID, ComponentRegistration, ValueOf } from '@/shared-types';
 
 export const Sprite = {
    Air: '.',
-   Wall: '#',
+   Coast: '#',
    Player: '@',
 } as const;
 

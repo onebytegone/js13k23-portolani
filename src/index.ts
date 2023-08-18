@@ -4,7 +4,7 @@ import { RenderSystem } from './systems/RenderSystem';
 import { generateWorld } from './lib/generate-world';
 import { FogSystem } from './systems/FogSystem';
 
-const worldState = generateWorld(0);
+const worldState = generateWorld(Date.now());
 
 const systems = [
    new MovementSystem(),
