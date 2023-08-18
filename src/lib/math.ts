@@ -1,3 +1,7 @@
+export interface Vec2D {
+   x: number;
+   y: number;
+}
 export function bucket(input: number, buckets: number = 2): number {
    return Math.floor(input * buckets) / buckets;
 }

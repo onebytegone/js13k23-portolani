@@ -1,10 +1,5 @@
 import { PRNG } from './make-prng';
-import { interp } from './math';
-
-interface Vec2D {
-   x: number;
-   y: number;
-}
+import { Vec2D, interp } from './math';
 
 export default class Perlin {
 

@@ -4,6 +4,7 @@ export const Sprite = {
    Air: '.',
    Coast: '#',
    Player: '@',
+   Port: '$',
 } as const;
 
 export type SpriteEnum = ValueOf<typeof Sprite>;

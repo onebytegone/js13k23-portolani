@@ -1,7 +1,11 @@
-export type PRNG = () => number;
+export interface PRNG {
+   (): number;
+   inRange: (min: number, max: number) => number;
+   randomElement: <T>(arr: T[]) => T;
+};
 
 export function makePRNG(kernel: number): PRNG {
-   return (): number => {
+   const fn = (): number => {
       // mulberry32
       kernel |= 0;
       kernel = kernel + 0x6D2B79F5 | 0;
@@ -12,4 +16,16 @@ export function makePRNG(kernel: number): PRNG {
 
       return ((t ^ t >>> 14) >>> 0) / 4294967296;
    };
+
+   fn.inRange = (min: number, max: number) => {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(fn() * (max - min) + min);
+   };
+
+   fn.randomElement = <T>(arr: T[]): T => {
+      return arr[fn.inRange(0, arr.length - 1)];
+   };
+
+   return fn;
 }
