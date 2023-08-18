@@ -24,8 +24,12 @@ body {
    color: #888;
 }
 
+.box {
+   width: 100%;
+}
+
 #c5 {
+   box-sizing: border-box;
+   width: 100%;
    padding: 8px;
-   border: 2px solid #555;
-   border-radius: 8px;
 }

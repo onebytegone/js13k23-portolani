@@ -3,24 +3,24 @@ import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
 import { ISpriteComponent } from '@/components/create-sprite-component';
 
-const CAMERA_MARGIN = 4,
-      TILE_SIZE = 16;
+const CAMERA_MARGIN = 4;
 
 export class RenderSystem extends System {
 
    static components = [ ComponentID.Position, ComponentID.Sprite ] as const;
 
+   private _sprites: (ISpriteComponent | undefined)[][] = [];
+   private _viewport: { x: number; y: number } = { x: 0, y: 0 };
+
    public constructor() {
       super();
+
+      new ResizeObserver(() => { this._draw(); }).observe(c5);
    }
 
-   public update(delta: number, worldState: WorldState): void { // eslint-disable-line class-methods-use-this
+   public update(delta: number, worldState: WorldState): void {
       const [ camera ] = worldState.getComponents(worldState.getEntities([ ComponentID.Camera ])[0], [ ComponentID.Camera ]),
-            [ player ] = worldState.getComponents(worldState.getEntities([ ComponentID.Input, ComponentID.Position ])[0], [ ComponentID.Position ]),
-            ctx = c5.getContext('2d')!;
-
-      c5.width = camera.viewportWidth * TILE_SIZE;
-      c5.height = camera.viewportHeight * TILE_SIZE;
+            [ player ] = worldState.getComponents(worldState.getEntities([ ComponentID.Input, ComponentID.Position ])[0], [ ComponentID.Position ]);
 
       const map: ISpriteComponent[][][] = [];
 
@@ -80,30 +80,54 @@ export class RenderSystem extends System {
          camera.y = maxPoint.y - camera.viewportHeight + 1;
       }
 
-      // console.log(camera);
-
-      const view: string[][] = [];
+      this._sprites = [];
+      this._viewport = {
+         x: camera.viewportWidth,
+         y: camera.viewportHeight,
+      };
 
       for (let y = 0; y < camera.viewportHeight; y++) {
-         view.push([]);
+         this._sprites.push([]);
 
          for (let x = 0; x < camera.viewportWidth; x++) {
-            const topSprite = (map[y + camera.y][x + camera.x]).reduce((memo: ISpriteComponent | undefined, sprite) => {
+            this._sprites[y][x] = (map[y + camera.y][x + camera.x]).reduce((memo: ISpriteComponent | undefined, sprite) => {
                return memo ? (memo.layer >= sprite.layer ? memo : sprite) : sprite;
             }, undefined);
-
-            if (topSprite) {
-               ctx.fillStyle = topSprite.tint ?? '#3a3a3a';
-               ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-
-               ctx.textBaseline = 'middle';
-               ctx.textAlign = 'center';
-               ctx.fillStyle = '#888';
-               ctx.font = "${TILE_SIZE}px monospace";
-               ctx.fillText(topSprite.sprite, x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2);
-            }
          }
       }
+
+      this._draw();
+   }
+
+   private _draw(): void {
+      const ctx = c5.getContext('2d')!,
+            dpr = window.devicePixelRatio,
+            viewportRatio = this._viewport.y / this._viewport.x,
+            tileSize = Math.round(Math.round(dpr * c5.clientWidth) / this._viewport.x);
+
+      c5.width = tileSize * this._viewport.x;
+      c5.height = c5.width * viewportRatio;
+
+      this._sprites.forEach((row, y) => {
+         row.forEach((sprite, x) => {
+            if (!sprite) {
+               return;
+            }
+
+            ctx.fillStyle = sprite.tint ?? '#3a3a3a';
+            ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#888';
+            ctx.font = `${tileSize}px monospace`;
+            ctx.fillText(
+               sprite.sprite,
+               x * tileSize + tileSize / 2,
+               y * tileSize + tileSize / 2
+            );
+         });
+      });
    }
 
 }
