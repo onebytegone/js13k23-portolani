@@ -17,7 +17,7 @@ export function generateWorld(_seed: number): WorldState {
    });
 
    worldState.createEntity({
-      ...createCameraComponent({ x: 0, y: 0, viewportWidth: 32, viewportHeight: 16 }),
+      ...createCameraComponent({ x: 0, y: 0, viewportWidth: 32, viewportHeight: 24 }),
    });
 
    for (let y = 0; y < 30; y++) {

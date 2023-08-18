@@ -3,7 +3,7 @@ import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
 import { ISpriteComponent } from '@/components/create-sprite-component';
 
-const CAMERA_MARGIN = 4;
+const CAMERA_MARGIN = 12;
 
 export class RenderSystem extends System {
 
@@ -86,13 +86,22 @@ export class RenderSystem extends System {
          y: camera.viewportHeight,
       };
 
-      for (let y = 0; y < camera.viewportHeight; y++) {
+      for (let y = 0; y < this._viewport.y; y++) {
+         const tileY = y + camera.y;
+
          this._sprites.push([]);
 
-         for (let x = 0; x < camera.viewportWidth; x++) {
-            this._sprites[y][x] = (map[y + camera.y][x + camera.x]).reduce((memo: ISpriteComponent | undefined, sprite) => {
-               return memo ? (memo.layer >= sprite.layer ? memo : sprite) : sprite;
-            }, undefined);
+         for (let x = 0; x < this._viewport.x; x++) {
+            const tileX = x + camera.x;
+
+            this._sprites[y][x] = map[tileY][tileX]
+               .filter((sprite) => {
+                  // TODO: vary range on sprite
+                 return Math.sqrt(Math.pow(player.x - tileX, 2) + Math.pow(player.y - tileY, 2)) < 9;
+               })
+               .reduce((memo: ISpriteComponent | undefined, sprite) => {
+                  return memo ? (memo.layer >= sprite.layer ? memo : sprite) : sprite;
+               }, undefined);
          }
       }
 
@@ -108,10 +117,24 @@ export class RenderSystem extends System {
       c5.width = tileSize * this._viewport.x;
       c5.height = c5.width * viewportRatio;
 
-      this._sprites.forEach((row, y) => {
-         row.forEach((sprite, x) => {
+      for (let y = 0; y < this._viewport.y; y++) {
+         for (let x = 0; x < this._viewport.x; x++) {
+            const sprite = this._sprites[y][x];
+
             if (!sprite) {
-               return;
+               ctx.fillStyle = '#333';
+               ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+
+               ctx.textBaseline = 'middle';
+               ctx.textAlign = 'center';
+               ctx.fillStyle = '#3a3a3a';
+               ctx.font = `${tileSize * 1.5}px monospace`;
+               ctx.fillText(
+                  '☁︎',
+                  x * tileSize + tileSize / 2,
+                  y * tileSize + tileSize / 2 - tileSize / 3
+               );
+               continue;
             }
 
             ctx.fillStyle = sprite.tint ?? '#3a3a3a';
@@ -126,8 +149,8 @@ export class RenderSystem extends System {
                x * tileSize + tileSize / 2,
                y * tileSize + tileSize / 2
             );
-         });
-      });
+         }
+      }
    }
 
 }
