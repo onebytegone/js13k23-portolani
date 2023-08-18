@@ -12,8 +12,6 @@ export class MovementSystem extends System {
          const [ pos, movement ] = worldState.getComponents(entityID, MovementSystem.components);
 
          if ((movement.x || movement.y) && movement.nextMovePossible <= Date.now()) {
-            console.log(pos, movement);
-
             const newLoc = { x: pos.x + movement.x, y: pos.y + movement.y },
                   terrainEntities = worldState.getEntitiesAtLocation(newLoc, [ ComponentID.Terrain ]);
 

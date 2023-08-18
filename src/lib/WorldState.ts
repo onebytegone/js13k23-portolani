@@ -11,8 +11,6 @@ export class WorldState {
       const entityID = this._entities.length as EntityID,
             componentMask = getMaskForComponentIDs(Object.keys(components) as any);
 
-      console.log(entityID, components, componentMask);
-
       this._entities[entityID] = componentMask;
 
       if (!this._entitiesByComponentMask[componentMask]) {

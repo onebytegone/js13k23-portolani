@@ -37,7 +37,6 @@ export class InputSystem extends System {
          const heading = getHeadingFromKeyEvent(event);
 
          if (heading) {
-            console.log(heading);
             worldState.getEntities(InputSystem.components).forEach((entityID) => {
                const [ movement ] = worldState.getComponents(entityID, InputSystem.components);
 
