@@ -1,6 +1,7 @@
 import { ICameraComponent } from './components/create-camera-component';
 import { IMovementComponent } from './components/create-movement-component';
 import { ISpriteComponent } from './components/create-sprite-component';
+import { ITagComponent } from './components/create-tag-component';
 import { ITerrainComponent } from './components/create-terrain-component';
 
 declare const __nominal__type: unique symbol;
@@ -37,7 +38,7 @@ export interface Vector2D {
 export interface ComponentMap extends Record<ComponentIDEnum, unknown> {
    [ComponentID.Position]: Vector2D;
    [ComponentID.Movement]: IMovementComponent;
-   [ComponentID.Input]: {};
+   [ComponentID.Input]: ITagComponent;
    [ComponentID.Sprite]: ISpriteComponent;
    [ComponentID.Terrain]: ITerrainComponent;
    [ComponentID.Camera]: ICameraComponent;

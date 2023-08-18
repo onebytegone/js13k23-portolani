@@ -1,10 +1,11 @@
 import { WorldState } from './WorldState';
-import { createInputComponent } from '../components/create-input-component';
 import { createPositionComponent } from '../components/create-position-component';
 import { Sprite, createSpriteComponent } from '../components/create-sprite-component';
 import { createMovementComponent } from '../components/create-movement-component';
 import { Terrain, createTerrainComponent } from '../components/create-terrain-component';
 import { createCameraComponent } from '../components/create-camera-component';
+import { createTagComponent } from '@/components/create-tag-component';
+import { ComponentID } from '@/shared-types';
 
 export function generateWorld(_seed: number): WorldState {
    const worldState = new WorldState();
@@ -13,7 +14,7 @@ export function generateWorld(_seed: number): WorldState {
       ...createPositionComponent(1, 1),
       ...createMovementComponent(),
       ...createSpriteComponent(Sprite.Player),
-      ...createInputComponent(),
+      ...createTagComponent(ComponentID.Input),
    });
 
    worldState.createEntity({
