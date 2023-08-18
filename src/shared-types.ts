@@ -1,4 +1,5 @@
 import { ICameraComponent } from './components/create-camera-component';
+import { IFogComponent } from './components/create-fog-component';
 import { IMovementComponent } from './components/create-movement-component';
 import { ISpriteComponent } from './components/create-sprite-component';
 import { ITagComponent } from './components/create-tag-component';
@@ -26,6 +27,7 @@ export const ComponentID = {
    Sprite: 3,
    Terrain: 4,
    Camera: 5,
+   Fog: 6,
 } as const;
 
 export type ComponentIDEnum = ValueOf<typeof ComponentID>;
@@ -42,6 +44,7 @@ export interface ComponentMap extends Record<ComponentIDEnum, unknown> {
    [ComponentID.Sprite]: ISpriteComponent;
    [ComponentID.Terrain]: ITerrainComponent;
    [ComponentID.Camera]: ICameraComponent;
+   [ComponentID.Fog]: IFogComponent;
 }
 
 export type ComponentRegistration<T extends ComponentIDEnum> =  { [K in T]: ComponentMap[T] };

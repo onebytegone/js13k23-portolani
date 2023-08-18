@@ -2,11 +2,13 @@ import { InputSystem } from './systems/InputSystem';
 import { MovementSystem } from './systems/MovementSystem';
 import { RenderSystem } from './systems/RenderSystem';
 import { generateWorld } from './lib/generate-world';
+import { FogSystem } from './systems/FogSystem';
 
 const worldState = generateWorld(0);
 
 const systems = [
    new MovementSystem(),
+   new FogSystem(),
    new RenderSystem(),
    new InputSystem(worldState, () => {
       draw(Date.now());

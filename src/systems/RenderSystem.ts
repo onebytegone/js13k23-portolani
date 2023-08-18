@@ -2,6 +2,7 @@ import { ComponentID } from '@/shared-types';
 import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
 import { ISpriteComponent } from '@/components/create-sprite-component';
+import { FogLevel } from '@/components/create-fog-component';
 
 const CAMERA_MARGIN = 12;
 
@@ -25,7 +26,7 @@ export class RenderSystem extends System {
       const map: ISpriteComponent[][][] = [];
 
       const maxPoint = worldState.getEntities(RenderSystem.components).reduce((memo, entityID) => {
-         const [ loc, sprite ] = worldState.getComponents(entityID, RenderSystem.components);
+         const [ loc, sprite, fog ] = worldState.getComponents(entityID, [ ...RenderSystem.components, ComponentID.Fog ] as const);
 
          if (!map[loc.y]) {
             map[loc.y] = [];
@@ -35,7 +36,10 @@ export class RenderSystem extends System {
             map[loc.y][loc.x] = [];
          }
 
-         map[loc.y][loc.x].push(sprite);
+         // TODO: Types, `fog` would ideally be possibly undefined
+         if (!fog || fog.level === FogLevel.None) {
+            map[loc.y][loc.x].push(sprite);
+         }
 
          if (loc.y > memo.y) {
             memo.y = loc.y;
@@ -94,14 +98,9 @@ export class RenderSystem extends System {
          for (let x = 0; x < this._viewport.x; x++) {
             const tileX = x + camera.x;
 
-            this._sprites[y][x] = map[tileY][tileX]
-               .filter((sprite) => {
-                  // TODO: vary range on sprite
-                 return Math.sqrt(Math.pow(player.x - tileX, 2) + Math.pow(player.y - tileY, 2)) < 9;
-               })
-               .reduce((memo: ISpriteComponent | undefined, sprite) => {
-                  return memo ? (memo.layer >= sprite.layer ? memo : sprite) : sprite;
-               }, undefined);
+            this._sprites[y][x] = map[tileY][tileX].reduce((memo: ISpriteComponent | undefined, sprite) => {
+               return memo ? (memo.layer >= sprite.layer ? memo : sprite) : sprite;
+            }, undefined);
          }
       }
 

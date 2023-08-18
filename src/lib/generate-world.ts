@@ -6,6 +6,7 @@ import { Terrain, createTerrainComponent } from '../components/create-terrain-co
 import { createCameraComponent } from '../components/create-camera-component';
 import { createTagComponent } from '@/components/create-tag-component';
 import { ComponentID } from '@/shared-types';
+import { FogLevel, createFogComponent } from '@/components/create-fog-component';
 
 export function generateWorld(_seed: number): WorldState {
    const worldState = new WorldState();
@@ -28,6 +29,7 @@ export function generateWorld(_seed: number): WorldState {
             ...createPositionComponent(x, y),
             ...createSpriteComponent(isWall ? Sprite.Wall : Sprite.Air),
             ...createTerrainComponent(isWall ? Terrain.Impassable : Terrain.Passable),
+            ...createFogComponent(FogLevel.Full),
          });
       }
    }
