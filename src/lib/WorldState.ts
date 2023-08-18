@@ -59,4 +59,8 @@ export class WorldState {
       }) as any; // TODO: better types
    }
 
+   public doesEntityHaveComponent(entityID: EntityID, componentID: ComponentIDEnum): boolean {
+      return !!this._components[Number(componentID)][entityID];
+   }
+
 }

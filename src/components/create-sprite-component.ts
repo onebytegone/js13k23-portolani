@@ -18,12 +18,12 @@ export const Sprite = {
 export type SpriteEnum = ValueOf<typeof Sprite>;
 
 export interface ISpriteComponent {
-   sprite: SpriteEnum;
+   sprite: SpriteEnum | string;
    layer: number;
    tint?: string;
 }
 
-export function createSpriteComponent(sprite: SpriteEnum, tint?: string, layer: number = 0): ComponentRegistration<typeof ComponentID.Sprite> {
+export function createSpriteComponent(sprite: SpriteEnum | string, tint?: string, layer: number = 0): ComponentRegistration<typeof ComponentID.Sprite> {
    return {
       [ComponentID.Sprite]: { sprite, tint, layer },
    };

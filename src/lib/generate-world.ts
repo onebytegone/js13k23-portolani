@@ -9,7 +9,8 @@ import { FogLevel, createFogComponent } from '@/components/create-fog-component'
 import Perlin from './Perlin';
 import { WorldState } from './WorldState';
 import { makePRNG } from './make-prng';
-import { Vec2D, binaryThreshold } from './math';
+import { Vec2D, adjustRange, binaryThreshold, bucket, wrap } from './math';
+import { HEADING_SPRITES, HeadingEnum, createHeadingComponent } from '@/components/create-heading-component';
 
 const MAP_X = 150,
       MAP_Y = 100,
@@ -33,7 +34,32 @@ function createDebugCanvas(): (x: number, y: number, val: number) => void {
    };
 }
 
-const landDebug = createDebugCanvas(),
+function renderHistogram(values: number[]): void {
+   const canvas = document.createElement('canvas') as HTMLCanvasElement,
+         COLUMN_SIZE = 0.2,
+         COLUMN_WIDTH = 3;
+
+   canvas.width = values.length * COLUMN_WIDTH;
+   canvas.height = values.reduce((m, v) => { return v > m ? v : m;}, 0) * COLUMN_SIZE;
+   canvas.style.width = '100%';
+   canvas.style.imageRendering = 'pixelated';
+   document.body.appendChild(canvas);
+
+
+   const ctx = canvas.getContext('2d')!;
+
+   ctx.fillStyle = hsl(0, 0, 1);
+   ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+   ctx.fillStyle = hsl(0.2, 0.8, 0.4);
+   console.log(values);
+   values.forEach((v, x) => {
+      ctx.fillRect(x * COLUMN_WIDTH, canvas.height - v * COLUMN_SIZE, COLUMN_WIDTH, v * COLUMN_SIZE);
+   });
+}
+
+const windDebug = createDebugCanvas(),
       portDebug = createDebugCanvas();
 
 function hsl(h: number, s: number, l: number): string {
@@ -86,7 +112,8 @@ export function generateWorld(kernel: number): WorldState {
    const worldState = new WorldState(),
          prng = makePRNG(kernel),
          landGenerator = new Perlin(prng, 10),
-         canalGenerator = new Perlin(prng, 20);
+         canalGenerator = new Perlin(prng, 20),
+         windGenerator = new Perlin(prng, 20);
 
    worldState.createEntity({
       ...createCameraComponent({ x: 0, y: 0, viewportWidth: 32, viewportHeight: 24 }),
@@ -100,17 +127,29 @@ export function generateWorld(kernel: number): WorldState {
       for (let x = 0; x < MAP_X; x++) {
          const landNoise = landGenerator.get(x, y) * circleCutoff(x, y),
                canalNoise = binaryThreshold(sCurve(Math.abs(canalGenerator.get(x, y))), 0.2),
-               isLand = !!(binaryThreshold(landNoise, 0.04) * canalNoise),
-               sprite = createSpriteComponent(isLand ? Sprite.Land : Sprite.Air, isLand ? Tint.Land : Tint.Ocean);
-
-         landDebug(x, y, isLand ? 1 : 0);
+               isLand = !!(binaryThreshold(landNoise, 0.04) * canalNoise);
 
          entityMap[y][x] = worldState.createEntity({
             ...createPositionComponent(x, y),
-            ...sprite,
+            ...createSpriteComponent(isLand ? Sprite.Land : Sprite.Air, isLand ? Tint.Land : Tint.Ocean),
             ...createTerrainComponent(isLand ? Terrain.Impassable : Terrain.Passable),
             ...createFogComponent(FogLevel.Full),
          });
+
+         if (!isLand) {
+            const windHeading = Math.floor(wrap(adjustRange(windGenerator.get(x, y), {
+               fromMin: -1, fromMax: 1, toMin: 0, toMax: 1440,
+            }), 360) / 45) as HeadingEnum;
+
+            windDebug(x, y, windHeading / 8);
+
+            worldState.createEntity({
+               ...createPositionComponent(x, y),
+               ...createHeadingComponent(windHeading),
+               ...createSpriteComponent(HEADING_SPRITES[windHeading], Tint.Ocean, 1),
+               ...createFogComponent(FogLevel.Full),
+            });
+         }
       }
    }
 
@@ -169,7 +208,7 @@ export function generateWorld(kernel: number): WorldState {
    worldState.createEntity({
       ...createPositionComponent(startingPoint.x, startingPoint.y),
       ...createMovementComponent(),
-      ...createSpriteComponent(Sprite.Player, Tint.Ocean),
+      ...createSpriteComponent(Sprite.Player, Tint.Ocean, 2),
       ...createTagComponent(ComponentID.Input),
    });
 

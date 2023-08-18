@@ -21,6 +21,10 @@ export function adjustRange(input: number, opts: { fromMin?: number; fromMax?: n
    return (input - fromMin) * (toMax - toMin) / (fromMax - fromMin) + toMin;
 }
 
+export function wrap(v: number, m: number): number {
+   return v >= 0 ? v % m : (v % m + m) % m;
+}
+
 function smootherstep(x: number): number {
    return (6 * Math.pow(x, 5)) - (15 * Math.pow(x, 4)) + (10 * Math.pow(x, 3));
 }
