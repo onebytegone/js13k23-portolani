@@ -2,7 +2,7 @@ import { ComponentID, EntityID } from '@/shared-types';
 import { createCameraComponent } from '../components/create-camera-component';
 import { createMovementComponent } from '../components/create-movement-component';
 import { createPositionComponent } from '../components/create-position-component';
-import { Sprite, createSpriteComponent } from '../components/create-sprite-component';
+import { Sprite, Tint, createSpriteComponent } from '../components/create-sprite-component';
 import { Terrain, createTerrainComponent } from '../components/create-terrain-component';
 import { createTagComponent } from '@/components/create-tag-component';
 import { FogLevel, createFogComponent } from '@/components/create-fog-component';
@@ -101,11 +101,7 @@ export function generateWorld(kernel: number): WorldState {
          const landNoise = landGenerator.get(x, y) * circleCutoff(x, y),
                canalNoise = binaryThreshold(sCurve(Math.abs(canalGenerator.get(x, y))), 0.2),
                isLand = !!(binaryThreshold(landNoise, 0.04) * canalNoise),
-               sprite = createSpriteComponent(isLand ? Sprite.Coast : Sprite.Air);
-
-         if (!isLand) {
-            sprite[ComponentID.Sprite].tint = hsl(214, 0.46, 0.70);
-         }
+               sprite = createSpriteComponent(isLand ? Sprite.Land : Sprite.Air, isLand ? Tint.Land : Tint.Ocean);
 
          landDebug(x, y, isLand ? 1 : 0);
 
@@ -122,12 +118,15 @@ export function generateWorld(kernel: number): WorldState {
          possiblePortLocations: Vec2D[] = [];
 
    floodFill(entityMap, (entityID, pos, delta) => {
-      const [ terrain ] = worldState.getComponents(entityID, [ ComponentID.Terrain ] as const);
+      const [ terrain, sprite ] = worldState.getComponents(entityID, [ ComponentID.Terrain, ComponentID.Sprite ] as const);
 
       if (terrain.terrain === Terrain.Passable) {
          oceanTiles.push(pos);
          return true;
       }
+
+      sprite.sprite = Sprite.Coast;
+      sprite.tint = Tint.Coast;
 
       portDebug(pos.x, pos.y, 0.2);
 
@@ -157,7 +156,7 @@ export function generateWorld(kernel: number): WorldState {
 
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
-         ...createSpriteComponent(Sprite.Port, 7),
+         ...createSpriteComponent(Sprite.Port, Tint.Port, 1),
          ...createTerrainComponent(Terrain.Impassable),
          ...createFogComponent(FogLevel.Full),
       });
@@ -170,7 +169,7 @@ export function generateWorld(kernel: number): WorldState {
    worldState.createEntity({
       ...createPositionComponent(startingPoint.x, startingPoint.y),
       ...createMovementComponent(),
-      ...createSpriteComponent(Sprite.Player),
+      ...createSpriteComponent(Sprite.Player, Tint.Ocean),
       ...createTagComponent(ComponentID.Input),
    });
 

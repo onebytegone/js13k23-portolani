@@ -1,8 +1,16 @@
 import { ComponentID, ComponentRegistration, ValueOf } from '@/shared-types';
 
+export const Tint = {
+   Ocean: 'blue',
+   Coast: 'tan',
+   Port: 'brown',
+   Land: 'green',
+} as const;
+
 export const Sprite = {
    Air: '.',
    Coast: '#',
+   Land: '^',
    Player: '@',
    Port: '$',
 } as const;
@@ -15,8 +23,8 @@ export interface ISpriteComponent {
    tint?: string;
 }
 
-export function createSpriteComponent(sprite: SpriteEnum, layer: number = 0): ComponentRegistration<typeof ComponentID.Sprite> {
+export function createSpriteComponent(sprite: SpriteEnum, tint?: string, layer: number = 0): ComponentRegistration<typeof ComponentID.Sprite> {
    return {
-      [ComponentID.Sprite]: { sprite, layer },
+      [ComponentID.Sprite]: { sprite, tint, layer },
    };
 }
