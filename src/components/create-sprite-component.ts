@@ -11,6 +11,7 @@ export type SpriteEnum = ValueOf<typeof Sprite>;
 export interface ISpriteComponent {
    sprite: SpriteEnum;
    layer: number;
+   tint?: string;
 }
 
 export function createSpriteComponent(sprite: SpriteEnum, layer: number = 0): ComponentRegistration<typeof ComponentID.Sprite> {

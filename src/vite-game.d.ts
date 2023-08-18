@@ -1,1 +1,1 @@
-declare const t2d: HTMLDivElement;
+declare const c5: HTMLCanvasElement;
