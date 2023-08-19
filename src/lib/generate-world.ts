@@ -9,7 +9,7 @@ import { FogLevel, createFogComponent } from '@/components/create-fog-component'
 import Perlin from './Perlin';
 import { WorldState } from './WorldState';
 import { makePRNG } from './make-prng';
-import { Vec2D, adjustRange, binaryThreshold, bucket, wrap } from './math';
+import { Vec2D, adjustRange, binaryThreshold, wrap } from './math';
 import { HEADING_SPRITES, HeadingEnum, createHeadingComponent } from '@/components/create-heading-component';
 
 const MAP_X = 150,
@@ -52,7 +52,6 @@ function renderHistogram(values: number[]): void {
    canvas.style.width = '100%';
    canvas.style.imageRendering = 'pixelated';
    document.body.appendChild(canvas);
-
 
    const ctx = canvas.getContext('2d')!;
 
