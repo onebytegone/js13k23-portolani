@@ -17,6 +17,10 @@ const MAP_X = 150,
       MIN_PORT_DISTANCE = 6;
 
 function createDebugCanvas(): (x: number, y: number, val: number) => void {
+   if (!window.DEBUG) {
+      return () => {};
+   }
+
    const canvas = document.createElement('canvas') as HTMLCanvasElement,
          TILE_SIZE = 3;
 
@@ -35,6 +39,10 @@ function createDebugCanvas(): (x: number, y: number, val: number) => void {
 }
 
 function renderHistogram(values: number[]): void {
+   if (!window.DEBUG) {
+      return;
+   }
+
    const canvas = document.createElement('canvas') as HTMLCanvasElement,
          COLUMN_SIZE = 0.2,
          COLUMN_WIDTH = 3;

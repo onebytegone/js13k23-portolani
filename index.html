@@ -11,6 +11,9 @@
       <div class="header"><span>Title</span><a href="#">Button</a></div>
       <canvas id="c5"></canvas>
    </div>
+   <script>
+      window.DEBUG = (new URLSearchParams(window.location.search)).has('debug');
+   </script>
    <script type="module" src="/src/index.ts"></script>
 </body>
 </html>

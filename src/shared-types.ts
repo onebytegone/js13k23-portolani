@@ -13,6 +13,12 @@ export type Nominal<Type, Identifier> = Type & {
 
 export type ValueOf<T> = T[keyof T];
 
+declare global {
+   interface Window {
+     DEBUG?: boolean;
+   }
+ }
+
 export type EntityID = Nominal<number, 'EntityID'>;
 
 // NOTE: Using a const and a separate type since TS and Google Closure don't play nicely
