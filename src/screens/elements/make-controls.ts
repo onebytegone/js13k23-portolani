@@ -1,4 +1,4 @@
-import { HEADING_SPRITES, Heading } from '@/components/create-heading-component';
+import { HEADING_SPRITES, Heading, HeadingEnum } from '@/components/create-heading-component';
 import { makeButton } from './make-button';
 
 const buttons = [
@@ -13,7 +13,7 @@ const buttons = [
    Heading.SE,
 ];
 
-export function makeControls(): HTMLElement {
+export function makeControls(onInput: (heading: HeadingEnum) => void): HTMLElement {
    const grid = document.createElement('div');
 
    grid.className = 'c7';
@@ -23,7 +23,7 @@ export function makeControls(): HTMLElement {
          grid.appendChild(document.createElement('div'));
       } else {
          const button = makeButton(HEADING_SPRITES[heading], () =>{
-            // TODO: send to the input system
+            onInput(heading);
          });
          grid.appendChild(button);
       }

@@ -1,50 +1,32 @@
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
-
-function getHeadingFromKeyEvent(event: KeyboardEvent): { x: number; y: number } | undefined {
-   let x = 0, y = 0;
-
-   if (event.code === 'KeyA' || event.code === 'KeyQ' || event.code === 'KeyZ') {
-      x = -1;
-   }
-
-   if (event.code === 'KeyE' || event.code === 'KeyD' || event.code === 'KeyC') {
-      x = 1;
-   }
-
-   if (event.code === 'KeyQ' || event.code === 'KeyW' || event.code === 'KeyE') {
-      y = -1;
-   }
-
-   if (event.code === 'KeyZ' || event.code === 'KeyX' || event.code === 'KeyC') {
-      y = 1;
-   }
-
-   if (x || y) {
-      return { x, y };
-   }
-}
+import { Heading, HeadingEnum } from '@/components/create-heading-component';
 
 export class InputSystem extends System {
 
    static components = [ ComponentID.Movement, ComponentID.Input ] as const;
 
-   public constructor(worldState: WorldState, onInput: () => void) {
+   public constructor(private _worldState: WorldState) {
       super();
+   }
 
-      document.addEventListener('keydown', (event) => {
-         const heading = getHeadingFromKeyEvent(event);
+   public processHeadingInput(heading: HeadingEnum): void {
+      this._worldState.getEntities(InputSystem.components).forEach((entityID) => {
+         const [ movement ] = this._worldState.getComponents(entityID, InputSystem.components);
 
-         if (heading) {
-            worldState.getEntities(InputSystem.components).forEach((entityID) => {
-               const [ movement ] = worldState.getComponents(entityID, InputSystem.components);
+         movement.y = 0;
+         if (heading === Heading.NW || heading === Heading.N || heading === Heading.NE) {
+            movement.y = -1;
+         } else if (heading === Heading.SW || heading === Heading.S || heading === Heading.SE) {
+            movement.y = 1;
+         }
 
-               movement.x = heading.x;
-               movement.y = heading.y;
-            });
-
-            onInput();
+         movement.x = 0;
+         if (heading === Heading.NW || heading === Heading.W || heading === Heading.SW) {
+            movement.x = -1;
+         } else if (heading === Heading.NE || heading === Heading.E || heading === Heading.SE) {
+            movement.x = 1;
          }
       });
    }
@@ -54,7 +36,7 @@ export class InputSystem extends System {
       worldState.getEntities(InputSystem.components).forEach((entityID) => {
          const [ movement ] = worldState.getComponents(entityID, InputSystem.components);
 
-         // Stop all movement in prep for the next key up
+         // Stop all movement in prep for the next input
          movement.x = 0;
          movement.y = 0;
       });
