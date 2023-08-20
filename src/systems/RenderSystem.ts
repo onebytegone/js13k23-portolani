@@ -13,10 +13,10 @@ export class RenderSystem extends System {
    private _sprites: (ISpriteComponent | undefined)[][] = [];
    private _viewport: { x: number; y: number } = { x: 0, y: 0 };
 
-   public constructor() {
+   public constructor(private _canvas: HTMLCanvasElement) {
       super();
 
-      new ResizeObserver(() => { this._draw(); }).observe(c5);
+      new ResizeObserver(() => { this._draw(); }).observe(this._canvas.parentElement!);
    }
 
    public update(delta: number, worldState: WorldState): void {
@@ -108,13 +108,15 @@ export class RenderSystem extends System {
    }
 
    private _draw(): void {
-      const ctx = c5.getContext('2d')!,
+      const ctx = this._canvas.getContext('2d')!,
             dpr = window.devicePixelRatio,
             viewportRatio = this._viewport.y / this._viewport.x,
-            tileSize = Math.round(Math.round(dpr * c5.clientWidth) / this._viewport.x);
+            wrapperRatio = this._canvas.parentElement!.clientHeight / this._canvas.parentElement!.clientWidth,
+            [ axis, dimension ] = wrapperRatio > viewportRatio ? [ 'x', 'clientWidth' ] as const : [ 'y', 'clientHeight' ] as const,
+            tileSize = Math.round(Math.round(dpr * this._canvas.parentElement![dimension]) / this._viewport[axis]);
 
-      c5.width = tileSize * this._viewport.x;
-      c5.height = c5.width * viewportRatio;
+      this._canvas.width = tileSize * this._viewport.x;
+      this._canvas.height = this._canvas.width * viewportRatio;
 
       for (let y = 0; y < this._viewport.y; y++) {
          for (let x = 0; x < this._viewport.x; x++) {

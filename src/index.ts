@@ -1,28 +1,10 @@
-import { InputSystem } from './systems/InputSystem';
-import { MovementSystem } from './systems/MovementSystem';
-import { RenderSystem } from './systems/RenderSystem';
-import { generateWorld } from './lib/generate-world';
-import { FogSystem } from './systems/FogSystem';
+import { makeIntroScreen } from './screens/IntroScreen';
+import { ScreenRenderFn } from './shared-types';
 
-const worldState = generateWorld(Date.now());
-
-const systems = [
-   new MovementSystem(),
-   new FogSystem(),
-   new RenderSystem(),
-   new InputSystem(worldState, () => {
-      draw(Date.now());
-   }),
-];
-
-let lastFrame = 0;
-
-function draw(currentTime: number) {
-   const delta = (currentTime - lastFrame) / 1000;
-
-   systems.forEach((system) => {
-      system.update(delta, worldState);
-   });
+function renderScreen(screen: ScreenRenderFn): void {
+   s5.innerHTML = '';
+   s5.className = '';
+   screen(s5, renderScreen);
 }
 
-draw(Date.now());
+renderScreen(makeIntroScreen());

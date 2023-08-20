@@ -1,10 +1,10 @@
 html, body {
-   min-height: 100%;
    margin: 0;
    padding: 0;
    font-family: monospace;
    color: #888;
    background-color: #333;
+   overscroll-behavior: none;
 }
 
 body {
@@ -14,22 +14,67 @@ body {
    align-items: center;
 }
 
-.header {
-   display: flex;
-   margin: 8px;
-}
-
-.header a {
-   margin-left: auto;
-   color: #888;
-}
-
-.box {
-   width: 100%;
-}
-
-#c5 {
+* {
    box-sizing: border-box;
+}
+
+#s5 {
+   height: 100vh;
+   position: relative;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
    width: 100%;
-   padding: 8px;
+   gap: 1em;
+}
+
+.wrapper {
+   width: 100%;
+}
+
+.c7 {
+   display: grid;
+   grid-template-columns: repeat(3, 1fr);
+   grid-template-rows: repeat(3, 1fr);
+   gap: 6px;
+   /* position: absolute;
+   bottom: 24px;
+   right: 24px; */
+}
+
+.c7 button {
+   min-width: 44px;
+   min-height: 44px;
+   font-size: 2em;
+   font-family: monospace;
+   touch-action: manipulation;
+}
+
+canvas {
+   height: 100%;
+   width: 100%;
+   object-fit: contain;
+   display: block;
+}
+
+@media (orientation: landscape) {
+   #s5 {
+      padding:
+         env(safe-area-inset-top)
+         env(safe-area-inset-right)
+         env(safe-area-inset-bottom)
+         env(safe-area-inset-left);
+   }
+   #s5.game {
+      flex-direction: row;
+   }
+   .c7 {
+      padding-right: 1em;
+   }
+   .wrapper {
+      flex: 1;
+      width: auto;
+      height: 100%;
+   }
 }

@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <head>
    <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+   <meta name="apple-mobile-web-app-capable" content="yes">
+   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+   <meta name="mobile-web-app-capable" content="yes">
    <title>Portolani</title>
    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗺</text></svg>">
    <link rel="stylesheet" href="style.css"/>
 </head>
 <html>
 <body>
-   <div class="box">
-      <div class="header"><span>Title</span><a href="#">Button</a></div>
-      <canvas id="c5"></canvas>
-   </div>
-   <script>
-      window.DEBUG = (new URLSearchParams(window.location.search)).has('debug');
-   </script>
+   <div id="s5"></div>
+   <script>window.DEBUG = (new URLSearchParams(window.location.search)).has('debug');</script>
    <script type="module" src="/src/index.ts"></script>
 </body>
 </html>
