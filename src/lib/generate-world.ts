@@ -182,7 +182,7 @@ export function generateWorld(kernel: number): WorldState {
       return false;
    });
 
-   const numberOfPorts = prng.inRange(0, 10),
+   const numberOfPorts = prng.inRange(10, 20),
          ports: Vec2D[] = [];
 
    while (ports.length < numberOfPorts) {
@@ -210,7 +210,20 @@ export function generateWorld(kernel: number): WorldState {
       portDebug(pos.x, pos.y, 0.5);
    }
 
-   const startingPoint = prng.randomElement(oceanTiles);
+   const startingPort = prng.randomElement(ports),
+         tilesAdjacentToStartingPort = worldState.getEntitiesAdjacentToLocation(startingPort, [ ComponentID.Terrain, ComponentID.Position ] as const);
+
+   const [ , startingPoint ] = prng.randomElement(Object.values(tilesAdjacentToStartingPort).flatMap((row) => {
+      return Object.values(row).flatMap((entities) => {
+         return entities
+            .map((entityID) => {
+               return worldState.getComponents(entityID, [ ComponentID.Terrain, ComponentID.Position ] as const);
+            })
+            .filter(([ terrain ]) => {
+               return terrain.terrain === Terrain.Passable;
+            });
+      });
+   }));
 
    worldState.createEntity({
       ...createPositionComponent(startingPoint.x, startingPoint.y),

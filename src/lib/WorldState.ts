@@ -53,6 +53,24 @@ export class WorldState {
       });
    }
 
+   public getEntitiesAdjacentToLocation(location: Vector2D, componentIDs: readonly ComponentIDEnum[] = []): EntityID[][][] {
+      const map: EntityID[][][] = [];
+
+      for (let y = -1; y <= 1; y++) {
+         map[y] = [];
+
+         for (let x = -1; x <= 1; x++) {
+            if (x === 0 && y === 0) {
+               continue;
+            }
+
+            map[y][x] = this.getEntitiesAtLocation({ x: location.x + x, y: location.y + y }, componentIDs);
+         }
+      }
+
+      return map;
+   }
+
    public getComponents<T extends readonly ComponentIDEnum[]>(entityID: EntityID, componentIDs: T): { [K in keyof T]: ComponentMap[T[K]] } {
       return componentIDs.map((componentID) => {
          return (this._components[componentID] || [])[entityID];
