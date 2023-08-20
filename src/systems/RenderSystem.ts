@@ -1,7 +1,7 @@
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
-import { ISpriteComponent } from '@/components/create-sprite-component';
+import { ISpriteComponent, Color } from '@/components/create-sprite-component';
 import { FogLevel } from '@/components/create-fog-component';
 
 const CAMERA_MARGIN = 12;
@@ -123,12 +123,12 @@ export class RenderSystem extends System {
             const sprite = this._sprites[y][x];
 
             if (!sprite) {
-               ctx.fillStyle = '#333';
+               ctx.fillStyle = Color.DefaultBG;
                ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
 
                ctx.textBaseline = 'middle';
                ctx.textAlign = 'center';
-               ctx.fillStyle = '#3a3a3a';
+               ctx.fillStyle = Color.Default;
                ctx.font = `${tileSize * 1.5}px monospace`;
                ctx.fillText(
                   '☁︎',
@@ -138,12 +138,12 @@ export class RenderSystem extends System {
                continue;
             }
 
-            ctx.fillStyle = sprite.tint ?? '#3a3a3a';
+            ctx.fillStyle = sprite.bg ?? Color.DefaultBG;
             ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
 
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
-            ctx.fillStyle = '#888';
+            ctx.fillStyle = sprite.tint ?? Color.Default;
             ctx.font = `${tileSize}px monospace`;
             ctx.fillText(
                sprite.sprite,

@@ -1,18 +1,24 @@
 import { ComponentID, ComponentRegistration, ValueOf } from '@/shared-types';
 
-export const Tint = {
-   Ocean: 'blue',
-   Coast: 'tan',
-   Port: 'brown',
-   Land: 'green',
+export const Color = {
+   OceanBG: '#3B727C',
+   Wind: '#295057',
+   CoastBG: '#C7B598',
+   Coast: '#A79371',
+   PortBG: '#9E565C',
+   Port: '#351D1F',
+   LandBG: '#68865E',
+   Land: '#41543B',
+   Default: '#DFD2BA',
+   DefaultBG: '#E3D8C4',
 } as const;
 
 export const Sprite = {
    Air: '.',
-   Coast: '#',
-   Land: '^',
+   Coast: '•',
+   Land: '↟',
    Player: '@',
-   Port: '$',
+   Port: '★',
 } as const;
 
 export type SpriteEnum = ValueOf<typeof Sprite>;
@@ -21,10 +27,13 @@ export interface ISpriteComponent {
    sprite: SpriteEnum | string;
    layer: number;
    tint?: string;
+   bg?: string;
 }
 
-export function createSpriteComponent(sprite: SpriteEnum | string, tint?: string, layer: number = 0): ComponentRegistration<typeof ComponentID.Sprite> {
+type SpriteOptions = Partial<Pick<ISpriteComponent, 'layer' | 'tint' |'bg'>>;
+
+export function createSpriteComponent(sprite: SpriteEnum | string, opts: SpriteOptions = {}): ComponentRegistration<typeof ComponentID.Sprite> {
    return {
-      [ComponentID.Sprite]: { sprite, tint, layer },
+      [ComponentID.Sprite]: { sprite, ...Object.assign({ layer: 0 }, opts) },
    };
 }

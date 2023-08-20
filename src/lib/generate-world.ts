@@ -2,7 +2,7 @@ import { ComponentID, EntityID } from '@/shared-types';
 import { createCameraComponent } from '../components/create-camera-component';
 import { createMovementComponent } from '../components/create-movement-component';
 import { createPositionComponent } from '../components/create-position-component';
-import { Sprite, Tint, createSpriteComponent } from '../components/create-sprite-component';
+import { Sprite, Color, createSpriteComponent } from '../components/create-sprite-component';
 import { Terrain, createTerrainComponent } from '../components/create-terrain-component';
 import { createTagComponent } from '@/components/create-tag-component';
 import { FogLevel, createFogComponent } from '@/components/create-fog-component';
@@ -115,6 +115,14 @@ function floodFill<T>(map: T[][], iteratee: (v: T, pos: Vec2D, delta: Vec2D) => 
    }
 }
 
+const LAYER = {
+   Default: 0,
+   Wind: 1,
+   Land: 2,
+   Port: 3,
+   Player: 4,
+};
+
 export function generateWorld(kernel: number): WorldState {
    const worldState = new WorldState(),
          prng = makePRNG(kernel),
@@ -136,24 +144,29 @@ export function generateWorld(kernel: number): WorldState {
                canalNoise = binaryThreshold(sCurve(Math.abs(canalGenerator.get(x, y))), 0.2),
                isLand = !!(binaryThreshold(landNoise, 0.04) * canalNoise);
 
-         entityMap[y][x] = worldState.createEntity({
-            ...createPositionComponent(x, y),
-            ...createSpriteComponent(isLand ? Sprite.Land : Sprite.Air, isLand ? Tint.Land : Tint.Ocean),
-            ...createTerrainComponent(isLand ? Terrain.Impassable : Terrain.Passable),
-            ...createFogComponent(FogLevel.Full),
-         });
-
-         if (!isLand) {
+         if (isLand) {
+            entityMap[y][x] = worldState.createEntity({
+               ...createPositionComponent(x, y),
+               ...createSpriteComponent(Sprite.Land, { layer: LAYER.Land, bg: Color.LandBG, tint: Color.Land }),
+               ...createTerrainComponent(Terrain.Impassable),
+               ...createFogComponent(FogLevel.Full),
+            });
+         } else {
             const windHeading = Math.floor(wrap(adjustRange(windGenerator.get(x, y), {
                fromMin: -1, fromMax: 1, toMin: 0, toMax: 1440,
             }), 360) / 45) as HeadingEnum;
 
             windDebug(x, y, windHeading / 8);
 
-            worldState.createEntity({
+            entityMap[y][x] = worldState.createEntity({
                ...createPositionComponent(x, y),
                ...createHeadingComponent(windHeading),
-               ...createSpriteComponent(HEADING_SPRITES[windHeading], Tint.Ocean, 1),
+               ...createSpriteComponent(HEADING_SPRITES[windHeading], {
+                  layer: LAYER.Wind,
+                  bg: Color.OceanBG,
+                  tint: Color.Wind,
+               }),
+               ...createTerrainComponent(Terrain.Passable),
                ...createFogComponent(FogLevel.Full),
             });
          }
@@ -172,7 +185,8 @@ export function generateWorld(kernel: number): WorldState {
       }
 
       sprite.sprite = Sprite.Coast;
-      sprite.tint = Tint.Coast;
+      sprite.bg = Color.CoastBG;
+      sprite.tint = Color.Coast;
 
       portDebug(pos.x, pos.y, 0.2);
 
@@ -202,7 +216,11 @@ export function generateWorld(kernel: number): WorldState {
 
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
-         ...createSpriteComponent(Sprite.Port, Tint.Port, 1),
+         ...createSpriteComponent(Sprite.Port, {
+            layer: LAYER.Port,
+            bg: Color.PortBG,
+            tint: Color.Port,
+         }),
          ...createTerrainComponent(Terrain.Impassable),
          ...createFogComponent(FogLevel.Full),
       });
@@ -228,7 +246,7 @@ export function generateWorld(kernel: number): WorldState {
    worldState.createEntity({
       ...createPositionComponent(startingPoint.x, startingPoint.y),
       ...createMovementComponent(),
-      ...createSpriteComponent(Sprite.Player, Tint.Ocean, 2),
+      ...createSpriteComponent(Sprite.Player, { layer: LAYER.Player, bg: Color.OceanBG }),
       ...createTagComponent(ComponentID.Input),
    });
 
