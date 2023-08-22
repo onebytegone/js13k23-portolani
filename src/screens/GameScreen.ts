@@ -6,6 +6,8 @@ import { FogSystem } from '../systems/FogSystem';
 import { ScreenRenderFn } from '@/shared-types';
 import { makeControls } from './elements/make-controls';
 import { Heading, HeadingEnum } from '@/components/create-heading-component';
+import { EncounterSystem } from '@/systems/EncounterSystem';
+import { HUDSystem } from '@/systems/HUDSystem';
 
 const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
    KeyQ: Heading.NW,
@@ -21,6 +23,8 @@ const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
 export function makeGameScreen(): ScreenRenderFn {
    return (el) => {
       const wrapper = document.createElement('div'),
+            header = document.createElement('h1'),
+            footer = document.createElement('h1'),
             canvas = document.createElement('canvas'),
             worldState = generateWorld(Date.now()),
             inputSystem = new InputSystem(worldState);
@@ -37,7 +41,9 @@ export function makeGameScreen(): ScreenRenderFn {
 
       const systems = [
          new MovementSystem(),
+         new EncounterSystem(),
          new FogSystem(),
+         new HUDSystem(header, footer),
          new RenderSystem(canvas),
          inputSystem,
       ];

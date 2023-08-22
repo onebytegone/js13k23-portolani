@@ -1,8 +1,10 @@
 import { ICameraComponent } from './components/create-camera-component';
+import { IEncounterComponent } from './components/create-encounter-component';
 import { IFogComponent } from './components/create-fog-component';
 import { IHeadingComponent } from './components/create-heading-component';
 import { IMovementComponent } from './components/create-movement-component';
 import { ISpriteComponent } from './components/create-sprite-component';
+import { IStatsComponent } from './components/create-stats-component';
 import { ITagComponent } from './components/create-tag-component';
 import { ITerrainComponent } from './components/create-terrain-component';
 
@@ -12,6 +14,10 @@ export type Nominal<Type, Identifier> = Type & {
 };
 
 export type ValueOf<T> = T[keyof T];
+
+export declare type PropsWithType<O, T> = Exclude<keyof Pick<O, {
+   [K in keyof O]: O[K] extends T ? K : never;
+}[keyof O]>, undefined>;
 
 declare global {
    interface Window {
@@ -36,6 +42,8 @@ export const ComponentID = {
    Camera: 5,
    Fog: 6,
    Heading: 7,
+   Encounter: 8,
+   Stats: 9,
 } as const;
 
 export type ComponentIDEnum = ValueOf<typeof ComponentID>;
@@ -54,6 +62,8 @@ export interface ComponentMap extends Record<ComponentIDEnum, unknown> {
    [ComponentID.Camera]: ICameraComponent;
    [ComponentID.Fog]: IFogComponent;
    [ComponentID.Heading]: IHeadingComponent;
+   [ComponentID.Encounter]: IEncounterComponent;
+   [ComponentID.Stats]: IStatsComponent;
 }
 
 export type ComponentRegistration<T extends ComponentIDEnum> =  { [K in T]: ComponentMap[T] };

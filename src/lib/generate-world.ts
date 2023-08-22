@@ -11,6 +11,8 @@ import { WorldState } from './WorldState';
 import { makePRNG } from './make-prng';
 import { Vec2D, adjustRange, binaryThreshold, wrap } from './math';
 import { HEADING_SPRITES, HeadingEnum, createHeadingComponent } from '@/components/create-heading-component';
+import { createEncounterComponent } from '@/components/create-encounter-component';
+import { createStatsComponent } from '@/components/create-stats-component';
 
 const MAP_X = 150,
       MAP_Y = 100,
@@ -223,6 +225,9 @@ export function generateWorld(kernel: number): WorldState {
          }),
          ...createTerrainComponent(Terrain.Impassable),
          ...createFogComponent(FogLevel.Full),
+         ...createEncounterComponent([
+            { stat: 'food', adjustment: 10 },
+         ]),
       });
 
       portDebug(pos.x, pos.y, 0.5);
@@ -248,6 +253,9 @@ export function generateWorld(kernel: number): WorldState {
       ...createMovementComponent(),
       ...createSpriteComponent(Sprite.Player, { layer: LAYER.Player, bg: Color.OceanBG }),
       ...createTagComponent(ComponentID.Input),
+      ...createStatsComponent({
+         food: 20,
+      }),
    });
 
    portDebug(startingPoint.x, startingPoint.y, 1);
