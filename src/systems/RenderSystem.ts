@@ -11,12 +11,17 @@ export class RenderSystem extends System {
    static components = [ ComponentID.Position, ComponentID.Sprite ] as const;
 
    private _sprites: (ISpriteComponent | undefined)[][] = [];
-   private _viewport: { x: number; y: number } = { x: 0, y: 0 };
+   private _camera: { x: number; y: number, viewportWidth: number, viewportHeight: number } = {
+      x: 0,
+      y: 0,
+      viewportWidth: 0,
+      viewportHeight: 0,
+   };
 
-   public constructor(private _canvas: HTMLCanvasElement) {
+   public constructor(private _canvas: HTMLCanvasElement, private _container: HTMLElement) {
       super();
 
-      new ResizeObserver(() => { this._draw(); }).observe(this._canvas.parentElement!);
+      new ResizeObserver(() => { this._draw(); }).observe(this._container);
    }
 
    public update(delta: number, worldState: WorldState): void {
@@ -85,20 +90,13 @@ export class RenderSystem extends System {
       }
 
       this._sprites = [];
-      this._viewport = {
-         x: camera.viewportWidth,
-         y: camera.viewportHeight,
-      };
+      this._camera = { ...camera };
 
-      for (let y = 0; y < this._viewport.y; y++) {
-         const tileY = y + camera.y;
-
+      for (let y = 0; y < maxPoint.y; y++) {
          this._sprites.push([]);
 
-         for (let x = 0; x < this._viewport.x; x++) {
-            const tileX = x + camera.x;
-
-            this._sprites[y][x] = map[tileY][tileX].reduce((memo: ISpriteComponent | undefined, sprite) => {
+         for (let x = 0; x < maxPoint.x; x++) {
+            this._sprites[y][x] = map[y][x].reduce((memo: ISpriteComponent | undefined, sprite) => {
                return memo ? (memo.layer >= sprite.layer ? memo : sprite) : sprite;
             }, undefined);
          }
@@ -110,21 +108,28 @@ export class RenderSystem extends System {
    private _draw(): void {
       const ctx = this._canvas.getContext('2d')!,
             dpr = window.devicePixelRatio,
-            viewportRatio = this._viewport.y / this._viewport.x,
-            wrapperRatio = this._canvas.parentElement!.clientHeight / this._canvas.parentElement!.clientWidth,
-            [ axis, dimension ] = wrapperRatio > viewportRatio ? [ 'x', 'clientWidth' ] as const : [ 'y', 'clientHeight' ] as const,
-            tileSize = Math.round(Math.round(dpr * this._canvas.parentElement![dimension]) / this._viewport[axis]);
+            viewportRatio = this._camera.viewportHeight / this._camera.viewportWidth,
+            wrapperRatio = this._container.clientHeight / this._container.clientWidth,
+            [ axis, dimension ] = wrapperRatio > viewportRatio ? [ 'viewportWidth', 'clientWidth' ] as const : [ 'viewportHeight', 'clientHeight' ] as const,
+            tileSize = Math.round(Math.round(dpr * this._container[dimension]) / this._camera[axis]);
 
-      this._canvas.width = tileSize * this._viewport.x;
-      this._canvas.height = this._canvas.width * viewportRatio;
+      this._canvas.width = this._container.clientWidth * dpr;
+      this._canvas.height = this._container.clientHeight * dpr;
+      this._canvas.style.width = `${this._container.clientWidth}px`;
+      this._canvas.style.height = `${this._container.clientHeight}px`;
 
-      for (let y = 0; y < this._viewport.y; y++) {
-         for (let x = 0; x < this._viewport.x; x++) {
-            const sprite = this._sprites[y][x];
+      const renderX = Math.floor((this._canvas.width - tileSize * this._camera.viewportWidth) / 2),
+            renderY = Math.floor((this._canvas.height - tileSize * this._camera.viewportHeight) / 2),
+            tileOffsetX = this._camera.x,
+            tileOffsetY = this._camera.y;
+
+      for (let y = 0; y < this._camera.viewportHeight; y++) {
+         for (let x = 0; x < this._camera.viewportWidth; x++) {
+            const sprite = this._sprites[y + tileOffsetY][x + tileOffsetX];
 
             if (!sprite) {
                ctx.fillStyle = Color.DefaultBG;
-               ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+               ctx.fillRect(renderX + x * tileSize, renderY + y * tileSize, tileSize, tileSize);
 
                ctx.textBaseline = 'middle';
                ctx.textAlign = 'center';
@@ -132,14 +137,14 @@ export class RenderSystem extends System {
                ctx.font = `${tileSize * 1.5}px monospace`;
                ctx.fillText(
                   '☁︎',
-                  x * tileSize + tileSize / 2,
-                  y * tileSize + tileSize / 2 - tileSize / 3
+                  renderX + x * tileSize + tileSize / 2,
+                  renderY + y * tileSize + tileSize / 2 - tileSize / 3
                );
                continue;
             }
 
             ctx.fillStyle = sprite.bg ?? Color.DefaultBG;
-            ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+            ctx.fillRect(renderX + x * tileSize, renderY + y * tileSize, tileSize, tileSize);
 
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
@@ -147,8 +152,8 @@ export class RenderSystem extends System {
             ctx.font = `${tileSize}px monospace`;
             ctx.fillText(
                sprite.sprite,
-               x * tileSize + tileSize / 2,
-               y * tileSize + tileSize / 2
+               renderX + x * tileSize + tileSize / 2,
+               renderY + y * tileSize + tileSize / 2
             );
          }
       }

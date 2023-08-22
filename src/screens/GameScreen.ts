@@ -22,18 +22,23 @@ const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
 
 export function makeGameScreen(): ScreenRenderFn {
    return (el) => {
-      const wrapper = document.createElement('div'),
-            header = document.createElement('h1'),
-            footer = document.createElement('h1'),
+      const gamePanel = document.createElement('div'),
+            frame = document.createElement('div'),
+            header = document.createElement('div'),
+            footer = document.createElement('div'),
             canvas = document.createElement('canvas'),
             worldState = generateWorld(Date.now()),
             inputSystem = new InputSystem(worldState);
 
       el.className = 'game';
-      wrapper.className = 'wrapper';
+      gamePanel.className = 'gamePanel';
+      frame.className = 'frame';
 
-      wrapper.appendChild(canvas);
-      el.appendChild(wrapper);
+      frame.appendChild(canvas);
+      gamePanel.appendChild(header);
+      gamePanel.appendChild(frame);
+      gamePanel.appendChild(footer);
+      el.appendChild(gamePanel);
       el.appendChild(makeControls((heading) => {
          inputSystem.processHeadingInput(heading);
          draw();
@@ -44,7 +49,7 @@ export function makeGameScreen(): ScreenRenderFn {
          new EncounterSystem(),
          new FogSystem(),
          new HUDSystem(header, footer),
-         new RenderSystem(canvas),
+         new RenderSystem(canvas, frame),
          inputSystem,
       ];
 

@@ -19,18 +19,42 @@ body {
 }
 
 #s5 {
-   height: 100vh;
-   position: relative;
    display: flex;
    flex-direction: column;
    align-items: center;
    justify-content: center;
-   width: 100%;
-   gap: 1em;
+   height: 100vh;
+   width: 100vw;
+   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-.wrapper {
+#s5.game {
+   flex-direction: row;
+}
+
+.gamePanel {
+   flex: 1;
+   display: flex;
+   flex-direction: column;
+   height: 100%;
+}
+
+.frame {
+   flex: 1;
+   background-color: #888;
+}
+
+canvas {
+   position: absolute;
    width: 100%;
+   height: auto;
+   display: block;
+}
+
+.sidebar {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
 }
 
 .c7 {
@@ -38,9 +62,7 @@ body {
    grid-template-columns: repeat(3, 1fr);
    grid-template-rows: repeat(3, 1fr);
    gap: 6px;
-   /* position: absolute;
-   bottom: 24px;
-   right: 24px; */
+   margin: 1em;
 }
 
 .c7 button {
@@ -56,30 +78,20 @@ body {
    user-select: none;
 }
 
-canvas {
-   height: 100%;
-   width: 100%;
-   object-fit: contain;
-   display: block;
-}
-
-@media (orientation: landscape) {
-   #s5 {
-      padding:
-         env(safe-area-inset-top)
-         env(safe-area-inset-right)
-         env(safe-area-inset-bottom)
-         env(safe-area-inset-left);
-   }
+@media (orientation: portrait) {
    #s5.game {
+      flex-direction: column;
+      justify-content: center;
+   }
+   .gamePanel {
+      flex: none;
+      width: 100%;
+      height: auto;
+   }
+   .frame {
+      aspect-ratio: 4 / 3;
+   }
+   .sidebar {
       flex-direction: row;
-   }
-   .c7 {
-      padding-right: 1em;
-   }
-   .wrapper {
-      flex: 1;
-      width: auto;
-      height: 100%;
    }
 }
