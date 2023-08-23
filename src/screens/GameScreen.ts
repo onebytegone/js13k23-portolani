@@ -34,6 +34,8 @@ export function makeGameScreen(): ScreenRenderFn {
       el.className = 'game';
       gamePanel.className = 'gamePanel';
       frame.className = 'frame';
+      header.className = 'header';
+      footer.className = 'footer';
 
       frame.appendChild(canvas);
       gamePanel.appendChild(header);

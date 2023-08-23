@@ -197,8 +197,7 @@ function ectPlugin(): Plugin {
       name: 'vite:ect',
       writeBundle: async (): Promise<void> => {
          try {
-            const assetFiles = (await fs.readdir(`${__dirname}/public/`)).map((filename) => { return `${__dirname}/public/${filename}`; }),
-                  args = ['-strip', '-zip', '-10009', `${__dirname}/.minified/index.html`, ...assetFiles],
+            const args = ['-strip', '-zip', '-10009', `${__dirname}/.minified/index.html`],
                   result = execFileSync(ect, args),
                   stats = statSync(`${__dirname}/.minified/index.zip`);
 

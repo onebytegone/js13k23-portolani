@@ -43,6 +43,10 @@ body {
    flex: 1;
 }
 
+.header {
+   display: flex;
+}
+
 canvas {
    position: absolute;
    width: 100%;
