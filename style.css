@@ -2,7 +2,7 @@ html, body {
    margin: 0;
    padding: 0;
    font-family: monospace;
-   color: #493927;
+   color: #2A261F;
    background-color: #E3D8C4;
    overscroll-behavior: none;
 }
@@ -18,18 +18,43 @@ body {
    box-sizing: border-box;
 }
 
+button {
+   all: unset;
+   min-width: 44px;
+   min-height: 44px;
+   font-size: 2em;
+   border: 3px solid #32291E;
+   color: #32291E;
+   background-color: #dad4c8;
+   border-radius: 2px;
+   padding: 8px 16px;
+   width: calc(100% - 36px);
+   text-align: center;
+}
+
+button:hover {
+   background-color: #bab5ab;
+}
+
 #s5 {
    display: flex;
    flex-direction: column;
    align-items: center;
    justify-content: center;
    height: 100vh;
-   width: 100vw;
    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
+h1 {
+   font-family: Luminari, monospace;
+   font-size: 7em;
+   margin: 0.2em 0;
+}
+
 #s5.game {
+   width: 100vw;
    flex-direction: row;
+   background-color: #D9CFBD;
 }
 
 .gamePanel {
@@ -37,6 +62,7 @@ body {
    display: flex;
    flex-direction: column;
    height: 100%;
+   border-right: 2px dashed #A7987E;
 }
 
 .frame {
@@ -45,6 +71,9 @@ body {
 
 .header {
    display: flex;
+   font-size: 2em;
+   padding: 0.25em;
+   border-bottom: 2px dashed #A7987E;
 }
 
 canvas {
@@ -52,12 +81,6 @@ canvas {
    width: 100%;
    height: auto;
    display: block;
-}
-
-.sidebar {
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
 }
 
 .c7 {
@@ -69,10 +92,7 @@ canvas {
 }
 
 .c7 button {
-   min-width: 44px;
-   min-height: 44px;
-   font-size: 2em;
-   font-family: monospace;
+   padding: 0;
    touch-action: manipulation;
    -webkit-user-select: none;
    -webkit-touch-callout: none;
@@ -84,17 +104,18 @@ canvas {
 @media (orientation: portrait) {
    #s5.game {
       flex-direction: column;
-      justify-content: center;
+      justify-content: unset;
    }
    .gamePanel {
       flex: none;
       width: 100%;
       height: auto;
+      border-right: none;
    }
    .frame {
       aspect-ratio: 4 / 3;
    }
-   .sidebar {
-      flex-direction: row;
+   .footer {
+      border-top: 2px dashed #A7987E;
    }
 }
