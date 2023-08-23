@@ -18,7 +18,7 @@ jobs:
          - run: npm ci
          - run: npm run build
          -
-            uses: actions/upload-artifact@v2
+            uses: actions/upload-artifact@v3
             with:
                name: minified.zip
                path: .minified/index.zip
