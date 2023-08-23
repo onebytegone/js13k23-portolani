@@ -26,6 +26,7 @@
       "build-with-best-roadroller": "cross-env USE_RR_CONFIG=true vite build",
       "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore src",
       "vite": "vite serve",
-      "tsc": "tsc --watch --noEmit"
+      "tsc": "tsc --watch --noEmit",
+      "strings": "cat .build/index*.js | sed -E \"s/[^a-z]+/\\n/gi\" | sort | uniq -c | awk '{ print $1 * length($2), $1, $2 }' | sort -nr | head -n 20"
    }
 }
