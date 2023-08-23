@@ -13,11 +13,15 @@ import { Heading, HeadingEnum } from '@/lib/math';
 const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
    KeyQ: Heading.NW,
    KeyW: Heading.N,
+   ArrowUp: Heading.N,
    KeyE: Heading.NE,
    KeyA: Heading.W,
+   ArrowLeft: Heading.W,
    KeyD: Heading.E,
+   ArrowRight: Heading.E,
    KeyZ: Heading.SW,
    KeyX: Heading.S,
+   ArrowDown: Heading.S,
    KeyC: Heading.SE,
 };
 
