@@ -47,7 +47,7 @@ button:hover {
 
 h1 {
    font-family: Luminari, monospace;
-   font-size: 7em;
+   font-size: 15vw;
    margin: 0.2em 0;
 }
 
@@ -111,6 +111,12 @@ canvas {
    line-height: 0.2em;
    padding-bottom: 0.2em;
    color: #295057;
+}
+
+@media (min-width: 560px) {
+   h1 {
+      font-size: 7em;
+   }
 }
 
 @media (orientation: portrait) {
