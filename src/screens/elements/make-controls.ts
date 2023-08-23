@@ -14,14 +14,14 @@ const buttons = [
    Heading.SE,
 ];
 
-export function makeControls(onInput: (heading: HeadingEnum) => void): HTMLElement {
+export function makeControls(onInput: (heading: HeadingEnum) => void, controlCenterEl?: HTMLElement): HTMLElement {
    const grid = document.createElement('div');
 
    grid.className = 'c7';
 
    buttons.forEach((heading) => {
       if (heading === undefined) {
-         grid.appendChild(document.createElement('div'));
+         grid.appendChild(controlCenterEl ?? document.createElement('div'));
       } else {
          const button = makeButton(HEADING_SPRITES[heading], () =>{
             onInput(heading);

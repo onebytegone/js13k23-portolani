@@ -32,6 +32,7 @@ export function makeGameScreen(): ScreenRenderFn {
             header = document.createElement('div'),
             footer = document.createElement('div'),
             canvas = document.createElement('canvas'),
+            controlCenter = document.createElement('div'),
             worldState = generateWorld(Date.now()),
             inputSystem = new InputSystem(worldState);
 
@@ -40,6 +41,7 @@ export function makeGameScreen(): ScreenRenderFn {
       frame.className = 'frame';
       header.className = 'header';
       footer.className = 'footer';
+      controlCenter.className = 'center';
 
       frame.appendChild(canvas);
       gamePanel.appendChild(header);
@@ -49,14 +51,14 @@ export function makeGameScreen(): ScreenRenderFn {
       el.appendChild(makeControls((heading) => {
          inputSystem.processHeadingInput(heading);
          draw();
-      }));
+      }, controlCenter));
 
       const systems = [
          new WindSystem(),
          new MovementSystem(),
          new EncounterSystem(),
          new FogSystem(),
-         new HUDSystem(header, footer, document.createElement('div')), // TODO use real control elem
+         new HUDSystem(header, footer, controlCenter),
          new RenderSystem(canvas, frame),
          inputSystem,
       ];

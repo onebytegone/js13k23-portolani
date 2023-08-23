@@ -2,7 +2,6 @@ import { ComponentID } from '@/shared-types';
 import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
 import { HEADING_SPRITES } from '@/components/create-heading-component';
-import { angleDifference, headingToVec2D, vec2DToAngle } from '@/lib/math';
 
 export class HUDSystem extends System {
 
@@ -38,7 +37,8 @@ export class HUDSystem extends System {
             [ heading ] = worldState.getComponents(windEntityID, [ ComponentID.Heading ]);
 
       this._foodEl.innerText = `${stats.food}`;
-      this._windHeadingEl.innerText = `${HEADING_SPRITES[heading.heading]}`;
+      this._windHeadingEl.innerText = HEADING_SPRITES[heading.heading];
+      this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
 
       sprite.skew = 0;
       sprite.size.x = 1;
