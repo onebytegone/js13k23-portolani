@@ -128,7 +128,7 @@ function roadrollerPlugin(): Plugin {
                   htmlWithEmbeddedCSS = cssFile ? embedCSS(html, cssFile) : html,
                   minifiedHtml = await htmlMinify.minify(htmlWithEmbeddedCSS, options);
 
-            await fs.rm(`${__dirname}/.minified`, { recursive: true });
+            await fs.rm(`${__dirname}/.minified`, { recursive: true, force: true });
             await fs.mkdir(`${__dirname}/.minified`, { recursive: true });
             await fs.writeFile(`${__dirname}/.minified/index.html`, await embedJS(minifiedHtml, jsFile));
          },
