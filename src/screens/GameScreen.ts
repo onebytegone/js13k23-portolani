@@ -8,6 +8,7 @@ import { makeControls } from './elements/make-controls';
 import { Heading, HeadingEnum } from '@/components/create-heading-component';
 import { EncounterSystem } from '@/systems/EncounterSystem';
 import { HUDSystem } from '@/systems/HUDSystem';
+import { WindSystem } from '@/systems/WindSystem';
 
 const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
    KeyQ: Heading.NW,
@@ -45,6 +46,7 @@ export function makeGameScreen(): ScreenRenderFn {
       }));
 
       const systems = [
+         new WindSystem(),
          new MovementSystem(),
          new EncounterSystem(),
          new FogSystem(),
