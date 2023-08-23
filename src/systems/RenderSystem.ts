@@ -99,15 +99,15 @@ export class RenderSystem extends System {
             viewportRatio = this._camera.viewportHeight / this._camera.viewportWidth,
             wrapperRatio = this._container.clientHeight / this._container.clientWidth,
             [ axis, dimension ] = wrapperRatio > viewportRatio ? [ 'viewportWidth', 'clientWidth' ] as const : [ 'viewportHeight', 'clientHeight' ] as const,
-            tileSize = Math.floor(this._container[dimension] / this._camera[axis]);
+            tileSize = Math.floor(dpr * this._container[dimension] / this._camera[axis]);
 
       this._canvas.width = this._container.clientWidth * dpr;
       this._canvas.height = this._container.clientHeight * dpr;
       this._canvas.style.width = `${this._container.clientWidth}px`;
       this._canvas.style.height = `${this._container.clientHeight}px`;
 
-      const tileMarginX = Math.ceil((Math.ceil(this._container.clientWidth / tileSize) - this._camera.viewportWidth) / 2),
-            tileMarginY = Math.ceil((Math.ceil(this._container.clientHeight / tileSize) - this._camera.viewportHeight) / 2),
+      const tileMarginX = Math.ceil((Math.ceil(this._canvas.width / tileSize) - this._camera.viewportWidth) / 2),
+            tileMarginY = Math.ceil((Math.ceil(this._canvas.height / tileSize) - this._camera.viewportHeight) / 2),
             visibleTilesX = this._camera.viewportWidth + tileMarginX * 2,
             visibleTilesY = this._camera.viewportHeight + tileMarginY * 2,
             renderX = Math.round((this._canvas.width - tileSize * visibleTilesX) / 2),
