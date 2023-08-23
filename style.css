@@ -41,7 +41,6 @@ body {
 
 .frame {
    flex: 1;
-   background-color: #888;
 }
 
 canvas {

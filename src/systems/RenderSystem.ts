@@ -17,6 +17,7 @@ export class RenderSystem extends System {
       viewportWidth: 0,
       viewportHeight: 0,
    };
+   private _mapSize: { x: number; y: number } = { x: 0, y: 0 };
 
    public constructor(private _canvas: HTMLCanvasElement, private _container: HTMLElement) {
       super();
@@ -30,7 +31,7 @@ export class RenderSystem extends System {
 
       const map: ISpriteComponent[][][] = [];
 
-      const maxPoint = worldState.getEntities(RenderSystem.components).reduce((memo, entityID) => {
+      this._mapSize = worldState.getEntities(RenderSystem.components).reduce((memo, entityID) => {
          const [ loc, sprite, fog ] = worldState.getComponents(entityID, [ ...RenderSystem.components, ComponentID.Fog ] as const);
 
          if (!map[loc.y]) {
@@ -46,12 +47,12 @@ export class RenderSystem extends System {
             map[loc.y][loc.x].push(sprite);
          }
 
-         if (loc.y > memo.y) {
-            memo.y = loc.y;
+         if (loc.y >= memo.y) {
+            memo.y = loc.y + 1;
          }
 
-         if (loc.x > memo.x) {
-            memo.x = loc.x;
+         if (loc.x >= memo.x) {
+            memo.x = loc.x + 1;
          }
 
          return memo;
@@ -73,29 +74,16 @@ export class RenderSystem extends System {
          camera.y = player.y - camera.viewportHeight + CAMERA_MARGIN + 1;
       }
 
-      if (camera.x < 0) {
-         camera.x = 0;
-      }
-
-      if (camera.x > maxPoint.x - camera.viewportWidth + 1) {
-         camera.x = maxPoint.x - camera.viewportWidth + 1;
-      }
-
-      if (camera.y < 0) {
-         camera.y = 0;
-      }
-
-      if (camera.y > maxPoint.y - camera.viewportHeight + 1) {
-         camera.y = maxPoint.y - camera.viewportHeight + 1;
-      }
+      camera.x = Math.max(0, Math.min(this._mapSize.x - camera.viewportWidth + 1, camera.x));
+      camera.y = Math.max(0, Math.min(this._mapSize.y - camera.viewportHeight + 1, camera.y));
 
       this._sprites = [];
       this._camera = { ...camera };
 
-      for (let y = 0; y < maxPoint.y; y++) {
+      for (let y = 0; y < this._mapSize.y; y++) {
          this._sprites.push([]);
 
-         for (let x = 0; x < maxPoint.x; x++) {
+         for (let x = 0; x < this._mapSize.x; x++) {
             this._sprites[y][x] = map[y][x].reduce((memo: ISpriteComponent | undefined, sprite) => {
                return memo ? (memo.layer >= sprite.layer ? memo : sprite) : sprite;
             }, undefined);
@@ -111,21 +99,25 @@ export class RenderSystem extends System {
             viewportRatio = this._camera.viewportHeight / this._camera.viewportWidth,
             wrapperRatio = this._container.clientHeight / this._container.clientWidth,
             [ axis, dimension ] = wrapperRatio > viewportRatio ? [ 'viewportWidth', 'clientWidth' ] as const : [ 'viewportHeight', 'clientHeight' ] as const,
-            tileSize = Math.round(Math.round(dpr * this._container[dimension]) / this._camera[axis]);
+            tileSize = Math.floor(this._container[dimension] / this._camera[axis]);
 
       this._canvas.width = this._container.clientWidth * dpr;
       this._canvas.height = this._container.clientHeight * dpr;
       this._canvas.style.width = `${this._container.clientWidth}px`;
       this._canvas.style.height = `${this._container.clientHeight}px`;
 
-      const renderX = Math.floor((this._canvas.width - tileSize * this._camera.viewportWidth) / 2),
-            renderY = Math.floor((this._canvas.height - tileSize * this._camera.viewportHeight) / 2),
-            tileOffsetX = this._camera.x,
-            tileOffsetY = this._camera.y;
+      const tileMarginX = Math.ceil((Math.ceil(this._container.clientWidth / tileSize) - this._camera.viewportWidth) / 2),
+            tileMarginY = Math.ceil((Math.ceil(this._container.clientHeight / tileSize) - this._camera.viewportHeight) / 2),
+            visibleTilesX = this._camera.viewportWidth + tileMarginX * 2,
+            visibleTilesY = this._camera.viewportHeight + tileMarginY * 2,
+            renderX = Math.round((this._canvas.width - tileSize * visibleTilesX) / 2),
+            renderY = Math.round((this._canvas.height - tileSize * visibleTilesY) / 2),
+            tileOffsetX = Math.max(-1, Math.min(this._camera.x - tileMarginX, this._mapSize.x - visibleTilesX + 1)),
+            tileOffsetY = Math.max(-1, Math.min(this._camera.y - tileMarginY, this._mapSize.y - visibleTilesY + 1));
 
-      for (let y = 0; y < this._camera.viewportHeight; y++) {
-         for (let x = 0; x < this._camera.viewportWidth; x++) {
-            const sprite = this._sprites[y + tileOffsetY][x + tileOffsetX];
+      for (let y = 0; y < visibleTilesY; y++) {
+         for (let x = 0; x < visibleTilesX; x++) {
+            const sprite = this._sprites[y + tileOffsetY] ? this._sprites[y + tileOffsetY][x + tileOffsetX] : undefined;
 
             if (!sprite) {
                ctx.fillStyle = Color.DefaultBG;
