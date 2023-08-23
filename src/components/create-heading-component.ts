@@ -1,17 +1,5 @@
-import { ComponentID, ComponentRegistration, ValueOf } from '@/shared-types';
-
-export const Heading = {
-   N: 0,
-   NE: 1,
-   E: 2,
-   SE: 3,
-   S: 4,
-   SW: 5,
-   W: 6,
-   NW: 7,
-} as const;
-
-export type HeadingEnum = ValueOf<typeof Heading>;
+import { Heading, HeadingEnum } from '@/lib/math';
+import { ComponentID, ComponentRegistration } from '@/shared-types';
 
 export interface IHeadingComponent {
    heading: HeadingEnum;

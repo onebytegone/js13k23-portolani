@@ -138,15 +138,17 @@ export class RenderSystem extends System {
             ctx.fillStyle = sprite.bg ?? Color.DefaultBG;
             ctx.fillRect(renderX + x * tileSize, renderY + y * tileSize, tileSize, tileSize);
 
+            ctx.fillStyle = sprite.tint ?? Color.Default;
+            ctx.save();
             ctx.textBaseline = 'middle';
             ctx.textAlign = 'center';
-            ctx.fillStyle = sprite.tint ?? Color.Default;
             ctx.font = `${tileSize}px monospace`;
-            ctx.fillText(
-               sprite.sprite,
-               renderX + x * tileSize + tileSize / 2,
-               renderY + y * tileSize + tileSize / 2
-            );
+            ctx.filter = sprite.filter ?? 'none';
+            ctx.translate(renderX + x * tileSize + tileSize / 2, renderY + y * tileSize + tileSize / 2);
+            ctx.rotate(sprite.skew);
+            ctx.scale(sprite.size.x, sprite.size.y);
+            ctx.fillText(sprite.sprite, 0, 0);
+            ctx.restore();
          }
       }
    }

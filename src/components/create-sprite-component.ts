@@ -1,3 +1,4 @@
+import { Vec2D } from '@/lib/math';
 import { ComponentID, ComponentRegistration, ValueOf } from '@/shared-types';
 
 export const Color = {
@@ -17,7 +18,7 @@ export const Sprite = {
    Air: '.',
    Coast: '•',
    Land: '↟',
-   Player: '@',
+   Player: '⛵️',
    Port: '★',
 } as const;
 
@@ -26,14 +27,21 @@ export type SpriteEnum = ValueOf<typeof Sprite>;
 export interface ISpriteComponent {
    sprite: SpriteEnum | string;
    layer: number;
+   skew: number;
+   size: Vec2D;
    tint?: string;
    bg?: string;
+   filter?: string;
 }
 
-type SpriteOptions = Partial<Pick<ISpriteComponent, 'layer' | 'tint' |'bg'>>;
+type SpriteOptions = Partial<Pick<ISpriteComponent, 'layer' | 'tint' |'bg' | 'filter'>>;
 
 export function createSpriteComponent(sprite: SpriteEnum | string, opts: SpriteOptions = {}): ComponentRegistration<typeof ComponentID.Sprite> {
    return {
-      [ComponentID.Sprite]: { sprite, ...Object.assign({ layer: 0 }, opts) },
+      [ComponentID.Sprite]: { sprite, ...Object.assign({
+         layer: 0,
+         skew: 0,
+         size: { x: 1, y: 1 },
+      }, opts) },
    };
 }

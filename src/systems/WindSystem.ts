@@ -1,18 +1,7 @@
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
-import { headingToVec2D } from './InputSystem';
-import { Vec2D } from '@/lib/math';
-
-function vec2DToAngle(vec: Vec2D): number {
-   return Math.atan2(vec.y, vec.x);
-}
-
-function angleDifference(a: number, b: number): number {
-   const phi = Math.abs(b - a) % (2 * Math.PI);
-
-   return Math.abs(phi > Math.PI ? 2 * Math.PI - phi : phi);
-}
+import { angleDifference, headingToVec2D, vec2DToAngle } from '@/lib/math';
 
 export class WindSystem extends System {
 

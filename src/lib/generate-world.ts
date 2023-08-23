@@ -9,8 +9,8 @@ import { FogLevel, createFogComponent } from '@/components/create-fog-component'
 import Perlin from './Perlin';
 import { WorldState } from './WorldState';
 import { makePRNG } from './make-prng';
-import { Vec2D, adjustRange, binaryThreshold, wrap } from './math';
-import { HEADING_SPRITES, HeadingEnum, createHeadingComponent } from '@/components/create-heading-component';
+import { HeadingEnum, Vec2D, adjustRange, binaryThreshold, wrap } from './math';
+import { HEADING_SPRITES, createHeadingComponent } from '@/components/create-heading-component';
 import { createEncounterComponent } from '@/components/create-encounter-component';
 import { createStatsComponent } from '@/components/create-stats-component';
 
@@ -251,7 +251,7 @@ export function generateWorld(kernel: number): WorldState {
    worldState.createEntity({
       ...createPositionComponent(startingPoint.x, startingPoint.y),
       ...createMovementComponent(),
-      ...createSpriteComponent(Sprite.Player, { layer: LAYER.Player, bg: Color.OceanBG }),
+      ...createSpriteComponent(Sprite.Player, { layer: LAYER.Player, bg: Color.OceanBG, filter: 'brightness(0%) invert(88%)' }),
       ...createTagComponent(ComponentID.Input),
       ...createStatsComponent({
          food: 20,

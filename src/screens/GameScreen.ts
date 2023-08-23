@@ -5,10 +5,10 @@ import { generateWorld } from '../lib/generate-world';
 import { FogSystem } from '../systems/FogSystem';
 import { ScreenRenderFn } from '@/shared-types';
 import { makeControls } from './elements/make-controls';
-import { Heading, HeadingEnum } from '@/components/create-heading-component';
 import { EncounterSystem } from '@/systems/EncounterSystem';
 import { HUDSystem } from '@/systems/HUDSystem';
 import { WindSystem } from '@/systems/WindSystem';
+import { Heading, HeadingEnum } from '@/lib/math';
 
 const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
    KeyQ: Heading.NW,
@@ -52,7 +52,7 @@ export function makeGameScreen(): ScreenRenderFn {
          new MovementSystem(),
          new EncounterSystem(),
          new FogSystem(),
-         new HUDSystem(header, footer),
+         new HUDSystem(header, footer, document.createElement('div')), // TODO use real control elem
          new RenderSystem(canvas, frame),
          inputSystem,
       ];

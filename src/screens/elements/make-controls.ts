@@ -1,5 +1,6 @@
-import { HEADING_SPRITES, Heading, HeadingEnum } from '@/components/create-heading-component';
+import { HEADING_SPRITES } from '@/components/create-heading-component';
 import { makeButton } from './make-button';
+import { Heading, HeadingEnum } from '@/lib/math';
 
 const buttons = [
    Heading.NW,
