@@ -3,30 +3,34 @@ import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
 import { HEADING_SPRITES } from '@/components/create-heading-component';
 
+function addSpacer(el: HTMLElement): void {
+   const spacer = document.createElement('div');
+
+   spacer.style.flex = '1';
+   el.appendChild(spacer);
+}
+
 export class HUDSystem extends System {
 
    private _foodEl = document.createElement('span');
-   private _windHeadingEl = document.createElement('span');
+   private _portEl = document.createElement('span');
 
    public constructor(statsEl: HTMLElement, private _controlCenterEl: HTMLElement) {
       super();
 
+      const portWrapper = document.createElement('div');
+
+      portWrapper.innerText = 'Ports: ';
+      portWrapper.appendChild(this._portEl);
+      statsEl.appendChild(portWrapper);
+
+      addSpacer(statsEl);
+
       const foodWrapper = document.createElement('div');
 
-      foodWrapper.innerText = 'Food:';
+      foodWrapper.innerText = 'Food left: ';
       foodWrapper.appendChild(this._foodEl);
       statsEl.appendChild(foodWrapper);
-
-      const spacer = document.createElement('div');
-
-      spacer.style.flex = '1';
-      statsEl.appendChild(spacer);
-
-      const windHeadingWrapper = document.createElement('div');
-
-      windHeadingWrapper.innerText = 'Wind:';
-      windHeadingWrapper.appendChild(this._windHeadingEl);
-      statsEl.appendChild(windHeadingWrapper);
    }
 
    // eslint-disable-next-line class-methods-use-this
@@ -36,8 +40,8 @@ export class HUDSystem extends System {
             windEntityID = worldState.getEntitiesAtLocation(player, [ ComponentID.Terrain, ComponentID.Heading ])[0],
             [ heading ] = worldState.getComponents(windEntityID, [ ComponentID.Heading ]);
 
-      this._foodEl.innerText = `${stats.food}`;
-      this._windHeadingEl.innerText = HEADING_SPRITES[heading.heading];
+      this._foodEl.innerText = `${stats.food} days`;
+      this._portEl.innerText = `${stats.portsVisited}/TODO`;
       this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
 
       sprite.skew = 0;

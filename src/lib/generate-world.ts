@@ -227,6 +227,7 @@ export function generateWorld(kernel: number): WorldState {
          ...createFogComponent(FogLevel.Full),
          ...createEncounterComponent([
             { stat: 'food', adjustment: 10 },
+            { stat: 'portsVisited', adjustment: 1 },
          ]),
       });
 
@@ -255,6 +256,7 @@ export function generateWorld(kernel: number): WorldState {
       ...createTagComponent(ComponentID.Input),
       ...createStatsComponent({
          food: 20,
+         portsVisited: 0,
          navLog: 0,
          soundingLine: 0,
          localCrew: 0,
