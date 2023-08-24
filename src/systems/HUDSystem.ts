@@ -8,25 +8,25 @@ export class HUDSystem extends System {
    private _foodEl = document.createElement('span');
    private _windHeadingEl = document.createElement('span');
 
-   public constructor(headerEl: HTMLElement, private _footerEl: HTMLElement, private _controlCenterEl: HTMLElement) {
+   public constructor(statsEl: HTMLElement, private _controlCenterEl: HTMLElement) {
       super();
 
       const foodWrapper = document.createElement('div');
 
       foodWrapper.innerText = 'Food:';
       foodWrapper.appendChild(this._foodEl);
-      headerEl.appendChild(foodWrapper);
+      statsEl.appendChild(foodWrapper);
 
       const spacer = document.createElement('div');
 
       spacer.style.flex = '1';
-      headerEl.appendChild(spacer);
+      statsEl.appendChild(spacer);
 
       const windHeadingWrapper = document.createElement('div');
 
       windHeadingWrapper.innerText = 'Wind:';
       windHeadingWrapper.appendChild(this._windHeadingEl);
-      headerEl.appendChild(windHeadingWrapper);
+      statsEl.appendChild(windHeadingWrapper);
    }
 
    // eslint-disable-next-line class-methods-use-this

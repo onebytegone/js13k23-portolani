@@ -66,15 +66,16 @@ h1 {
    border-right: 2px dashed #A7987E;
 }
 
-.frame {
-   flex: 1;
+.controlPanel {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
 }
 
-.header {
-   display: flex;
+.stats {
    font-size: 2em;
    padding: 0.25em;
-   border-bottom: 2px dashed #A7987E;
 }
 
 canvas {
@@ -127,11 +128,14 @@ canvas {
       width: 100%;
       height: auto;
       border-right: none;
-   }
-   .frame {
       aspect-ratio: 4 / 3;
+      border-bottom: 2px dashed #A7987E;
    }
-   .footer {
-      border-top: 2px dashed #A7987E;
+   .controlPanel {
+      width: 100%;
+   }
+   .stats {
+      display: flex;
+      width: 100%;
    }
 }

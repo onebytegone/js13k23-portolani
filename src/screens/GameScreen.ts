@@ -28,38 +28,38 @@ const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
 export function makeGameScreen(): ScreenRenderFn {
    return (el) => {
       const gamePanel = document.createElement('div'),
-            frame = document.createElement('div'),
-            header = document.createElement('div'),
-            footer = document.createElement('div'),
             canvas = document.createElement('canvas'),
+            controlPanel = document.createElement('div'),
+            stats = document.createElement('div'),
             controlCenter = document.createElement('div'),
             worldState = generateWorld(Date.now()),
             inputSystem = new InputSystem(worldState);
 
       el.className = 'game';
+
       gamePanel.className = 'gamePanel';
-      frame.className = 'frame';
-      header.className = 'header';
-      footer.className = 'footer';
+      gamePanel.appendChild(canvas);
+
+      controlPanel.className = 'controlPanel';
+      stats.className = 'stats';
       controlCenter.className = 'center';
 
-      frame.appendChild(canvas);
-      gamePanel.appendChild(header);
-      gamePanel.appendChild(frame);
-      gamePanel.appendChild(footer);
-      el.appendChild(gamePanel);
-      el.appendChild(makeControls((heading) => {
+      controlPanel.append(stats);
+      controlPanel.appendChild(makeControls((heading) => {
          inputSystem.processHeadingInput(heading);
          draw();
       }, controlCenter));
+
+      el.appendChild(gamePanel);
+      el.appendChild(controlPanel);
 
       const systems = [
          new WindSystem(),
          new MovementSystem(),
          new EncounterSystem(),
          new FogSystem(),
-         new HUDSystem(header, footer, controlCenter),
-         new RenderSystem(canvas, frame),
+         new HUDSystem(stats, controlCenter),
+         new RenderSystem(canvas, gamePanel),
          inputSystem,
       ];
 
