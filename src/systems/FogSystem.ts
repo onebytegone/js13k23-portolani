@@ -14,7 +14,7 @@ export class FogSystem extends System {
       worldState.getEntities(FogSystem.components).forEach((entityID) => {
          const [ { x, y }, fog ] = worldState.getComponents(entityID, FogSystem.components);
 
-         if (Math.sqrt(Math.pow(player.x - x, 2) + Math.pow(player.y - y, 2)) < 9) {
+         if (Math.sqrt(Math.pow(player.x - x, 2) + Math.pow(player.y - y, 2)) < 2.5) {
             fog.level = FogLevel.None;
          }
       });

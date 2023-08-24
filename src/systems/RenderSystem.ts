@@ -4,7 +4,7 @@ import { WorldState } from '@/lib/WorldState';
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
 
-const CAMERA_MARGIN = 12;
+const CAMERA_MARGIN = 4;
 
 export class RenderSystem extends System {
 

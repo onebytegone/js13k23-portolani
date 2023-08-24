@@ -133,7 +133,7 @@ export function generateWorld(kernel: number): WorldState {
          windGenerator = new Perlin(prng, 20);
 
    worldState.createEntity({
-      ...createCameraComponent({ x: 0, y: 0, viewportWidth: 32, viewportHeight: 24 }),
+      ...createCameraComponent({ x: 0, y: 0, viewportWidth: 15, viewportHeight: 10 }),
    });
 
    const entityMap: EntityID[][] = [];
