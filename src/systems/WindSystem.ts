@@ -23,9 +23,7 @@ export class WindSystem extends System {
       } else if (angleDifference(windAngle, movementAngle) === 3 * Math.PI / 4) { // 45deg upwind
          stats.food -= 2;
       } else { // Against wind
-         movement.x = 0;
-         movement.y = 0;
-         stats.food -= 1;
+         stats.food -= 6;
       }
    }
 
