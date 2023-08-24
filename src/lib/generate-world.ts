@@ -2,13 +2,13 @@ import { ComponentID, EntityID } from '@/shared-types';
 import { createCameraComponent } from '../components/create-camera-component';
 import { createMovementComponent } from '../components/create-movement-component';
 import { createPositionComponent } from '../components/create-position-component';
-import { Sprite, Color, createSpriteComponent } from '../components/create-sprite-component';
+import { Sprite, Color, createSpriteComponent, FISH_SVG_PATH } from '../components/create-sprite-component';
 import { Terrain, createTerrainComponent } from '../components/create-terrain-component';
 import { createTagComponent } from '@/components/create-tag-component';
 import { FogLevel, createFogComponent } from '@/components/create-fog-component';
 import Perlin from './Perlin';
 import { WorldState } from './WorldState';
-import { makePRNG } from './make-prng';
+import { PRNG, makePRNG } from './make-prng';
 import { HeadingEnum, Vec2D, adjustRange, binaryThreshold, wrap } from './math';
 import { HEADING_SPRITES, createHeadingComponent } from '@/components/create-heading-component';
 import { createEncounterComponent } from '@/components/create-encounter-component';
@@ -16,7 +16,7 @@ import { createStatsComponent } from '@/components/create-stats-component';
 
 const MAP_X = 150,
       MAP_Y = 100,
-      MIN_PORT_DISTANCE = 6;
+      MIN_ENCOUNTER_DISTANCE = 6;
 
 function createDebugCanvas(): (x: number, y: number, val: number) => void {
    if (!window.DEBUG) {
@@ -69,7 +69,7 @@ function renderHistogram(values: number[]): void {
 }
 
 const windDebug = createDebugCanvas(),
-      portDebug = createDebugCanvas();
+      encounterDebug = createDebugCanvas();
 
 function hsl(h: number, s: number, l: number): string {
    return `hsl(${h},${(s*100).toPrecision(2)}%,${(l*100).toPrecision(2)}%)`;
@@ -117,11 +117,35 @@ function floodFill<T>(map: T[][], iteratee: (v: T, pos: Vec2D, delta: Vec2D) => 
    }
 }
 
+function createEncounters(prng: PRNG, numberOfEncounters: number, possibleLocations: Vec2D[], generateFn: (pos: Vec2D) => void): Vec2D[] {
+   const encounters: Vec2D[] = [];
+
+   while (encounters.length < numberOfEncounters) {
+      const [ pos ] = possibleLocations.splice(prng.inRange(0, possibleLocations.length - 1), 1);
+
+      const distToClosest = encounters.reduce((memo, encounter) => {
+         const dist =  Math.sqrt(Math.pow(encounter.x - pos.x, 2) + Math.pow(encounter.y - pos.y, 2));
+
+         return dist < memo ? dist : memo;
+      }, 999);
+
+      if (distToClosest <= MIN_ENCOUNTER_DISTANCE) {
+         continue;
+      }
+
+      encounters.push(pos);
+
+      generateFn(pos);
+   }
+
+   return encounters;
+}
+
 const LAYER = {
    Default: 0,
    Wind: 1,
    Land: 2,
-   Port: 3,
+   Encounter: 3,
    Player: 4,
 };
 
@@ -175,14 +199,14 @@ export function generateWorld(kernel: number): WorldState {
       }
    }
 
-   const oceanTiles: Vec2D[] = [],
+   const possibleOceanEncounterLocations: Vec2D[] = [],
          possiblePortLocations: Vec2D[] = [];
 
    floodFill(entityMap, (entityID, pos, delta) => {
       const [ terrain, sprite ] = worldState.getComponents(entityID, [ ComponentID.Terrain, ComponentID.Sprite ] as const);
 
       if (terrain.terrain === Terrain.Passable) {
-         oceanTiles.push(pos);
+         possibleOceanEncounterLocations.push(pos);
          return true;
       }
 
@@ -190,7 +214,7 @@ export function generateWorld(kernel: number): WorldState {
       sprite.bg = Color.CoastBG;
       sprite.tint = Color.Coast;
 
-      portDebug(pos.x, pos.y, 0.2);
+      encounterDebug(pos.x, pos.y, 0.2);
 
       if (delta.x === 0 || delta.y === 0) {
          possiblePortLocations.push(pos);
@@ -198,28 +222,11 @@ export function generateWorld(kernel: number): WorldState {
       return false;
    });
 
-   const numberOfPorts = prng.inRange(10, 20),
-         ports: Vec2D[] = [];
-
-   while (ports.length < numberOfPorts) {
-      const [ pos ] = possiblePortLocations.splice(prng.inRange(0, possiblePortLocations.length - 1), 1);
-
-      const distToClosestPort = ports.reduce((memo, port) => {
-         const dist =  Math.sqrt(Math.pow(port.x - pos.x, 2) + Math.pow(port.y - pos.y, 2));
-
-         return dist < memo ? dist : memo;
-      }, 999);
-
-      if (distToClosestPort <= MIN_PORT_DISTANCE) {
-         continue;
-      }
-
-      ports.push(pos);
-
+   const ports: Vec2D[] = createEncounters(prng, prng.inRange(20, 40), possiblePortLocations, (pos) => {
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
          ...createSpriteComponent(Sprite.Port, {
-            layer: LAYER.Port,
+            layer: LAYER.Encounter,
             bg: Color.PortBG,
             tint: Color.Port,
          }),
@@ -231,8 +238,25 @@ export function generateWorld(kernel: number): WorldState {
          ]),
       });
 
-      portDebug(pos.x, pos.y, 0.5);
-   }
+      encounterDebug(pos.x, pos.y, 0.5);
+   });
+
+   createEncounters(prng, prng.inRange(20, 40), possibleOceanEncounterLocations, (pos) => {
+      worldState.createEntity({
+         ...createPositionComponent(pos.x, pos.y),
+         ...createSpriteComponent(FISH_SVG_PATH, {
+            layer: LAYER.Encounter,
+            bg: Color.OceanBG,
+            tint: '#B1C7CB',
+         }),
+         ...createFogComponent(FogLevel.Full),
+         ...createEncounterComponent([
+            { stat: 'food', adjustment: 30 },
+         ]),
+      });
+
+      encounterDebug(pos.x, pos.y, 0.25);
+   });
 
    const startingPort = prng.randomElement(ports),
          tilesAdjacentToStartingPort = worldState.getEntitiesAdjacentToLocation(startingPort, [ ComponentID.Terrain, ComponentID.Position ] as const);
@@ -263,7 +287,7 @@ export function generateWorld(kernel: number): WorldState {
       }),
    });
 
-   portDebug(startingPoint.x, startingPoint.y, 1);
+   encounterDebug(startingPoint.x, startingPoint.y, 1);
 
    return worldState;
 }

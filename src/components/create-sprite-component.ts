@@ -20,7 +20,17 @@ export const Sprite = {
    Land: '↟',
    Player: '@',
    Port: '★',
+   N: '↑',
+   NE: '↗',
+   E: '→',
+   SE: '↘',
+   S: '↓',
+   SW: '↙',
+   W: '←',
+   NW: '↖',
 } as const;
+
+export const FISH_SVG_PATH = 'M95 50a40 40 0 0 1-70 6l-20 15l5-21l-5-21l20 15a40 40 0 0 1 70 6zM80 50a6 6 0 1 0-12 0a6 6 0 1 0 12 0z';
 
 export type SpriteEnum = ValueOf<typeof Sprite>;
 

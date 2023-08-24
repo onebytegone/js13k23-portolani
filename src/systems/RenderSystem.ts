@@ -139,11 +139,12 @@ export class RenderSystem extends System {
             ctx.fillRect(renderX + x * tileSize, renderY + y * tileSize, tileSize, tileSize);
 
             ctx.fillStyle = sprite.tint ?? Color.Default;
+
             ctx.save();
             if (sprite.sprite === Sprite.Player) {
                ctx.fillStyle = '#E0DCD8';
                ctx.translate(renderX + x * tileSize, renderY + y * tileSize);
-               ctx.scale(tileSize/100, tileSize/100);
+               ctx.scale(tileSize / 100, tileSize / 100);
                ctx.translate(50, 50);
                ctx.rotate(sprite.skew);
                ctx.scale(sprite.size.x, sprite.size.y);
@@ -160,9 +161,7 @@ export class RenderSystem extends System {
                   'c-5 -1, -11 -6, -16 -20',
                   'z',
                ].join(' ')));
-               ctx.restore();
-            } else {
-               ctx.save();
+            } else if ((Object.values(Sprite) as string[]).includes(sprite.sprite)) {
                ctx.textBaseline = 'middle';
                ctx.textAlign = 'center';
                ctx.font = `${tileSize}px monospace`;
@@ -170,6 +169,14 @@ export class RenderSystem extends System {
                ctx.rotate(sprite.skew);
                ctx.scale(sprite.size.x, sprite.size.y);
                ctx.fillText(sprite.sprite, 0, 0);
+            } else {
+               ctx.translate(renderX + x * tileSize, renderY + y * tileSize);
+               ctx.scale(tileSize / 100, tileSize / 100);
+               ctx.translate(50, 50);
+               ctx.rotate(sprite.skew);
+               ctx.scale(sprite.size.x, sprite.size.y);
+               ctx.translate(-50, -50);
+               ctx.fill(new Path2D(sprite.sprite));
             }
             ctx.restore();
          }
