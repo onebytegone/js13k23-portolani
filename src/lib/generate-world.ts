@@ -255,6 +255,9 @@ export function generateWorld(kernel: number): WorldState {
       ...createTagComponent(ComponentID.Input),
       ...createStatsComponent({
          food: 20,
+         navLog: 0,
+         soundingLine: 0,
+         localCrew: 0,
       }),
    });
 
