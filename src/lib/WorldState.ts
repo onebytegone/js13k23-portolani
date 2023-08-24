@@ -41,6 +41,10 @@ export class WorldState {
 
       delete this._components[Number(componentID)][entityID];
       this._entities[entityID] = newComponentMask;
+
+      if (!this._entitiesByComponentMask[newComponentMask]) {
+         this._entitiesByComponentMask[newComponentMask] = [];
+      }
       this._entitiesByComponentMask[newComponentMask].push(entityID);
    }
 
