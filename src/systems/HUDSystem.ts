@@ -45,21 +45,21 @@ export class HUDSystem extends System {
       sprite.size.y = 1;
       if (movement.x === -1 && movement.y === -1) {
          sprite.skew = Math.PI / 4;
+         sprite.size.x = -1;
       } else if (movement.x === -1 && movement.y === 1) {
          sprite.skew = Math.PI / -4;
+         sprite.size.x = -1;
       } else if (movement.x === 0 && movement.y === -1) {
          sprite.skew = Math.PI / 2;
-      } else if (movement.x === 1 && movement.y === 0) {
+         sprite.size.x = -1;
+      } else if (movement.x === -1 && movement.y === 0) {
          sprite.size.x = -1;
       } else if (movement.x === 1 && movement.y === 1) {
          sprite.skew = Math.PI / 4;
-         sprite.size.x = -1;
       } else if (movement.x === 1 && movement.y === -1) {
          sprite.skew = Math.PI / -4;
-         sprite.size.x = -1;
       } else if (movement.x === 0 && movement.y === 1) {
          sprite.skew = Math.PI / 2;
-         sprite.size.x = -1;
          sprite.size.y = -1;
       }
    }

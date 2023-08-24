@@ -251,7 +251,7 @@ export function generateWorld(kernel: number): WorldState {
    worldState.createEntity({
       ...createPositionComponent(startingPoint.x, startingPoint.y),
       ...createMovementComponent(),
-      ...createSpriteComponent(Sprite.Player, { layer: LAYER.Player, bg: Color.OceanBG, filter: 'brightness(0%) invert(88%)' }),
+      ...createSpriteComponent(Sprite.Player, { layer: LAYER.Player, bg: Color.OceanBG }),
       ...createTagComponent(ComponentID.Input),
       ...createStatsComponent({
          food: 20,

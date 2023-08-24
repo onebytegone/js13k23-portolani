@@ -18,7 +18,7 @@ export const Sprite = {
    Air: '.',
    Coast: '•',
    Land: '↟',
-   Player: '⛵️',
+   Player: '@',
    Port: '★',
 } as const;
 
@@ -31,10 +31,9 @@ export interface ISpriteComponent {
    size: Vec2D;
    tint?: string;
    bg?: string;
-   filter?: string;
 }
 
-type SpriteOptions = Partial<Pick<ISpriteComponent, 'layer' | 'tint' |'bg' | 'filter'>>;
+type SpriteOptions = Partial<Pick<ISpriteComponent, 'layer' | 'tint' |'bg'>>;
 
 export function createSpriteComponent(sprite: SpriteEnum | string, opts: SpriteOptions = {}): ComponentRegistration<typeof ComponentID.Sprite> {
    return {

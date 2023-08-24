@@ -1,8 +1,8 @@
+import { FogLevel } from '@/components/create-fog-component';
+import { Color, ISpriteComponent, Sprite } from '@/components/create-sprite-component';
+import { WorldState } from '@/lib/WorldState';
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
-import { WorldState } from '@/lib/WorldState';
-import { ISpriteComponent, Color } from '@/components/create-sprite-component';
-import { FogLevel } from '@/components/create-fog-component';
 
 const CAMERA_MARGIN = 12;
 
@@ -140,14 +140,37 @@ export class RenderSystem extends System {
 
             ctx.fillStyle = sprite.tint ?? Color.Default;
             ctx.save();
-            ctx.textBaseline = 'middle';
-            ctx.textAlign = 'center';
-            ctx.font = `${tileSize}px monospace`;
-            ctx.filter = sprite.filter ?? 'none';
-            ctx.translate(renderX + x * tileSize + tileSize / 2, renderY + y * tileSize + tileSize / 2);
-            ctx.rotate(sprite.skew);
-            ctx.scale(sprite.size.x, sprite.size.y);
-            ctx.fillText(sprite.sprite, 0, 0);
+            if (sprite.sprite === Sprite.Player) {
+               ctx.fillStyle = '#E0DCD8';
+               ctx.translate(renderX + x * tileSize, renderY + y * tileSize);
+               ctx.scale(tileSize/100, tileSize/100);
+               ctx.translate(50, 50);
+               ctx.rotate(sprite.skew);
+               ctx.scale(sprite.size.x, sprite.size.y);
+               ctx.translate(-50, -50);
+               ctx.fill(new Path2D([
+                  'M35 8 v59 h59 z',
+                  'M10 22 v42 h47 z',
+               ].join(' ')));
+               ctx.fillStyle = '#C1B9B1';
+               ctx.fill(new Path2D([
+                  'M10 68 l26 1 l2 4 h23 l30 -2',
+                  'c-1 5, -5 18, -17 20',
+                  'h-48',
+                  'c-5 -1, -11 -6, -16 -20',
+                  'z',
+               ].join(' ')));
+               ctx.restore();
+            } else {
+               ctx.save();
+               ctx.textBaseline = 'middle';
+               ctx.textAlign = 'center';
+               ctx.font = `${tileSize}px monospace`;
+               ctx.translate(renderX + x * tileSize + tileSize / 2, renderY + y * tileSize + tileSize / 2);
+               ctx.rotate(sprite.skew);
+               ctx.scale(sprite.size.x, sprite.size.y);
+               ctx.fillText(sprite.sprite, 0, 0);
+            }
             ctx.restore();
          }
       }
