@@ -1,7 +1,7 @@
 import { InputSystem } from '../systems/InputSystem';
 import { MovementSystem } from '../systems/MovementSystem';
 import { RenderSystem } from '../systems/RenderSystem';
-import { generateWorld } from '../lib/generate-world';
+import { WorldGenOptions, generateWorld } from '../lib/generate-world';
 import { FogSystem } from '../systems/FogSystem';
 import { ScreenRenderFn } from '@/shared-types';
 import { makeControls } from './elements/make-controls';
@@ -25,14 +25,14 @@ const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
    KeyC: Heading.SE,
 };
 
-export function makeGameScreen(): ScreenRenderFn {
+export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn {
    return (el) => {
       const gamePanel = document.createElement('div'),
             canvas = document.createElement('canvas'),
             controlPanel = document.createElement('div'),
             stats = document.createElement('div'),
             controlCenter = document.createElement('div'),
-            worldState = generateWorld(Date.now()),
+            worldState = generateWorld(worldGenOptions),
             inputSystem = new InputSystem(worldState);
 
       el.className = 'game';

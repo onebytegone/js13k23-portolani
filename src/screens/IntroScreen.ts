@@ -9,8 +9,10 @@ export function makeIntroScreen(): ScreenRenderFn {
       title.innerText = '𝕻𝔬𝔯𝔱𝔬𝔩𝔞𝔫𝔦';
       el.appendChild(title);
 
-      el.appendChild(makeButton('Play', () => {
-         renderScreen(makeGameScreen());
+      el.appendChild(makeButton('Daily Map', () => {
+         renderScreen(makeGameScreen({
+            kernel: Math.floor(Date.now() / 1000 / 60 / 60 / 24),
+         }));
       }));
    };
 }

@@ -149,9 +149,13 @@ const LAYER = {
    Player: 4,
 };
 
-export function generateWorld(kernel: number): WorldState {
+export interface WorldGenOptions {
+   kernel: number
+}
+
+export function generateWorld(opts: WorldGenOptions): WorldState {
    const worldState = new WorldState(),
-         prng = makePRNG(kernel),
+         prng = makePRNG(opts.kernel),
          landGenerator = new Perlin(prng, 10),
          canalGenerator = new Perlin(prng, 20),
          windGenerator = new Perlin(prng, 20);
