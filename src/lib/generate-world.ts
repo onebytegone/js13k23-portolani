@@ -232,10 +232,10 @@ export function generateWorld(kernel: number): WorldState {
          }),
          ...createTerrainComponent(Terrain.Impassable),
          ...createFogComponent(FogLevel.Full),
-         ...createEncounterComponent([
-            { stat: 'food', adjustment: 10 },
-            { stat: 'portsVisited', adjustment: 1 },
-         ]),
+         ...createEncounterComponent({
+            food: { adjust: 10 },
+            portsVisited: { adjust: 1 },
+         }),
       });
 
       encounterDebug(pos.x, pos.y, 0.5);
@@ -250,9 +250,9 @@ export function generateWorld(kernel: number): WorldState {
             tint: '#B1C7CB',
          }),
          ...createFogComponent(FogLevel.Full),
-         ...createEncounterComponent([
-            { stat: 'food', adjustment: 30 },
-         ]),
+         ...createEncounterComponent({
+            food: { adjust: 30 },
+         }),
       });
 
       encounterDebug(pos.x, pos.y, 0.25);
@@ -281,9 +281,9 @@ export function generateWorld(kernel: number): WorldState {
       ...createStatsComponent({
          food: 20,
          portsVisited: 0,
-         navLog: 0,
-         soundingLine: 0,
-         localCrew: 0,
+         navLog: false,
+         soundingLine: false,
+         localCrew: false,
       }),
    });
 

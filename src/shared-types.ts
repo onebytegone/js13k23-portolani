@@ -15,10 +15,6 @@ export type Nominal<Type, Identifier> = Type & {
 
 export type ValueOf<T> = T[keyof T];
 
-export declare type PropsWithType<O, T> = Exclude<keyof Pick<O, {
-   [K in keyof O]: O[K] extends T ? K : never;
-}[keyof O]>, undefined>;
-
 declare global {
    interface Window {
      DEBUG?: boolean;

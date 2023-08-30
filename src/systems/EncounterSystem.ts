@@ -12,11 +12,12 @@ export class EncounterSystem extends System {
       Object.values(encounteredEntities).map(Object.values).flat(2).forEach((entityID) => {
          const [ encounter ] = worldState.getComponents(entityID, [ ComponentID.Encounter ]);
 
-         encounter.statChanges.forEach((change) => {
-            if (change.adjustment) {
-               stats[change.stat] += change.adjustment;
-            } else if (change.value !== undefined) {
-               stats[change.stat] = change.value;
+         // TODO: The types here are terrible
+         Object.entries(encounter.statChanges).forEach(([ prop, change ]: any) => {
+            if (change.adjust) {
+               (stats as any)[prop] += change.adjust;
+            } else if (change.set) {
+               (stats as any)[prop] = change.set;
             }
          });
 

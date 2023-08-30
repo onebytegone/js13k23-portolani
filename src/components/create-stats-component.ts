@@ -3,9 +3,9 @@ import { ComponentID, ComponentRegistration } from '@/shared-types';
 export interface IStatsComponent {
    food: number;
    portsVisited: number;
-   navLog: number;
-   soundingLine: number;
-   localCrew: number;
+   navLog: boolean;
+   soundingLine: boolean;
+   localCrew: boolean;
 }
 
 export function createStatsComponent(stats: IStatsComponent): ComponentRegistration<typeof ComponentID.Stats> {
