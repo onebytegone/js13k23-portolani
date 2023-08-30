@@ -43,9 +43,10 @@ export class HUDSystem extends System {
             [ stats, player, movement, sprite ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats, ComponentID.Position, ComponentID.Movement, ComponentID.Sprite ] as const),
             windEntityID = worldState.getEntitiesAtLocation(player, [ ComponentID.Terrain, ComponentID.Heading ])[0],
             [ heading ] = worldState.getComponents(windEntityID, [ ComponentID.Heading ]),
-            foodDelta = stats.lastReportedFood !== undefined ? stats.food - stats.lastReportedFood : undefined;
+            foodLevel = Math.floor(stats.food),
+            foodDelta = stats.lastReportedFood !== undefined ? foodLevel - stats.lastReportedFood : undefined;
 
-      this._foodEl.innerText = `${stats.food} days ${foodDelta !== undefined ? ` (${foodDelta})` : ''}`;
+      this._foodEl.innerText = `${foodLevel} days ${foodDelta ? ` (${foodDelta})` : ''}`;
       this._eventEl.innerText = stats.event || '';
       this._portEl.innerText = `${stats.portsVisited.length}/${stats.totalPorts}`;
       this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
@@ -73,7 +74,7 @@ export class HUDSystem extends System {
          sprite.size.y = -1;
       }
 
-      stats.lastReportedFood = stats.food;
+      stats.lastReportedFood = foodLevel;
    }
 
 }

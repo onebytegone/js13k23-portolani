@@ -14,17 +14,20 @@ export class WindSystem extends System {
             windAngle = vec2DToAngle(headingToVec2D(heading.heading)),
             movementAngle = vec2DToAngle(movement);
 
+      let days = 2; // Against wind
+
       if (angleDifference(windAngle, movementAngle) === 0) { // Directly downwind
-         stats.food -= 2;
+         days = 0.5;
       } else if (angleDifference(windAngle, movementAngle) === Math.PI / 4) { // 45deg downwind
-         stats.food -= 1;
+         days = 0.2;
       } else if (angleDifference(windAngle, movementAngle) === Math.PI / 2) { // 90deg to wind
-         stats.food -= 1;
+         days = 0.2;
       } else if (angleDifference(windAngle, movementAngle) === 3 * Math.PI / 4) { // 45deg upwind
-         stats.food -= 2;
-      } else { // Against wind
-         stats.food -= 6;
+         days = 0.3;
       }
+
+      stats.food -= days;
+      stats.day += days;
    }
 
 }

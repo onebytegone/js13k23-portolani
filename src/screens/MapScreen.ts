@@ -120,7 +120,7 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
       const statsSummary = document.createElement('p');
 
       statsSummary.innerHTML = `#portolani ${worldState.label}<br>`
-         + `↟${mapData.tilesDiscovered} ☀︎${stats.day} ⚓︎${stats.portsVisited.length}`;
+         + `↟${mapData.tilesDiscovered} ☀︎${Math.floor(stats.day)} ⚓︎${stats.portsVisited.length}`;
 
       el.appendChild(statsSummary);
 
