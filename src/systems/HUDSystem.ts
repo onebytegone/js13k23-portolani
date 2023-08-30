@@ -2,6 +2,7 @@ import { ComponentID } from '@/shared-types';
 import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
 import { HEADING_SPRITES } from '@/components/create-heading-component';
+import { FISH_SVG_PATH, Sprite } from '@/components/create-sprite-component';
 
 function addSpacer(el: HTMLElement): void {
    const spacer = document.createElement('div');
@@ -14,21 +15,24 @@ export class HUDSystem extends System {
 
    private _foodEl = document.createElement('span');
    private _portEl = document.createElement('span');
+   private _eventEl = document.createElement('span');
 
    public constructor(statsEl: HTMLElement, private _controlCenterEl: HTMLElement) {
       super();
 
       const portWrapper = document.createElement('div');
 
-      portWrapper.innerText = 'Ports: ';
+      portWrapper.innerText = `${Sprite.Port}`;
       portWrapper.appendChild(this._portEl);
       statsEl.appendChild(portWrapper);
 
       addSpacer(statsEl);
+      statsEl.appendChild(this._eventEl);
+      addSpacer(statsEl);
 
       const foodWrapper = document.createElement('div');
 
-      foodWrapper.innerText = 'Food left: ';
+      foodWrapper.innerHTML = `<svg height="1em" viewBox="0 -20 100 100"><path d="${FISH_SVG_PATH}"/></svg>`;
       foodWrapper.appendChild(this._foodEl);
       statsEl.appendChild(foodWrapper);
    }
@@ -38,9 +42,11 @@ export class HUDSystem extends System {
       const playerEntityID = worldState.getEntities([ ComponentID.Stats, ComponentID.Position ])[0],
             [ stats, player, movement, sprite ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats, ComponentID.Position, ComponentID.Movement, ComponentID.Sprite ] as const),
             windEntityID = worldState.getEntitiesAtLocation(player, [ ComponentID.Terrain, ComponentID.Heading ])[0],
-            [ heading ] = worldState.getComponents(windEntityID, [ ComponentID.Heading ]);
+            [ heading ] = worldState.getComponents(windEntityID, [ ComponentID.Heading ]),
+            foodDelta = stats.lastReportedFood !== undefined ? stats.food - stats.lastReportedFood : undefined;
 
-      this._foodEl.innerText = `${stats.food} days`;
+      this._foodEl.innerText = `${stats.food} days ${foodDelta !== undefined ? ` (${foodDelta})` : ''}`;
+      this._eventEl.innerText = stats.event || '';
       this._portEl.innerText = `${stats.portsVisited}/${stats.totalPorts}`;
       this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
 
@@ -66,6 +72,8 @@ export class HUDSystem extends System {
          sprite.skew = Math.PI / 2;
          sprite.size.y = -1;
       }
+
+      stats.lastReportedFood = stats.food;
    }
 
 }

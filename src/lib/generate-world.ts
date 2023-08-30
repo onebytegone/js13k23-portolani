@@ -235,6 +235,7 @@ export function generateWorld(kernel: number): WorldState {
          ...createEncounterComponent({
             food: { adjust: 10 },
             portsVisited: { adjust: 1 },
+            event: { set: 'At Port' },
          }),
       });
 
@@ -252,6 +253,7 @@ export function generateWorld(kernel: number): WorldState {
          ...createFogComponent(FogLevel.Full),
          ...createEncounterComponent({
             food: { adjust: 30 },
+            event: { set: 'Fish!' },
          }),
       });
 
