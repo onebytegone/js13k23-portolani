@@ -41,7 +41,7 @@ export class HUDSystem extends System {
             [ heading ] = worldState.getComponents(windEntityID, [ ComponentID.Heading ]);
 
       this._foodEl.innerText = `${stats.food} days`;
-      this._portEl.innerText = `${stats.portsVisited}/TODO`;
+      this._portEl.innerText = `${stats.portsVisited}/${stats.totalPorts}`;
       this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
 
       sprite.skew = 0;

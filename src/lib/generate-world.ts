@@ -281,6 +281,7 @@ export function generateWorld(kernel: number): WorldState {
       ...createStatsComponent({
          food: 20,
          portsVisited: 0,
+         totalPorts: ports.length,
          navLog: false,
          soundingLine: false,
          localCrew: false,
