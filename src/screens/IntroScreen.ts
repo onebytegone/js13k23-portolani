@@ -6,7 +6,7 @@ export function makeIntroScreen(): ScreenRenderFn {
    return (el, renderScreen) => {
       const title = document.createElement('h1');
 
-      title.innerText = 'Portolani';
+      title.innerText = '𝕻𝔬𝔯𝔱𝔬𝔩𝔞𝔫𝔦';
       el.appendChild(title);
 
       el.appendChild(makeButton('Play', () => {
