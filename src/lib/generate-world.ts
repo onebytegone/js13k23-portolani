@@ -2,7 +2,7 @@ import { ComponentID, EntityID } from '@/shared-types';
 import { createCameraComponent } from '../components/create-camera-component';
 import { createMovementComponent } from '../components/create-movement-component';
 import { createPositionComponent } from '../components/create-position-component';
-import { Sprite, Color, createSpriteComponent, FISH_SVG_PATH } from '../components/create-sprite-component';
+import { Sprite, Color, createSpriteComponent, FISH_SVG_PATH, SpriteLayer } from '../components/create-sprite-component';
 import { Terrain, createTerrainComponent } from '../components/create-terrain-component';
 import { createTagComponent } from '@/components/create-tag-component';
 import { FogLevel, createFogComponent } from '@/components/create-fog-component';
@@ -141,20 +141,13 @@ function createEncounters(prng: PRNG, numberOfEncounters: number, possibleLocati
    return encounters;
 }
 
-const LAYER = {
-   Default: 0,
-   Wind: 1,
-   Land: 2,
-   Encounter: 3,
-   Player: 4,
-};
-
 export interface WorldGenOptions {
-   kernel: number
+   kernel: number;
+   label?: string;
 }
 
 export function generateWorld(opts: WorldGenOptions): WorldState {
-   const worldState = new WorldState(),
+   const worldState = new WorldState(opts.label || `${opts.kernel}`),
          prng = makePRNG(opts.kernel),
          landGenerator = new Perlin(prng, 10),
          canalGenerator = new Perlin(prng, 20),
@@ -177,7 +170,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          if (isLand) {
             entityMap[y][x] = worldState.createEntity({
                ...createPositionComponent(x, y),
-               ...createSpriteComponent(Sprite.Land, { layer: LAYER.Land, bg: Color.LandBG, tint: Color.Land }),
+               ...createSpriteComponent(Sprite.Land, { layer: SpriteLayer.Land, bg: Color.LandBG, tint: Color.Land }),
                ...createTerrainComponent(Terrain.Impassable),
                ...createFogComponent(FogLevel.Full),
             });
@@ -192,7 +185,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
                ...createPositionComponent(x, y),
                ...createHeadingComponent(windHeading),
                ...createSpriteComponent(HEADING_SPRITES[windHeading], {
-                  layer: LAYER.Wind,
+                  layer: SpriteLayer.Wind,
                   bg: Color.OceanBG,
                   tint: Color.Wind,
                }),
@@ -230,7 +223,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
          ...createSpriteComponent(Sprite.Port, {
-            layer: LAYER.Encounter,
+            layer: SpriteLayer.Port,
             bg: Color.PortBG,
             tint: Color.Port,
          }),
@@ -238,7 +231,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          ...createFogComponent(FogLevel.Full),
          ...createEncounterComponent({
             food: { adjust: 10 },
-            portsVisited: { adjust: 1 },
+            portsVisited: { push: { x: pos.x, y: pos.y } },
             event: { set: 'At Port' },
          }),
       });
@@ -250,7 +243,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
          ...createSpriteComponent(FISH_SVG_PATH, {
-            layer: LAYER.Encounter,
+            layer: SpriteLayer.Encounter,
             bg: Color.OceanBG,
             tint: '#B1C7CB',
          }),
@@ -282,11 +275,12 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
    worldState.createEntity({
       ...createPositionComponent(startingPoint.x, startingPoint.y),
       ...createMovementComponent(),
-      ...createSpriteComponent(Sprite.Player, { layer: LAYER.Player, bg: Color.OceanBG }),
+      ...createSpriteComponent(Sprite.Player, { layer: SpriteLayer.Player, bg: Color.OceanBG }),
       ...createTagComponent(ComponentID.Input),
       ...createStatsComponent({
+         day: 0,
          food: 20,
-         portsVisited: 0,
+         portsVisited: [],
          totalPorts: ports.length,
          navLog: false,
          soundingLine: false,

@@ -12,6 +12,7 @@ export function makeIntroScreen(): ScreenRenderFn {
       el.appendChild(makeButton('Daily Map', () => {
          renderScreen(makeGameScreen({
             kernel: Math.floor(Date.now() / 1000 / 60 / 60 / 24),
+            label: new Date().toISOString().replace(/T.*/, ''),
          }));
       }));
    };

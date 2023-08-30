@@ -6,8 +6,10 @@ export const Color = {
    Wind: '#295057',
    CoastBG: '#C7B598',
    Coast: '#A79371',
+   CoastMap: '#938576',
    PortBG: '#9E565C',
    Port: '#351D1F',
+   PortLineMap: '#B05F66',
    LandBG: '#68865E',
    Land: '#41543B',
    Default: '#DFD2BA',
@@ -34,9 +36,20 @@ export const FISH_SVG_PATH = 'M95 50a40 40 0 0 1-70 6l-20 15l5-21l-5-21l20 15a40
 
 export type SpriteEnum = ValueOf<typeof Sprite>;
 
+export const SpriteLayer = {
+   Default: 0,
+   Wind: 1,
+   Land: 2,
+   Port: 3,
+   Encounter: 4,
+   Player: 5,
+} as const;
+
+export type SpriteLayerEnum = ValueOf<typeof SpriteLayer>;
+
 export interface ISpriteComponent {
    sprite: SpriteEnum | string;
-   layer: number;
+   layer: SpriteLayerEnum;
    skew: number;
    size: Vec2D;
    tint?: string;

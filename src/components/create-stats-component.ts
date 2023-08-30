@@ -1,9 +1,11 @@
+import { Vec2D } from '@/lib/math';
 import { ComponentID, ComponentRegistration } from '@/shared-types';
 
 export interface IStatsComponent {
+   day: number;
    food: number;
    lastReportedFood?: number;
-   portsVisited: number;
+   portsVisited: Vec2D[];
    totalPorts: number;
    navLog: boolean;
    soundingLine: boolean;

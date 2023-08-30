@@ -18,6 +18,8 @@ export class EncounterSystem extends System {
                (stats as any)[prop] += change.adjust;
             } else if (change.set) {
                (stats as any)[prop] = change.set;
+            } else if (change.push) {
+               (stats as any)[prop].push(change.push);
             }
          });
 

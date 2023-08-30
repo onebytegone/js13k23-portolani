@@ -47,7 +47,7 @@ export class HUDSystem extends System {
 
       this._foodEl.innerText = `${stats.food} days ${foodDelta !== undefined ? ` (${foodDelta})` : ''}`;
       this._eventEl.innerText = stats.event || '';
-      this._portEl.innerText = `${stats.portsVisited}/${stats.totalPorts}`;
+      this._portEl.innerText = `${stats.portsVisited.length}/${stats.totalPorts}`;
       this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
 
       sprite.skew = 0;

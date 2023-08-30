@@ -3,12 +3,13 @@ import { MovementSystem } from '../systems/MovementSystem';
 import { RenderSystem } from '../systems/RenderSystem';
 import { WorldGenOptions, generateWorld } from '../lib/generate-world';
 import { FogSystem } from '../systems/FogSystem';
-import { ScreenRenderFn } from '@/shared-types';
+import { ComponentID, ScreenRenderFn } from '@/shared-types';
 import { makeControls } from './elements/make-controls';
 import { EncounterSystem } from '@/systems/EncounterSystem';
 import { HUDSystem } from '@/systems/HUDSystem';
 import { WindSystem } from '@/systems/WindSystem';
 import { Heading, HeadingEnum } from '@/lib/math';
+import { makeMapScreen } from './MapScreen';
 
 const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
    KeyQ: Heading.NW,
@@ -26,7 +27,7 @@ const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
 };
 
 export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn {
-   return (el) => {
+   return (el, renderScreen) => {
       const gamePanel = document.createElement('div'),
             canvas = document.createElement('canvas'),
             controlPanel = document.createElement('div'),
@@ -63,15 +64,24 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
          inputSystem,
       ];
 
-      // TODO: remove listener when leaving the screen
-      document.addEventListener('keydown', (event) => {
+      function processInput(event: KeyboardEvent) {
          const heading = KEY_HEADING_MAP[event.code];
 
          if (heading !== undefined) {
             inputSystem.processHeadingInput(heading);
             draw();
+
+            const playerEntityID = worldState.getEntities([ ComponentID.Stats ])[0],
+                  [ statsComponent ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats ] as const);
+
+            if (statsComponent.food <= 0) {
+               document.removeEventListener('keydown', processInput);
+               renderScreen(makeMapScreen(worldState));
+            }
          }
-      });
+      }
+
+      document.addEventListener('keydown', processInput);
 
       function draw() {
          systems.forEach((system) => {
