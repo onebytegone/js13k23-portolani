@@ -14,11 +14,9 @@ import { HEADING_SPRITES, createHeadingComponent } from '@/components/create-hea
 import { createEncounterComponent } from '@/components/create-encounter-component';
 import { createStatsComponent } from '@/components/create-stats-component';
 
-const MAP_X = 150,
-      MAP_Y = 100,
-      MIN_ENCOUNTER_DISTANCE = 6;
+const MIN_ENCOUNTER_DISTANCE = 6;
 
-function createDebugCanvas(): (x: number, y: number, val: number) => void {
+function createDebugCanvas(mapSize: Vec2D): (x: number, y: number, val: number) => void {
    if (!window.DEBUG) {
       return () => {};
    }
@@ -26,8 +24,8 @@ function createDebugCanvas(): (x: number, y: number, val: number) => void {
    const canvas = document.createElement('canvas') as HTMLCanvasElement,
          TILE_SIZE = 3;
 
-   canvas.width = MAP_X * TILE_SIZE;
-   canvas.height = MAP_Y * TILE_SIZE;
+   canvas.width = mapSize.x * TILE_SIZE;
+   canvas.height = mapSize.y * TILE_SIZE;
    canvas.style.width = '100%';
    canvas.style.imageRendering = 'pixelated';
    document.body.appendChild(canvas);
@@ -68,17 +66,14 @@ function renderHistogram(values: number[]): void {
    });
 }
 
-const windDebug = createDebugCanvas(),
-      encounterDebug = createDebugCanvas();
-
 function hsl(h: number, s: number, l: number): string {
    return `hsl(${h},${(s*100).toPrecision(2)}%,${(l*100).toPrecision(2)}%)`;
 }
 
-function circleCutoff(x: number, y: number): number {
+function circleCutoff(mapSize: Vec2D, x: number, y: number): number {
    return Math.max(
-      Math.pow(Math.sin(Math.PI / 1.02 * (x / MAP_X + 0.01)), 0.4)
-      * Math.pow(Math.sin(Math.PI / 1.02 * (y / MAP_Y + 0.01)), 0.4)
+      Math.pow(Math.sin(Math.PI / 1.02 * (x / mapSize.x + 0.01)), 0.4)
+      * Math.pow(Math.sin(Math.PI / 1.02 * (y / mapSize.y + 0.01)), 0.4)
       - 0.2,
       0
    );
@@ -141,9 +136,17 @@ function createEncounters(prng: PRNG, numberOfEncounters: number, possibleLocati
    return encounters;
 }
 
+interface Range {
+   min: number;
+   max: number
+}
+
 export interface WorldGenOptions {
    kernel: number;
    label?: string;
+   mapSize: Vec2D;
+   portCount: Range;
+   fishCount: Range;
 }
 
 export function generateWorld(opts: WorldGenOptions): WorldState {
@@ -153,17 +156,21 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          canalGenerator = new Perlin(prng, 20),
          windGenerator = new Perlin(prng, 20);
 
+
+   const windDebug = createDebugCanvas(opts.mapSize),
+         encounterDebug = createDebugCanvas(opts.mapSize);
+
    worldState.createEntity({
       ...createCameraComponent({ x: 0, y: 0, viewportWidth: 15, viewportHeight: 10 }),
    });
 
    const entityMap: EntityID[][] = [];
 
-   for (let y = 0; y < MAP_Y; y++) {
+   for (let y = 0; y < opts.mapSize.y; y++) {
       entityMap[y] = [];
 
-      for (let x = 0; x < MAP_X; x++) {
-         const landNoise = landGenerator.get(x, y) * circleCutoff(x, y),
+      for (let x = 0; x < opts.mapSize.x; x++) {
+         const landNoise = landGenerator.get(x, y) * circleCutoff(opts.mapSize, x, y),
                canalNoise = binaryThreshold(sCurve(Math.abs(canalGenerator.get(x, y))), 0.2),
                isLand = !!(binaryThreshold(landNoise, 0.04) * canalNoise);
 
@@ -219,7 +226,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
       return false;
    });
 
-   const ports: Vec2D[] = createEncounters(prng, prng.inRange(20, 40), possiblePortLocations, (pos) => {
+   const ports: Vec2D[] = createEncounters(prng, prng.inRange(opts.portCount.min, opts.portCount.max), possiblePortLocations, (pos) => {
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
          ...createSpriteComponent(Sprite.Port, {
@@ -250,7 +257,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
       encounterDebug(pos.x, pos.y, 0.5);
    });
 
-   createEncounters(prng, prng.inRange(20, 40), possibleOceanEncounterLocations, (pos) => {
+   createEncounters(prng, prng.inRange(opts.fishCount.min, opts.fishCount.max), possibleOceanEncounterLocations, (pos) => {
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
          ...createSpriteComponent(FISH_SVG_PATH, {

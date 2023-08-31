@@ -5,7 +5,8 @@ import { CHARACTER_FONT_STACK, Color, ISpriteComponent, Sprite, SpriteLayer } fr
 import { makeButton } from './elements/make-button';
 import { makeIntroScreen } from './IntroScreen';
 
-const TILE_SIZE = 6;
+const TARGET_WIDTH = 900,
+      TEXT_INSET = 20;
 
 function bresenhamLine(x0: number, y0: number, x1: number, y1: number, draw: (x: number, y: number) => void) {
    const dx = Math.abs(x1 - x0),
@@ -77,9 +78,10 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
          return memo;
       }, { x: 0, y: 0, tilesDiscovered: 0 });
 
+      const tileSize = Math.round(TARGET_WIDTH / mapData.x);
 
-      canvas.width = mapData.x * TILE_SIZE;
-      canvas.height = mapData.y * TILE_SIZE;
+      canvas.width = mapData.x * tileSize;
+      canvas.height = mapData.y * tileSize;
       ctx.fillStyle = Color.DefaultBG;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -99,7 +101,7 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
 
             if ((sprite.layer === SpriteLayer.Land || sprite.layer === SpriteLayer.Port) && sprite.sprite !== Sprite.Land) {
                ctx.fillStyle = Color.CoastMap;
-               ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+               ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
          });
       });
@@ -108,7 +110,7 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
 
       stats.portsVisited.slice(1).reduce((src, dest) => {
          bresenhamLine(src.x, src.y, dest.x, dest.y, (x, y) => {
-            ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
          });
 
          return dest;
@@ -121,10 +123,10 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
       const mapInfo = `#portolani ${worldState.label}`,
             scores = `↟${mapData.tilesDiscovered} ☀︎${Math.floor(stats.day)} ⚓︎${stats.portsVisited.length}`,
             metrics = ctx.measureText(scores),
-            textY = mapData.y * TILE_SIZE - metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+            textY = canvas.height - metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
 
-      ctx.fillText(mapInfo, TILE_SIZE * 2, textY);
-      ctx.fillText(scores, mapData.x * TILE_SIZE - metrics.width - TILE_SIZE * 2, textY);
+      ctx.fillText(mapInfo, TEXT_INSET, textY);
+      ctx.fillText(scores, canvas.width - metrics.width - TEXT_INSET, textY);
 
       const shareRow = document.createElement('div'),
             downloadLink = document.createElement('a');
