@@ -125,7 +125,7 @@ export class RenderSystem extends System {
 
                ctx.textBaseline = 'middle';
                ctx.textAlign = 'center';
-               ctx.fillStyle = Color.Default;
+               ctx.fillStyle = Color.Fog;
                ctx.font = `${tileSize * 1.2}px ${CHARACTER_FONT_STACK}`;
                ctx.fillText(
                   '≋',
@@ -142,7 +142,7 @@ export class RenderSystem extends System {
 
             ctx.save();
             if (sprite.sprite === Sprite.Player) {
-               ctx.fillStyle = '#E0DCD8';
+               ctx.fillStyle = Color.PlayerSail;
                ctx.translate(renderX + x * tileSize, renderY + y * tileSize);
                ctx.scale(tileSize / 100, tileSize / 100);
                ctx.translate(50, 50);
@@ -153,7 +153,7 @@ export class RenderSystem extends System {
                   'M35 8 v59 h59 z',
                   'M10 22 v42 h47 z',
                ].join(' ')));
-               ctx.fillStyle = '#C1B9B1';
+               ctx.fillStyle = Color.PlayerHull;
                ctx.fill(new Path2D([
                   'M10 68 l26 1 l2 4 h23 l30 -2',
                   'c-1 5, -5 18, -17 20',

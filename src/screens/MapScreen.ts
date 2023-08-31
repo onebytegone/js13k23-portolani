@@ -96,6 +96,8 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
             }, undefined);
 
             if (!sprite) {
+               ctx.fillStyle = Color.FogMap;
+               ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
                return;
             }
 
@@ -117,8 +119,8 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
       }, stats.portsVisited[0]);
 
 
-      ctx.fillStyle = '#2A261F';
-      ctx.font = `22px ${CHARACTER_FONT_STACK}`;
+      ctx.fillStyle = Color.Default;
+      ctx.font = `28px ${CHARACTER_FONT_STACK}`;
 
       const mapInfo = `#portolani ${worldState.label}`,
             scores = `↟${mapData.tilesDiscovered} ☀︎${Math.floor(stats.day)} ⚓︎${stats.portsVisited.length}`,

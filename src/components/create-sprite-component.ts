@@ -4,6 +4,7 @@ import { ComponentID, ComponentRegistration, ValueOf } from '@/shared-types';
 export const Color = {
    OceanBG: '#3B727C',
    Wind: '#295057',
+   Fish: '#B1C7CB',
    CoastBG: '#C7B598',
    Coast: '#A79371',
    CoastMap: '#938576',
@@ -11,11 +12,15 @@ export const Color = {
    Port: '#351D1F',
    PortVisitedBG: '#4E6446',
    PortVisited: '#273223',
-   PortLineMap: '#B05F66',
+   PortLineMap: '#813b41',
    LandBG: '#68865E',
    Land: '#41543B',
-   Default: '#DFD2BA',
+   Fog: '#DFD2BA',
+   FogMap: '#CFC4AF',
+   Default: '#2A261F',
    DefaultBG: '#E3D8C4',
+   PlayerSail: '#E0DCD8',
+   PlayerHull: '#C1B9B1',
 } as const;
 
 export const Sprite = {
