@@ -2,7 +2,7 @@ import { ComponentID, EntityID } from '@/shared-types';
 import { createCameraComponent } from '../components/create-camera-component';
 import { createMovementComponent } from '../components/create-movement-component';
 import { createPositionComponent } from '../components/create-position-component';
-import { Sprite, Color, createSpriteComponent, FISH_SVG_PATH, SpriteLayer } from '../components/create-sprite-component';
+import { Sprite, Color, createSpriteComponent, FISH_SVG_PATH, SpriteLayer, CHARACTER_FONT_STACK } from '../components/create-sprite-component';
 import { Terrain, createTerrainComponent } from '../components/create-terrain-component';
 import { createTagComponent } from '@/components/create-tag-component';
 import { FogLevel, createFogComponent } from '@/components/create-fog-component';
@@ -226,6 +226,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             layer: SpriteLayer.Port,
             bg: Color.PortBG,
             tint: Color.Port,
+            font: CHARACTER_FONT_STACK,
          }),
          ...createTerrainComponent(Terrain.Impassable),
          ...createFogComponent(FogLevel.Full),

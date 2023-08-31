@@ -21,7 +21,7 @@ export const Sprite = {
    Coast: '•',
    Land: '↟',
    Player: '@',
-   Port: '★',
+   Port: '⚓︎',
    N: '↑',
    NE: '↗',
    E: '→',
@@ -31,6 +31,8 @@ export const Sprite = {
    W: '←',
    NW: '↖',
 } as const;
+
+export const CHARACTER_FONT_STACK = 'Menlo,Segoe UI Symbol,monospace';
 
 export const FISH_SVG_PATH = 'M95 50a40 40 0 0 1-70 6l-20 15l5-21l-5-21l20 15a40 40 0 0 1 70 6zM80 50a6 6 0 1 0-12 0a6 6 0 1 0 12 0z';
 
@@ -53,10 +55,11 @@ export interface ISpriteComponent {
    skew: number;
    size: Vec2D;
    tint?: string;
+   font?: string;
    bg?: string;
 }
 
-type SpriteOptions = Partial<Pick<ISpriteComponent, 'layer' | 'tint' |'bg'>>;
+type SpriteOptions = Partial<Pick<ISpriteComponent, 'layer' | 'tint' | 'font' |'bg'>>;
 
 export function createSpriteComponent(sprite: SpriteEnum | string, opts: SpriteOptions = {}): ComponentRegistration<typeof ComponentID.Sprite> {
    return {

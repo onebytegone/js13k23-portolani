@@ -2,7 +2,7 @@ import { ComponentID } from '@/shared-types';
 import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
 import { HEADING_SPRITES } from '@/components/create-heading-component';
-import { FISH_SVG_PATH, Sprite } from '@/components/create-sprite-component';
+import { CHARACTER_FONT_STACK, FISH_SVG_PATH, Sprite } from '@/components/create-sprite-component';
 
 function addSpacer(el: HTMLElement): void {
    const spacer = document.createElement('div');
@@ -20,9 +20,12 @@ export class HUDSystem extends System {
    public constructor(statsEl: HTMLElement, private _controlCenterEl: HTMLElement) {
       super();
 
-      const portWrapper = document.createElement('div');
+      const portWrapper = document.createElement('div'),
+            portIcon = document.createElement('span');
 
-      portWrapper.innerText = `${Sprite.Port}`;
+      portIcon.innerText = `${Sprite.Port}`;
+      portIcon.style.fontFamily = CHARACTER_FONT_STACK;
+      portWrapper.appendChild(portIcon);
       portWrapper.appendChild(this._portEl);
       statsEl.appendChild(portWrapper);
 

@@ -164,7 +164,7 @@ export class RenderSystem extends System {
             } else if ((Object.values(Sprite) as string[]).includes(sprite.sprite)) {
                ctx.textBaseline = 'middle';
                ctx.textAlign = 'center';
-               ctx.font = `${tileSize}px monospace`;
+               ctx.font = `${tileSize}px ${sprite.font ? sprite.font : 'monospace'}`;
                ctx.translate(renderX + x * tileSize + tileSize / 2, renderY + y * tileSize + tileSize / 2);
                ctx.rotate(sprite.skew);
                ctx.scale(sprite.size.x, sprite.size.y);
