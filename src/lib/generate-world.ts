@@ -231,9 +231,19 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          ...createTerrainComponent(Terrain.Impassable),
          ...createFogComponent(FogLevel.Full),
          ...createEncounterComponent({
-            food: { adjust: 10 },
-            portsVisited: { push: { x: pos.x, y: pos.y } },
-            event: { set: 'At Port' },
+            playerChanges: {
+               [ComponentID.Stats]: {
+                  food: { adjust: 10 },
+                  portsVisited: { push: { x: pos.x, y: pos.y } },
+                  event: { set: 'At Port' },
+               },
+            },
+            entityChanges: {
+               [ComponentID.Sprite]: {
+                  bg: { set: Color.PortVisitedBG },
+                  tint: { set: Color.PortVisited },
+               },
+            },
          }),
       });
 
@@ -250,8 +260,13 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          }),
          ...createFogComponent(FogLevel.Full),
          ...createEncounterComponent({
-            food: { adjust: 30 },
-            event: { set: 'Fish!' },
+            destroyEntity: true,
+            playerChanges: {
+               [ComponentID.Stats]: {
+                  food: { adjust: 30 },
+                  event: { set: 'Fish!' },
+               },
+            },
          }),
       });
 

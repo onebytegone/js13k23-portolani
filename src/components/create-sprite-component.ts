@@ -9,6 +9,8 @@ export const Color = {
    CoastMap: '#938576',
    PortBG: '#9E565C',
    Port: '#351D1F',
+   PortVisitedBG: '#4E6446',
+   PortVisited: '#273223',
    PortLineMap: '#B05F66',
    LandBG: '#68865E',
    Land: '#41543B',

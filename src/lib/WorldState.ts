@@ -1,5 +1,5 @@
 import { ComponentID, ComponentIDEnum, ComponentMap, EntityID, Vector2D } from '@/shared-types';
-import { getMaskForComponentIDs, removeComponentIDFromMask } from './component-id-mask';
+import { getComponentIDsFromMask, getMaskForComponentIDs, removeComponentIDFromMask } from './component-id-mask';
 
 export class WorldState {
 
@@ -29,6 +29,20 @@ export class WorldState {
       });
 
       return entityID;
+   }
+
+   public destroyEntity(entityID: EntityID): void {
+      const componentMask = this._entities[entityID];
+
+      this._entitiesByComponentMask[componentMask] = this._entitiesByComponentMask[componentMask].filter((e) => {
+         return e !== entityID;
+      });
+
+      delete this._entities[entityID];
+
+      getComponentIDsFromMask(componentMask).forEach((componentID) => {
+         delete this._components[componentID][entityID];
+      });
    }
 
    // TODO: add components to entity
