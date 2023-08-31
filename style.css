@@ -120,6 +120,19 @@ canvas {
    color: #295057;
 }
 
+.share {
+   display: flex;
+   width: 100%;
+}
+
+.share *:first-child {
+   margin-left: 0;
+}
+
+.share *:last-child {
+   margin-right: 0;
+}
+
 @media (min-width: 560px) {
    h1 {
       font-size: 7em;
