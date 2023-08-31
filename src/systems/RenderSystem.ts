@@ -74,9 +74,6 @@ export class RenderSystem extends System {
          camera.y = player.y - camera.viewportHeight + CAMERA_MARGIN + 1;
       }
 
-      camera.x = Math.max(0, Math.min(this._mapSize.x - camera.viewportWidth + 1, camera.x));
-      camera.y = Math.max(0, Math.min(this._mapSize.y - camera.viewportHeight + 1, camera.y));
-
       this._sprites = [];
       this._camera = { ...camera };
 
@@ -112,26 +109,31 @@ export class RenderSystem extends System {
             visibleTilesY = this._camera.viewportHeight + tileMarginY * 2,
             renderX = Math.round((this._canvas.width - tileSize * visibleTilesX) / 2),
             renderY = Math.round((this._canvas.height - tileSize * visibleTilesY) / 2),
-            tileOffsetX = Math.max(-1, Math.min(this._camera.x - tileMarginX, this._mapSize.x - visibleTilesX + 1)),
-            tileOffsetY = Math.max(-1, Math.min(this._camera.y - tileMarginY, this._mapSize.y - visibleTilesY + 1));
+            tileOffsetX = Math.max(-2, Math.min(this._camera.x - tileMarginX, this._mapSize.x - visibleTilesX + 2)),
+            tileOffsetY = Math.max(-2, Math.min(this._camera.y - tileMarginY, this._mapSize.y - visibleTilesY + 2));
 
       for (let y = 0; y < visibleTilesY; y++) {
          for (let x = 0; x < visibleTilesX; x++) {
-            const sprite = this._sprites[y + tileOffsetY] ? this._sprites[y + tileOffsetY][x + tileOffsetX] : undefined;
+            const spriteX = x + tileOffsetX,
+                  spriteY = y + tileOffsetY,
+                  sprite = this._sprites[spriteY] ? this._sprites[spriteY][spriteX] : undefined,
+                  isOutOfBounds = spriteX < 0 || spriteY < 0 || spriteX >= this._mapSize.x || spriteY >= this._mapSize.y;
 
             if (!sprite) {
-               ctx.fillStyle = Color.DefaultBG;
+               ctx.fillStyle = isOutOfBounds ? Color.FogMap : Color.DefaultBG;
                ctx.fillRect(renderX + x * tileSize, renderY + y * tileSize, tileSize, tileSize);
 
-               ctx.textBaseline = 'middle';
-               ctx.textAlign = 'center';
-               ctx.fillStyle = Color.Fog;
-               ctx.font = `${tileSize * 1.2}px ${CHARACTER_FONT_STACK}`;
-               ctx.fillText(
-                  '≋',
-                  renderX + x * tileSize + tileSize / 2,
-                  renderY + y * tileSize + tileSize / 2
-               );
+               if (!isOutOfBounds) {
+                  ctx.textBaseline = 'middle';
+                  ctx.textAlign = 'center';
+                  ctx.fillStyle = Color.Fog;
+                  ctx.font = `${tileSize * 1.2}px ${CHARACTER_FONT_STACK}`;
+                  ctx.fillText(
+                     '≋',
+                     renderX + x * tileSize + tileSize / 2,
+                     renderY + y * tileSize + tileSize / 2
+                  );
+               }
                continue;
             }
 
