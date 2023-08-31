@@ -1,5 +1,5 @@
 import { FogLevel } from '@/components/create-fog-component';
-import { Color, ISpriteComponent, Sprite } from '@/components/create-sprite-component';
+import { CHARACTER_FONT_STACK, Color, ISpriteComponent, Sprite } from '@/components/create-sprite-component';
 import { WorldState } from '@/lib/WorldState';
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
@@ -126,11 +126,11 @@ export class RenderSystem extends System {
                ctx.textBaseline = 'middle';
                ctx.textAlign = 'center';
                ctx.fillStyle = Color.Default;
-               ctx.font = `${tileSize * 1.5}px monospace`;
+               ctx.font = `${tileSize * 1.2}px ${CHARACTER_FONT_STACK}`;
                ctx.fillText(
-                  '☁︎',
+                  '≋',
                   renderX + x * tileSize + tileSize / 2,
-                  renderY + y * tileSize + tileSize / 2 - tileSize / 3
+                  renderY + y * tileSize + tileSize / 2
                );
                continue;
             }
@@ -164,11 +164,11 @@ export class RenderSystem extends System {
             } else if ((Object.values(Sprite) as string[]).includes(sprite.sprite)) {
                ctx.textBaseline = 'middle';
                ctx.textAlign = 'center';
-               ctx.font = `${tileSize}px ${sprite.font ? sprite.font : 'monospace'}`;
+               ctx.font = `${tileSize}px ${sprite.font ? sprite.font : CHARACTER_FONT_STACK}`;
                ctx.translate(renderX + x * tileSize + tileSize / 2, renderY + y * tileSize + tileSize / 2);
                ctx.rotate(sprite.skew);
                ctx.scale(sprite.size.x, sprite.size.y);
-               ctx.fillText(sprite.sprite, 0, 0);
+               ctx.fillText(sprite.sprite, 0, 3);
             } else {
                ctx.translate(renderX + x * tileSize, renderY + y * tileSize);
                ctx.scale(tileSize / 100, tileSize / 100);
