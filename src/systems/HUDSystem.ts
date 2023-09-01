@@ -3,41 +3,59 @@ import { System } from './System';
 import { WorldState } from '@/lib/WorldState';
 import { HEADING_SPRITES } from '@/components/create-heading-component';
 import { CHARACTER_FONT_STACK, FISH_SVG_PATH, Sprite } from '@/components/create-sprite-component';
-
-function addSpacer(el: HTMLElement): void {
-   const spacer = document.createElement('div');
-
-   spacer.style.flex = '1';
-   el.appendChild(spacer);
-}
+import { createEl, loadHTML } from '@/lib/dom';
 
 export class HUDSystem extends System {
 
-   private _foodEl = document.createElement('span');
-   private _portEl = document.createElement('span');
-   private _eventEl = document.createElement('span');
+   private _foodEl = createEl('span');
+   private _portEl = createEl('span');
+   private _eventEl = createEl('span');
 
-   public constructor(statsEl: HTMLElement, private _controlCenterEl: HTMLElement) {
+   public constructor(hudEl: HTMLElement, private _controlCenterEl: HTMLElement) {
       super();
 
-      const portWrapper = document.createElement('div'),
-            portIcon = document.createElement('span');
+      const portIcon = createEl('span');
 
-      portIcon.innerText = `${Sprite.Port}`;
+      portIcon.innerText = Sprite.Port;
       portIcon.style.fontFamily = CHARACTER_FONT_STACK;
-      portWrapper.appendChild(portIcon);
-      portWrapper.appendChild(this._portEl);
-      statsEl.appendChild(portWrapper);
 
-      addSpacer(statsEl);
-      statsEl.appendChild(this._eventEl);
-      addSpacer(statsEl);
+      hudEl.appendChild(createEl('div', {
+         className: 'nw',
+         childElements: [
+            createEl('div', {
+               className: 'stat',
+               childElements: [
+                  portIcon,
+                  this._portEl,
+               ],
+            }),
+         ]
+      }));
 
-      const foodWrapper = document.createElement('div');
+      hudEl.appendChild(createEl('div', {
+         className: 'ne',
+         childElements: [
+            createEl('div', {
+               className: 'stat',
+               childElements: [
+                  loadHTML(`<svg height="1em" viewBox="0 -20 100 100"><path d="${FISH_SVG_PATH}"/></svg>`),
+                  this._foodEl,
+               ],
+            }),
+         ]
+      }));
 
-      foodWrapper.innerHTML = `<svg height="1em" viewBox="0 -20 100 100"><path d="${FISH_SVG_PATH}"/></svg>`;
-      foodWrapper.appendChild(this._foodEl);
-      statsEl.appendChild(foodWrapper);
+      hudEl.appendChild(createEl('div', {
+         className: 's',
+         childElements: [
+            createEl('div', {
+               className: 'stat',
+               childElements: [
+                  this._eventEl,
+               ],
+            }),
+         ]
+      }));
    }
 
    // eslint-disable-next-line class-methods-use-this

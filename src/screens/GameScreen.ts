@@ -31,7 +31,7 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
       const gamePanel = document.createElement('div'),
             canvas = document.createElement('canvas'),
             controlPanel = document.createElement('div'),
-            stats = document.createElement('div'),
+            hud = document.createElement('div'),
             controlCenter = document.createElement('div'),
             worldState = generateWorld(worldGenOptions),
             inputSystem = new InputSystem(worldState);
@@ -41,11 +41,12 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
       gamePanel.className = 'gamePanel';
       gamePanel.appendChild(canvas);
 
+      hud.className = 'hud';
+      gamePanel.appendChild(hud);
+
       controlPanel.className = 'controlPanel';
-      stats.className = 'stats';
       controlCenter.className = 'center';
 
-      controlPanel.append(stats);
       controlPanel.appendChild(makeControls((heading) => {
          inputSystem.processHeadingInput(heading);
          draw();
@@ -59,7 +60,7 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
          new MovementSystem(),
          new EncounterSystem(),
          new FogSystem(),
-         new HUDSystem(stats, controlCenter),
+         new HUDSystem(hud, controlCenter),
          new RenderSystem(canvas, gamePanel),
          inputSystem,
       ];
