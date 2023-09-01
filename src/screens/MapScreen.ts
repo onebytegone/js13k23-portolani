@@ -144,19 +144,21 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
       shareRow.appendChild(downloadLink);
 
       if (window.ClipboardItem) {
-         shareRow.appendChild(makeButton('Copy Map', () => {
-            canvas.toBlob(async (blob) => {
-               if (!blob) {
-                  return;
-               }
-
-               await navigator.clipboard.write([
-                  new ClipboardItem({
-                     'image/png': blob,
+         shareRow.appendChild(makeButton('Copy Map', async () => {
+            await navigator.clipboard.write([
+               new ClipboardItem({
+                  'image/png': new Promise((resolve, reject) => {
+                     canvas.toBlob(async (blob) => {
+                        if (blob) {
+                           resolve(blob);
+                           return;
+                        }
+                        reject();
+                    });
                   }),
-               ]);
-               alert('Map copied to clipboard!');
-           });
+               }),
+            ]);
+            alert('Map copied to clipboard!');
          }));
       }
 
