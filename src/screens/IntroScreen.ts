@@ -4,6 +4,8 @@ import { makeGameScreen } from './GameScreen';
 
 export function makeIntroScreen(): ScreenRenderFn {
    return (el, renderScreen) => {
+      el.className = 'intro';
+
       const title = document.createElement('h1');
 
       title.innerText = '𝕻𝔬𝔯𝔱𝔬𝔩𝔞𝔫𝔦';

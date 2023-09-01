@@ -39,12 +39,14 @@ function bresenhamLine(x0: number, y0: number, x1: number, y1: number, draw: (x:
 
 export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
    return (el, renderScreen) => {
-      const title = document.createElement('h2'),
+      const title = document.createElement('h1'),
             canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d')!,
             playerEntityID = worldState.getEntities([ ComponentID.Stats ])[0],
             [ stats ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats ] as const),
             map: ISpriteComponent[][][] = [];
+
+      el.className = 'map';
 
       title.innerText = 'Voyage Complete';
       el.appendChild(title);
