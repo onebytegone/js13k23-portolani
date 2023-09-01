@@ -48,7 +48,7 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
 
       el.className = 'map';
 
-      title.innerText = 'Voyage Complete';
+      title.innerText = 'Voyage Complete!';
       el.appendChild(title);
       el.appendChild(canvas);
 
