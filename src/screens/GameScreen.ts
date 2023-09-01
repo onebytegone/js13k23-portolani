@@ -47,10 +47,7 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
       controlPanel.className = 'controlPanel';
       controlCenter.className = 'center';
 
-      controlPanel.appendChild(makeControls((heading) => {
-         inputSystem.processHeadingInput(heading);
-         draw();
-      }, controlCenter));
+      controlPanel.appendChild(makeControls(processHeadingInput, controlCenter));
 
       el.appendChild(gamePanel);
       el.appendChild(controlPanel);
@@ -65,24 +62,30 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
          inputSystem,
       ];
 
-      function processInput(event: KeyboardEvent) {
-         const heading = KEY_HEADING_MAP[event.code];
+      function processHeadingInput(heading: HeadingEnum): void {
+         inputSystem.processHeadingInput(heading);
+         draw();
 
-         if (heading !== undefined) {
-            inputSystem.processHeadingInput(heading);
-            draw();
+         const playerEntityID = worldState.getEntities([ ComponentID.Stats ])[0],
+               [ statsComponent ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats ] as const);
 
-            const playerEntityID = worldState.getEntities([ ComponentID.Stats ])[0],
-                  [ statsComponent ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats ] as const);
+               console.log(statsComponent);
 
-            if (statsComponent.food <= 0 || statsComponent.portsVisited.length === statsComponent.totalPorts) {
-               document.removeEventListener('keydown', processInput);
-               renderScreen(makeMapScreen(worldState));
-            }
+         if (statsComponent.food <= 0 || statsComponent.portsVisited.length === statsComponent.totalPorts) {
+            document.removeEventListener('keydown', processKeyboardInput);
+            renderScreen(makeMapScreen(worldState));
          }
       }
 
-      document.addEventListener('keydown', processInput);
+      function processKeyboardInput(event: KeyboardEvent) {
+         const heading = KEY_HEADING_MAP[event.code];
+
+         if (heading !== undefined) {
+            processHeadingInput(heading);
+         }
+      }
+
+      document.addEventListener('keydown', processKeyboardInput);
 
       function draw() {
          systems.forEach((system) => {
