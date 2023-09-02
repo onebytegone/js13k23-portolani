@@ -12,19 +12,37 @@ import { Heading, HeadingEnum } from '@/lib/math';
 import { makeMapScreen } from './MapScreen';
 import { anyEntity } from '@/lib/WorldState';
 
+// Google Closure Compiler will rename all the keys of any object (and there doesn't seem
+// to be a way to disable this per object). Therefore, create a list of the literal string
+// key codes we want to listen for.
+const KeyCode = {
+   Q: 'KeyQ',
+   W: 'KeyW',
+   Up: 'ArrowUp',
+   E: 'KeyE',
+   A: 'KeyA',
+   Left: 'ArrowLeft',
+   D: 'KeyD',
+   Right: 'ArrowRight',
+   Z: 'KeyZ',
+   X: 'KeyX',
+   Down: 'ArrowDown',
+   C: 'KeyC',
+}
+
 const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
-   KeyQ: Heading.NW,
-   KeyW: Heading.N,
-   ArrowUp: Heading.N,
-   KeyE: Heading.NE,
-   KeyA: Heading.W,
-   ArrowLeft: Heading.W,
-   KeyD: Heading.E,
-   ArrowRight: Heading.E,
-   KeyZ: Heading.SW,
-   KeyX: Heading.S,
-   ArrowDown: Heading.S,
-   KeyC: Heading.SE,
+   [KeyCode.Q]: Heading.NW,
+   [KeyCode.W]: Heading.N,
+   [KeyCode.Up]: Heading.N,
+   [KeyCode.E]: Heading.NE,
+   [KeyCode.A]: Heading.W,
+   [KeyCode.Left]: Heading.W,
+   [KeyCode.D]: Heading.E,
+   [KeyCode.Right]: Heading.E,
+   [KeyCode.Z]: Heading.SW,
+   [KeyCode.X]: Heading.S,
+   [KeyCode.Down]: Heading.S,
+   [KeyCode.C]: Heading.SE,
 };
 
 export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn {
