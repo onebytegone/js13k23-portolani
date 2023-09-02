@@ -77,7 +77,7 @@ export class HUDSystem extends System {
       this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
 
       this._bonusEl.innerHTML = '';
-      if (stats.localCrew || stats.navLog || stats.soundingLine) {
+      if (stats.localCrew) {
          this._bonusEl.appendChild(createEl('div', {
             innerText: Sprite.LocalCrew,
             title: 'Local Crew: Advanced knowledge about fish, pirates, and ports',
