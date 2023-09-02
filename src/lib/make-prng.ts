@@ -2,6 +2,7 @@ export interface PRNG {
    (): number;
    inRange: (min: number, max: number) => number;
    randomElement: <T>(arr: T[]) => T;
+   randomElements: <T>(arr: T[], count: number) => T[];
 };
 
 export function makePRNG(kernel: number): PRNG {
@@ -25,6 +26,23 @@ export function makePRNG(kernel: number): PRNG {
 
    fn.randomElement = <T>(arr: T[]): T => {
       return arr[fn.inRange(0, arr.length - 1)];
+   };
+
+   fn.randomElements = <T>(arr: T[], count: number): T[] => {
+      if (arr.length <= count) {
+         return arr;
+      }
+
+      const output = [];
+
+      for (let i = 0; i < count; i++) {
+         const index = fn.inRange(0, arr.length - 1);
+
+         output.push(arr[index]);
+         arr.splice(index, 1);
+      }
+
+      return output;
    };
 
    return fn;

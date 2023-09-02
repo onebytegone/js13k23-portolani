@@ -18,6 +18,7 @@ export function makeIntroScreen(): ScreenRenderFn {
             mapSize: { x: 40, y: 30 },
             portCount: { min: 8, max: 8 },
             fishCount: { min: 3, max: 6 },
+            pirateCount: { min: 10, max: 15 },
          }));
       }));
    };

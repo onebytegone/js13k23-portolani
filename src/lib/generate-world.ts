@@ -11,10 +11,13 @@ import { WorldState } from './WorldState';
 import { PRNG, makePRNG } from './make-prng';
 import { HeadingEnum, Vec2D, adjustRange, binaryThreshold, wrap } from './math';
 import { HEADING_SPRITES, createHeadingComponent } from '@/components/create-heading-component';
-import { createEncounterComponent } from '@/components/create-encounter-component';
-import { createStatsComponent } from '@/components/create-stats-component';
+import { Changes, createEncounterComponent } from '@/components/create-encounter-component';
+import { IStatsComponent, createStatsComponent } from '@/components/create-stats-component';
 
-const MIN_ENCOUNTER_DISTANCE = 6;
+const MIN_ENCOUNTER_DISTANCE = 6,
+      PORT_BONUS_CHANCE = 0.2,
+      PIRATE_BONUS_CHANCE = 0.5,
+      PIRATE_LOSS_CHANCE = 0.85;
 
 function createDebugCanvas(mapSize: Vec2D): (x: number, y: number, val: number) => void {
    if (!window.DEBUG) {
@@ -70,6 +73,14 @@ function hsl(h: number, s: number, l: number): string {
    return `hsl(${h},${(s*100).toPrecision(2)}%,${(l*100).toPrecision(2)}%)`;
 }
 
+function seq(count: number): number[] {
+   return new Array(count)
+      .fill(1)
+      .map((_, i) => {
+         return i;
+      });
+}
+
 function circleCutoff(mapSize: Vec2D, x: number, y: number): number {
    return Math.max(
       Math.pow(Math.sin(Math.PI / 1.02 * (x / mapSize.x + 0.01)), 0.4)
@@ -112,7 +123,7 @@ function floodFill<T>(map: T[][], iteratee: (v: T, pos: Vec2D, delta: Vec2D) => 
    }
 }
 
-function createEncounters(prng: PRNG, numberOfEncounters: number, possibleLocations: Vec2D[], generateFn: (pos: Vec2D) => void): Vec2D[] {
+function createEncounters(prng: PRNG, numberOfEncounters: number, possibleLocations: Vec2D[], generateFn: (pos: Vec2D, index: number) => void): Vec2D[] {
    const encounters: Vec2D[] = [];
 
    while (encounters.length < numberOfEncounters) {
@@ -128,12 +139,29 @@ function createEncounters(prng: PRNG, numberOfEncounters: number, possibleLocati
          continue;
       }
 
-      encounters.push(pos);
-
-      generateFn(pos);
+      generateFn(pos, encounters.push(pos) - 1);
    }
 
    return encounters;
+}
+
+function makePortBonuses(prng: PRNG, portCount: number, bonusCount: number): Record<number, Changes<IStatsComponent>> {
+   const bonuses = [
+      'navLog',
+      'soundingLine',
+      'localCrew',
+   ];
+
+   const els = prng.randomElements(seq(portCount), bonusCount * bonuses.length);
+
+   console.log(seq(portCount), els, bonusCount * bonuses.length);
+
+   return els.reduce((memo, portIndex, i) => {
+      memo[portIndex] = {
+         [bonuses[Math.floor(i / bonusCount)]]: { set: true },
+      };
+      return memo;
+   }, {} as Record<number, Changes<IStatsComponent>>);
 }
 
 interface Range {
@@ -147,6 +175,7 @@ export interface WorldGenOptions {
    mapSize: Vec2D;
    portCount: Range;
    fishCount: Range;
+   pirateCount: Range;
 }
 
 export function generateWorld(opts: WorldGenOptions): WorldState {
@@ -155,7 +184,6 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          landGenerator = new Perlin(prng, 10),
          canalGenerator = new Perlin(prng, 20),
          windGenerator = new Perlin(prng, 20);
-
 
    const windDebug = createDebugCanvas(opts.mapSize),
          encounterDebug = createDebugCanvas(opts.mapSize);
@@ -204,7 +232,10 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
    }
 
    const possibleOceanEncounterLocations: Vec2D[] = [],
-         possiblePortLocations: Vec2D[] = [];
+         possiblePortLocations: Vec2D[] = [],
+         portCount = prng.inRange(opts.portCount.min, opts.portCount.max),
+         pirateCount = prng.inRange(opts.pirateCount.min, opts.pirateCount.max),
+         portBonuses = makePortBonuses(prng, portCount, 2);
 
    floodFill(entityMap, (entityID, pos, delta) => {
       const [ terrain, sprite ] = worldState.getComponents(entityID, [ ComponentID.Terrain, ComponentID.Sprite ] as const);
@@ -226,7 +257,9 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
       return false;
    });
 
-   const ports: Vec2D[] = createEncounters(prng, prng.inRange(opts.portCount.min, opts.portCount.max), possiblePortLocations, (pos) => {
+   console.log(portBonuses);
+
+   const ports: Vec2D[] = createEncounters(prng, portCount, possiblePortLocations, (pos, i) => {
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
          ...createSpriteComponent(Sprite.Port, {
@@ -243,6 +276,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
                   food: { adjust: 10 },
                   portsVisited: { push: { x: pos.x, y: pos.y } },
                   event: { set: 'At Port' },
+                  ...(portBonuses[i] || {}),
                },
             },
             entityChanges: {
@@ -270,7 +304,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             destroyEntity: true,
             playerChanges: {
                [ComponentID.Stats]: {
-                  food: { adjust: 30 },
+                  food: { adjust: prng.inRange(5, 20) },
                   event: { set: 'Fish!' },
                },
             },
@@ -278,6 +312,39 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
       });
 
       encounterDebug(pos.x, pos.y, 0.25);
+   });
+
+   createEncounters(prng, pirateCount, possibleOceanEncounterLocations, (pos) => {
+      function getStatImpact(): { set: boolean } | undefined {
+         if (prng() < PIRATE_LOSS_CHANCE) {
+            return { set: false };
+         }
+      }
+
+      worldState.createEntity({
+         ...createPositionComponent(pos.x, pos.y),
+         ...createSpriteComponent(Sprite.Pirate, {
+            layer: SpriteLayer.Encounter,
+            bg: Color.OceanBG,
+            tint: Color.Fog,
+            font: CHARACTER_FONT_STACK,
+         }),
+         ...createFogComponent(FogLevel.Full),
+         ...createEncounterComponent({
+            destroyEntity: true,
+            playerChanges: {
+               [ComponentID.Stats]: {
+                  food: { adjust: prng.inRange(-30, -5) },
+                  event: { set: 'Pirates!' },
+                  navLog: getStatImpact(),
+                  soundingLine: getStatImpact(),
+                  localCrew: getStatImpact(),
+               },
+            },
+         }),
+      });
+
+      encounterDebug(pos.x, pos.y, 0.45);
    });
 
    const startingPort = prng.randomElement(ports),
@@ -302,7 +369,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
       ...createTagComponent(ComponentID.Input),
       ...createStatsComponent({
          day: 0,
-         food: 20,
+         food: 31,
          portsVisited: [],
          totalPorts: ports.length,
          navLog: false,

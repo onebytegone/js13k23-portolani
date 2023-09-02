@@ -29,6 +29,7 @@ export const Sprite = {
    Land: '↟',
    Player: '@',
    Port: '⚓︎',
+   Pirate: '⚔',
    N: '↑',
    NE: '↗',
    E: '→',
@@ -37,6 +38,9 @@ export const Sprite = {
    SW: '↙',
    W: '←',
    NW: '↖',
+   LocalCrew: '⊛',
+   NavLog: '⤱',
+   SoundingLine: '≊',
 } as const;
 
 export const CHARACTER_FONT_STACK = 'Menlo,Segoe UI Symbol,monospace';

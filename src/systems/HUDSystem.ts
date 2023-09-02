@@ -10,6 +10,7 @@ export class HUDSystem extends System {
    private _foodEl = createEl('span');
    private _portEl = createEl('span');
    private _eventEl = createEl('span');
+   private _bonusEl = createEl('span');
 
    public constructor(hudEl: HTMLElement, private _controlCenterEl: HTMLElement) {
       super();
@@ -32,6 +33,8 @@ export class HUDSystem extends System {
          ]
       }));
 
+      this._bonusEl = createEl('div', { className: 'stat bonus' });
+
       hudEl.appendChild(createEl('div', {
          className: 'ne',
          childElements: [
@@ -42,6 +45,7 @@ export class HUDSystem extends System {
                   this._foodEl,
                ],
             }),
+            this._bonusEl,
          ]
       }));
 
@@ -71,6 +75,16 @@ export class HUDSystem extends System {
       this._eventEl.innerText = stats.event || '';
       this._portEl.innerText = `${stats.portsVisited.length}/${stats.totalPorts}`;
       this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
+      if (stats.localCrew || stats.navLog || stats.soundingLine) {
+         this._bonusEl.style.display = '';
+         this._bonusEl.innerText = [
+            stats.localCrew ? Sprite.LocalCrew : undefined,
+            stats.navLog ? Sprite.NavLog : undefined,
+            stats.soundingLine ? Sprite.SoundingLine : undefined,
+         ].filter((v) => { return !!v; }).join('');
+      } else {
+         this._bonusEl.style.display = 'none';
+      }
 
       sprite.skew = 0;
       sprite.size.x = 1;

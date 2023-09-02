@@ -5,10 +5,14 @@ import { EntityChanges } from '@/components/create-encounter-component';
 
 function performChanges(worldState: WorldState, entityID: EntityID, entityChanges: EntityChanges): void {
    // TODO: The types here are terrible
-   Object.entries(entityChanges).forEach(([ componentID, cpmponentChanges ]) => {
+   Object.entries(entityChanges).forEach(([ componentID, componentChanges ]) => {
       const [ component ] = worldState.getComponents(entityID, [ Number(componentID) as ComponentIDEnum ]);
 
-      Object.entries(cpmponentChanges).forEach(([ prop, change ]: any) => {
+      Object.entries(componentChanges).forEach(([ prop, change ]: any) => {
+         if (!change) {
+            return;
+         }
+
          if (change.adjust) {
             (component as any)[prop] += change.adjust;
          } else if (change.set) {
