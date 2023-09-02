@@ -98,10 +98,10 @@ export class RenderSystem extends System {
             [ axis, dimension ] = wrapperRatio > viewportRatio ? [ 'viewportWidth', 'clientWidth' ] as const : [ 'viewportHeight', 'clientHeight' ] as const,
             tileSize = Math.floor(dpr * this._container[dimension] / this._camera[axis]);
 
-      this._canvas.width = this._container.clientWidth * dpr;
-      this._canvas.height = this._container.clientHeight * dpr;
-      this._canvas.style.width = `${this._container.clientWidth}px`;
-      this._canvas.style.height = `${this._container.clientHeight}px`;
+      this._canvas.width = this._container.clientWidth * dpr; // eslint-disable-line id-denylist
+      this._canvas.height = this._container.clientHeight * dpr; // eslint-disable-line id-denylist
+      this._canvas.style.width = `${this._container.clientWidth}px`; // eslint-disable-line id-denylist
+      this._canvas.style.height = `${this._container.clientHeight}px`; // eslint-disable-line id-denylist
 
       const tileMarginX = Math.ceil((Math.ceil(this._canvas.width / tileSize) - this._camera.viewportWidth) / 2),
             tileMarginY = Math.ceil((Math.ceil(this._canvas.height / tileSize) - this._camera.viewportHeight) / 2),

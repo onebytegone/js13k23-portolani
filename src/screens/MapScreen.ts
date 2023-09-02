@@ -82,8 +82,8 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
 
       const tileSize = Math.round(TARGET_WIDTH / mapData.x);
 
-      canvas.width = mapData.x * tileSize;
-      canvas.height = mapData.y * tileSize;
+      canvas.width = mapData.x * tileSize; // eslint-disable-line id-denylist
+      canvas.height = mapData.y * tileSize; // eslint-disable-line id-denylist
       ctx.fillStyle = Color.DefaultBG;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 

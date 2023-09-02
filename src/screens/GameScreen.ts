@@ -69,8 +69,6 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
          const playerEntityID = worldState.getEntities([ ComponentID.Stats ])[0],
                [ statsComponent ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats ] as const);
 
-               console.log(statsComponent);
-
          if (statsComponent.food <= 0 || statsComponent.portsVisited.length === statsComponent.totalPorts) {
             document.removeEventListener('keydown', processKeyboardInput);
             renderScreen(makeMapScreen(worldState));

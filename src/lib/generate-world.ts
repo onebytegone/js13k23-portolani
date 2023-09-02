@@ -15,8 +15,6 @@ import { Changes, createEncounterComponent } from '@/components/create-encounter
 import { IStatsComponent, createStatsComponent } from '@/components/create-stats-component';
 
 const MIN_ENCOUNTER_DISTANCE = 6,
-      PORT_BONUS_CHANCE = 0.2,
-      PIRATE_BONUS_CHANCE = 0.5,
       PIRATE_LOSS_CHANCE = 0.85;
 
 function createDebugCanvas(mapSize: Vec2D): (x: number, y: number, val: number) => void {
@@ -27,9 +25,9 @@ function createDebugCanvas(mapSize: Vec2D): (x: number, y: number, val: number) 
    const canvas = document.createElement('canvas') as HTMLCanvasElement,
          TILE_SIZE = 3;
 
-   canvas.width = mapSize.x * TILE_SIZE;
-   canvas.height = mapSize.y * TILE_SIZE;
-   canvas.style.width = '100%';
+   canvas.width = mapSize.x * TILE_SIZE; // eslint-disable-line id-denylist
+   canvas.height = mapSize.y * TILE_SIZE; // eslint-disable-line id-denylist
+   canvas.style.width = '100%'; // eslint-disable-line id-denylist
    canvas.style.imageRendering = 'pixelated';
    document.body.appendChild(canvas);
 
@@ -41,6 +39,7 @@ function createDebugCanvas(mapSize: Vec2D): (x: number, y: number, val: number) 
    };
 }
 
+// eslint-disable-next-line unused-imports/no-unused-vars
 function renderHistogram(values: number[]): void {
    if (!window.DEBUG) {
       return;
@@ -50,9 +49,9 @@ function renderHistogram(values: number[]): void {
          COLUMN_SIZE = 0.2,
          COLUMN_WIDTH = 3;
 
-   canvas.width = values.length * COLUMN_WIDTH;
-   canvas.height = values.reduce((m, v) => { return v > m ? v : m;}, 0) * COLUMN_SIZE;
-   canvas.style.width = '100%';
+   canvas.width = values.length * COLUMN_WIDTH; // eslint-disable-line id-denylist
+   canvas.height = values.reduce((m, v) => { return v > m ? v : m;}, 0) * COLUMN_SIZE; // eslint-disable-line id-denylist
+   canvas.style.width = '100%'; // eslint-disable-line id-denylist
    canvas.style.imageRendering = 'pixelated';
    document.body.appendChild(canvas);
 
@@ -63,7 +62,6 @@ function renderHistogram(values: number[]): void {
 
 
    ctx.fillStyle = hsl(0.2, 0.8, 0.4);
-   console.log(values);
    values.forEach((v, x) => {
       ctx.fillRect(x * COLUMN_WIDTH, canvas.height - v * COLUMN_SIZE, COLUMN_WIDTH, v * COLUMN_SIZE);
    });
@@ -152,11 +150,7 @@ function makePortBonuses(prng: PRNG, portCount: number, bonusCount: number): Rec
       'localCrew',
    ];
 
-   const els = prng.randomElements(seq(portCount), bonusCount * bonuses.length);
-
-   console.log(seq(portCount), els, bonusCount * bonuses.length);
-
-   return els.reduce((memo, portIndex, i) => {
+   return prng.randomElements(seq(portCount), bonusCount * bonuses.length).reduce((memo, portIndex, i) => {
       memo[portIndex] = {
          [bonuses[Math.floor(i / bonusCount)]]: { set: true },
       };
@@ -257,8 +251,6 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
       return false;
    });
 
-   console.log(portBonuses);
-
    const ports: Vec2D[] = createEncounters(prng, portCount, possiblePortLocations, (pos, i) => {
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
@@ -297,7 +289,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          ...createSpriteComponent(FISH_SVG_PATH, {
             layer: SpriteLayer.Encounter,
             bg: Color.OceanBG,
-            tint: '#B1C7CB',
+            tint: Color.Fish,
          }),
          ...createFogComponent(FogLevel.Full),
          ...createEncounterComponent({
