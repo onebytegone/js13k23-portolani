@@ -46,6 +46,7 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
 
       controlPanel.className = 'controlPanel';
       controlCenter.className = 'center';
+      controlCenter.title = 'Current wind heading';
 
       controlPanel.appendChild(makeControls(processHeadingInput, controlCenter));
 

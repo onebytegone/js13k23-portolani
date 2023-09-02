@@ -7,8 +7,8 @@ import { createEl, loadHTML } from '@/lib/dom';
 
 export class HUDSystem extends System {
 
-   private _foodEl = createEl('span');
-   private _portEl = createEl('span');
+   private _foodEl = createEl('span', { className: 'value', title: 'Days of food remaining' });
+   private _portEl = createEl('span', { className: 'value', title: 'Number of ports visited' });
    private _eventEl = createEl('span');
    private _bonusEl = createEl('span');
 
@@ -75,15 +75,25 @@ export class HUDSystem extends System {
       this._eventEl.innerText = stats.event || '';
       this._portEl.innerText = `${stats.portsVisited.length}/${stats.totalPorts}`;
       this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
+
+      this._bonusEl.innerHTML = '';
       if (stats.localCrew || stats.navLog || stats.soundingLine) {
-         this._bonusEl.style.display = '';
-         this._bonusEl.innerText = [
-            stats.localCrew ? Sprite.LocalCrew : undefined,
-            stats.navLog ? Sprite.NavLog : undefined,
-            stats.soundingLine ? Sprite.SoundingLine : undefined,
-         ].filter((v) => { return !!v; }).join('');
-      } else {
-         this._bonusEl.style.display = 'none';
+         this._bonusEl.appendChild(createEl('div', {
+            innerText: Sprite.LocalCrew,
+            title: 'Local Crew: Advanced knowledge about fish, pirates, and ports',
+         }));
+      }
+      if (stats.navLog) {
+         this._bonusEl.appendChild(createEl('div', {
+            innerText: Sprite.NavLog,
+            title: 'Nav Log: More insight into wind conditions',
+         }));
+      }
+      if (stats.soundingLine) {
+         this._bonusEl.appendChild(createEl('div', {
+            innerText: Sprite.SoundingLine,
+            title: 'Sounding Line: Better understanding about the location of land',
+         }));
       }
 
       sprite.skew = 0;

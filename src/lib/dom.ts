@@ -1,8 +1,16 @@
-export function createEl(tagName: string, params: { className?: string, childElements?: HTMLElement[]  } = {}): HTMLElement {
+export function createEl(tagName: string, params: { className?: string, innerText?: string; title?: string; childElements?: HTMLElement[] } = {}): HTMLElement {
    const el = document.createElement(tagName);
 
    if (params.className) {
       el.className = params.className;
+   }
+
+   if (params.innerText) {
+      el.innerText = params.innerText;
+   }
+
+   if (params.title) {
+      el.title = params.title;
    }
 
    (params.childElements || []).forEach((child) => {
