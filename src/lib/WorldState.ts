@@ -1,6 +1,14 @@
 import { ComponentID, ComponentIDEnum, ComponentMap, EntityID, Vector2D } from '@/shared-types';
 import { getComponentIDsFromMask, getMaskForComponentIDs, removeComponentIDFromMask } from './component-id-mask';
 
+export function makeEntityID(id: string): EntityID {
+   return Number(id) as EntityID;
+}
+
+export function anyEntity<T>(entities: { [s: string]: T }): T {
+   return Object.values(entities)[0];
+}
+
 export class WorldState {
 
    private _entities: number[] = [];
@@ -64,7 +72,7 @@ export class WorldState {
       this._entitiesByComponentMask[newComponentMask].push(entityID);
    }
 
-   public getEntities(componentIDs: readonly ComponentIDEnum[]): EntityID[] {
+   public getEntityIDs(componentIDs: readonly ComponentIDEnum[]): EntityID[] {
       const requestedMask = getMaskForComponentIDs(componentIDs);
 
       return Object.entries(this._entitiesByComponentMask).reduce((memo, [ entityMask, entityIDs ]) => {
@@ -76,14 +84,30 @@ export class WorldState {
       }, [] as number[]) as EntityID[];
    }
 
-   public getEntitiesAtLocation(location: Vector2D, componentIDs: readonly ComponentIDEnum[] = []): EntityID[] {
+   public getEntityIDsAtLocation(location: Vector2D, componentIDs: readonly ComponentIDEnum[] = []): EntityID[] {
       // TODO: This is really inefficient. Likely, a grid data structure, at minimum,
       // would be better.
-      return this.getEntities([ ComponentID.Position, ...componentIDs ]).filter((entityID) => {
+      return this.getEntityIDs([ ComponentID.Position, ...componentIDs ]).filter((entityID) => {
          const [ loc ] = this.getComponents(entityID, [ ComponentID.Position ]);
 
-         return location.x === loc.x && location.y === loc.y;
+         return loc && location.x === loc.x && location.y === loc.y;
       });
+   }
+
+   public getEntities<T extends readonly ComponentIDEnum[]>(componentIDs: T): Record<EntityID, { [K in keyof T]: ComponentMap[T[K]] }> {
+      return this.getEntityIDs(componentIDs).reduce((memo, entityID) => {
+         memo[entityID] = this.getComponents(entityID, componentIDs);
+
+         return memo;
+      }, {} as any); // TODO: types
+   }
+
+   public getEntitiesAtLocation<T extends readonly ComponentIDEnum[]>(location: Vector2D, componentIDs: T): Record<EntityID, { [K in keyof T]: ComponentMap[T[K]] }> {
+      return this.getEntityIDsAtLocation(location, componentIDs).reduce((memo, entityID) => {
+         memo[entityID] = this.getComponents(entityID, componentIDs);
+
+         return memo;
+      }, {} as any); // TODO: types
    }
 
    public getEntitiesAdjacentToLocation(location: Vector2D, componentIDs: readonly ComponentIDEnum[] = []): EntityID[][][] {
@@ -97,14 +121,14 @@ export class WorldState {
                continue;
             }
 
-            map[y][x] = this.getEntitiesAtLocation({ x: location.x + x, y: location.y + y }, componentIDs);
+            map[y][x] = this.getEntityIDsAtLocation({ x: location.x + x, y: location.y + y }, componentIDs);
          }
       }
 
       return map;
    }
 
-   public getComponents<T extends readonly ComponentIDEnum[]>(entityID: EntityID, componentIDs: T): { [K in keyof T]: ComponentMap[T[K]] } {
+   public getComponents<T extends readonly ComponentIDEnum[]>(entityID: EntityID, componentIDs: T): { [K in keyof T]?: ComponentMap[T[K]] } {
       return componentIDs.map((componentID) => {
          return (this._components[componentID] || [])[entityID];
       }) as any; // TODO: better types

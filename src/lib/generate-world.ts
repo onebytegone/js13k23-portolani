@@ -236,14 +236,16 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
    floodFill(entityMap, (entityID, pos, delta) => {
       const [ terrain, sprite ] = worldState.getComponents(entityID, [ ComponentID.Terrain, ComponentID.Sprite ] as const);
 
-      if (terrain.terrain === Terrain.Passable) {
+      if (terrain && terrain.terrain === Terrain.Passable) {
          possibleOceanEncounterLocations.push(pos);
          return true;
       }
 
-      sprite.sprite = Sprite.Coast;
-      sprite.bg = Color.CoastBG;
-      sprite.tint = Color.Coast;
+      if (sprite) {
+         sprite.sprite = Sprite.Coast;
+         sprite.bg = Color.CoastBG;
+         sprite.tint = Color.Coast;
+      }
 
       encounterDebug(pos.x, pos.y, 0.2);
 
@@ -351,10 +353,14 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
                return worldState.getComponents(entityID, [ ComponentID.Terrain, ComponentID.Position ] as const);
             })
             .filter(([ terrain ]) => {
-               return terrain.terrain === Terrain.Passable;
+               return terrain && terrain.terrain === Terrain.Passable;
             });
       });
    }));
+
+   if (!startingPoint) {
+      throw Error();
+   }
 
    worldState.createEntity({
       ...createPositionComponent(startingPoint.x, startingPoint.y),

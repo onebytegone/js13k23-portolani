@@ -1,6 +1,6 @@
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
-import { WorldState } from '@/lib/WorldState';
+import { WorldState, anyEntity } from '@/lib/WorldState';
 import { HEADING_SPRITES } from '@/components/create-heading-component';
 import { CHARACTER_FONT_STACK, FISH_SVG_PATH, Sprite } from '@/components/create-sprite-component';
 import { createEl, loadHTML } from '@/lib/dom';
@@ -64,10 +64,8 @@ export class HUDSystem extends System {
 
    // eslint-disable-next-line class-methods-use-this
    public update(_delta: number, worldState: WorldState): void {
-      const playerEntityID = worldState.getEntities([ ComponentID.Stats, ComponentID.Position ])[0],
-            [ stats, player, movement, sprite ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats, ComponentID.Position, ComponentID.Movement, ComponentID.Sprite ] as const),
-            windEntityID = worldState.getEntitiesAtLocation(player, [ ComponentID.Terrain, ComponentID.Heading ])[0],
-            [ heading ] = worldState.getComponents(windEntityID, [ ComponentID.Heading ]),
+      const [ stats, player, movement, sprite ] = anyEntity(worldState.getEntities([ ComponentID.Stats, ComponentID.Position, ComponentID.Movement, ComponentID.Sprite ] as const)),
+            [ , heading ] = anyEntity(worldState.getEntitiesAtLocation(player, [ ComponentID.Terrain, ComponentID.Heading ] as const)),
             foodLevel = Math.floor(stats.food),
             foodDelta = stats.lastReportedFood !== undefined ? foodLevel - stats.lastReportedFood : undefined;
 

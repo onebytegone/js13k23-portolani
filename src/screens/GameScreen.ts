@@ -10,6 +10,7 @@ import { HUDSystem } from '@/systems/HUDSystem';
 import { WindSystem } from '@/systems/WindSystem';
 import { Heading, HeadingEnum } from '@/lib/math';
 import { makeMapScreen } from './MapScreen';
+import { anyEntity } from '@/lib/WorldState';
 
 const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
    KeyQ: Heading.NW,
@@ -67,8 +68,7 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
          inputSystem.processHeadingInput(heading);
          draw();
 
-         const playerEntityID = worldState.getEntities([ ComponentID.Stats ])[0],
-               [ statsComponent ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats ] as const),
+         const [ statsComponent ] = anyEntity(worldState.getEntities([ ComponentID.Stats ] as const)),
                isOutOfFood = (statsComponent.food <= 0),
                visitedAllPorts = statsComponent.portsVisited.length === statsComponent.totalPorts;
 

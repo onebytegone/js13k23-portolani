@@ -1,6 +1,6 @@
 import { ComponentID, ComponentIDEnum, EntityID } from '@/shared-types';
 import { System } from './System';
-import { WorldState } from '@/lib/WorldState';
+import { WorldState, makeEntityID } from '@/lib/WorldState';
 import { EntityChanges } from '@/components/create-encounter-component';
 
 function performChanges(worldState: WorldState, entityID: EntityID, entityChanges: EntityChanges): void {
@@ -28,15 +28,18 @@ function performChanges(worldState: WorldState, entityID: EntityID, entityChange
 export class EncounterSystem extends System {
 
    public update(delta: number, worldState: WorldState): void { // eslint-disable-line class-methods-use-this
-      const playerEntityID = worldState.getEntities([ ComponentID.Position, ComponentID.Stats ])[0],
-            [ player ] = worldState.getComponents(playerEntityID, [ ComponentID.Position ] as const),
+      const [ playerEntityID, [ player ] ] = Object.entries(worldState.getEntities([ ComponentID.Position, ComponentID.Stats ] as const))[0],
             encounteredEntities = worldState.getEntitiesAdjacentToLocation(player, [ ComponentID.Encounter ]);
 
       Object.values(encounteredEntities).map(Object.values).flat(2).forEach((entityID) => {
          const [ encounter ] = worldState.getComponents(entityID, [ ComponentID.Encounter ]);
 
+         if (!encounter) {
+            return;
+         }
+
          if (encounter.playerChanges) {
-            performChanges(worldState, playerEntityID, encounter.playerChanges);
+            performChanges(worldState, makeEntityID(playerEntityID), encounter.playerChanges);
          }
 
          if (encounter.entityChanges) {

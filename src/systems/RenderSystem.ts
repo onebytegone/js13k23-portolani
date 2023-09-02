@@ -1,14 +1,12 @@
 import { FogLevel } from '@/components/create-fog-component';
 import { CHARACTER_FONT_STACK, Color, ISpriteComponent, Sprite } from '@/components/create-sprite-component';
-import { WorldState } from '@/lib/WorldState';
+import { WorldState, anyEntity, makeEntityID } from '@/lib/WorldState';
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
 
 const CAMERA_MARGIN = 4;
 
 export class RenderSystem extends System {
-
-   static components = [ ComponentID.Position, ComponentID.Sprite ] as const;
 
    private _sprites: (ISpriteComponent | undefined)[][] = [];
    private _camera: { x: number; y: number, viewportWidth: number, viewportHeight: number } = {
@@ -26,25 +24,22 @@ export class RenderSystem extends System {
    }
 
    public update(delta: number, worldState: WorldState): void {
-      const [ camera ] = worldState.getComponents(worldState.getEntities([ ComponentID.Camera ])[0], [ ComponentID.Camera ]),
-            [ player ] = worldState.getComponents(worldState.getEntities([ ComponentID.Input, ComponentID.Position ])[0], [ ComponentID.Position ]);
+      const [ camera ] = anyEntity(worldState.getEntities([ ComponentID.Camera ])),
+            [ , player ] = anyEntity(worldState.getEntities([ ComponentID.Input, ComponentID.Position ] as const));
 
-      const map: ISpriteComponent[][][] = [];
+      const mapData = Object.entries(worldState.getEntities([ ComponentID.Position, ComponentID.Sprite ] as const)).reduce((memo, [ entityID, [ loc, sprite ] ]) => {
+         const [ fog ] = worldState.getComponents(makeEntityID(entityID), [ ComponentID.Fog ]);
 
-      this._mapSize = worldState.getEntities(RenderSystem.components).reduce((memo, entityID) => {
-         const [ loc, sprite, fog ] = worldState.getComponents(entityID, [ ...RenderSystem.components, ComponentID.Fog ] as const);
-
-         if (!map[loc.y]) {
-            map[loc.y] = [];
+         if (!memo.map[loc.y]) {
+            memo.map[loc.y] = [];
          }
 
-         if (!map[loc.y][loc.x]) {
-            map[loc.y][loc.x] = [];
+         if (!memo.map[loc.y][loc.x]) {
+            memo.map[loc.y][loc.x] = [];
          }
 
-         // TODO: Types, `fog` would ideally be possibly undefined
          if (!fog || fog.level === FogLevel.None) {
-            map[loc.y][loc.x].push(sprite);
+            memo.map[loc.y][loc.x].push(sprite);
          }
 
          if (loc.y >= memo.y) {
@@ -56,7 +51,7 @@ export class RenderSystem extends System {
          }
 
          return memo;
-      }, { x: 0, y: 0 });
+      }, { x: 0, y: 0, map: [] as ISpriteComponent[][][] });
 
       if (player.x - CAMERA_MARGIN < camera.x) {
          camera.x = player.x - CAMERA_MARGIN;
@@ -76,12 +71,13 @@ export class RenderSystem extends System {
 
       this._sprites = [];
       this._camera = { ...camera };
+      this._mapSize = { x: mapData.x, y: mapData.y };
 
       for (let y = 0; y < this._mapSize.y; y++) {
          this._sprites.push([]);
 
          for (let x = 0; x < this._mapSize.x; x++) {
-            this._sprites[y][x] = map[y][x].reduce((memo: ISpriteComponent | undefined, sprite) => {
+            this._sprites[y][x] = mapData.map[y][x].reduce((memo: ISpriteComponent | undefined, sprite) => {
                return memo ? (memo.layer >= sprite.layer ? memo : sprite) : sprite;
             }, undefined);
          }

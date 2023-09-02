@@ -12,9 +12,8 @@ export class InputSystem extends System {
    }
 
    public processHeadingInput(heading: HeadingEnum): void {
-      this._worldState.getEntities(InputSystem.components).forEach((entityID) => {
-         const [ movement ] = this._worldState.getComponents(entityID, InputSystem.components),
-               vec = headingToVec2D(heading);
+      Object.values(this._worldState.getEntities(InputSystem.components)).forEach(([ movement ]) => {
+         const vec = headingToVec2D(heading);
 
          movement.x = vec.x;
          movement.y = vec.y;
@@ -23,9 +22,7 @@ export class InputSystem extends System {
 
    // eslint-disable-next-line class-methods-use-this
    public update(_delta: number, worldState: WorldState): void {
-      worldState.getEntities(InputSystem.components).forEach((entityID) => {
-         const [ movement ] = worldState.getComponents(entityID, InputSystem.components);
-
+      Object.values(worldState.getEntities(InputSystem.components)).forEach(([ movement ]) => {
          // Stop all movement in prep for the next input
          movement.x = 0;
          movement.y = 0;

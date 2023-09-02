@@ -1,6 +1,6 @@
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
-import { WorldState } from '@/lib/WorldState';
+import { WorldState, anyEntity, makeEntityID } from '@/lib/WorldState';
 import { FogLevel } from '@/components/create-fog-component';
 import { Terrain } from '@/components/create-terrain-component';
 
@@ -10,11 +10,10 @@ export class FogSystem extends System {
 
    // eslint-disable-next-line class-methods-use-this
    public update(_delta: number, worldState: WorldState): void {
-      const playerEntityID = worldState.getEntities([ ComponentID.Input, ComponentID.Position ])[0],
-            [ player, stats ] = worldState.getComponents(playerEntityID, [ ComponentID.Position, ComponentID.Stats ] as const);
+      const [ player, stats ] = anyEntity(worldState.getEntities([ ComponentID.Position, ComponentID.Stats ] as const));
 
-      worldState.getEntities(FogSystem.components).forEach((entityID) => {
-         const [ { x, y }, fog ] = worldState.getComponents(entityID, FogSystem.components),
+      Object.entries(worldState.getEntities(FogSystem.components)).forEach(([ rawEntityID, [ { x, y }, fog ] ]) => {
+         const entityID = makeEntityID(rawEntityID),
                [ terrain ] = worldState.getComponents(entityID, [ ComponentID.Terrain ]),
                hasEncounterComponent = worldState.doesEntityHaveComponent(entityID, ComponentID.Encounter);
 
@@ -24,7 +23,6 @@ export class FogSystem extends System {
             viewDistance = 6;
          }
 
-         // TODO: types terrain should be optional
          if (stats.soundingLine && terrain && terrain.terrain === Terrain.Impassable && !hasEncounterComponent) {
             viewDistance = 6;
          }

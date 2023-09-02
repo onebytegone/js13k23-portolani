@@ -1,5 +1,5 @@
 import { ComponentID, ScreenRenderFn } from '@/shared-types';
-import { WorldState } from '@/lib/WorldState';
+import { WorldState, anyEntity, makeEntityID } from '@/lib/WorldState';
 import { FogLevel } from '@/components/create-fog-component';
 import { CHARACTER_FONT_STACK, Color, ISpriteComponent, Sprite, SpriteLayer } from '@/components/create-sprite-component';
 import { makeButton } from './elements/make-button';
@@ -42,8 +42,7 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
    return (el, renderScreen) => {
       const canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d')!,
-            playerEntityID = worldState.getEntities([ ComponentID.Stats ])[0],
-            [ stats ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats ] as const),
+            [ stats ] = anyEntity(worldState.getEntities([ ComponentID.Stats ])),
             map: ISpriteComponent[][][] = [];
 
       el.className = 'map';
@@ -52,8 +51,8 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
       el.appendChild(createEl('div', { className: 'subtitle', innerText: endCondition }));
       el.appendChild(canvas);
 
-      const mapData = worldState.getEntities([ ComponentID.Position, ComponentID.Sprite ] as const).reduce((memo, entityID) => {
-         const [ loc, sprite, fog ] = worldState.getComponents(entityID, [ ComponentID.Position, ComponentID.Sprite, ComponentID.Fog ] as const);
+      const mapData = Object.entries(worldState.getEntities([ ComponentID.Position, ComponentID.Sprite ] as const)).reduce((memo, [ entityID, [ loc, sprite ] ]) => {
+         const [ fog ] = worldState.getComponents(makeEntityID(entityID), [ ComponentID.Fog ]);
 
          if (!map[loc.y]) {
             map[loc.y] = [];

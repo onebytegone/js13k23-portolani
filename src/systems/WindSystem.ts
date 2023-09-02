@@ -1,16 +1,14 @@
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
-import { WorldState } from '@/lib/WorldState';
+import { WorldState, anyEntity } from '@/lib/WorldState';
 import { angleDifference, headingToVec2D, vec2DToAngle } from '@/lib/math';
 
 export class WindSystem extends System {
 
    // eslint-disable-next-line class-methods-use-this
    public update(_delta: number, worldState: WorldState): void {
-      const playerEntityID = worldState.getEntities([ ComponentID.Stats, ComponentID.Position ])[0],
-            [ stats, player, movement ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats, ComponentID.Position, ComponentID.Movement ] as const),
-            windEntityID = worldState.getEntitiesAtLocation(player, [ ComponentID.Terrain, ComponentID.Heading ])[0],
-            [ heading ] = worldState.getComponents(windEntityID, [ ComponentID.Heading ]),
+      const [ stats, player, movement ] = anyEntity(worldState.getEntities([ ComponentID.Stats, ComponentID.Position, ComponentID.Movement ] as const)),
+            [ , heading ] = anyEntity(worldState.getEntitiesAtLocation(player, [ ComponentID.Terrain, ComponentID.Heading ] as const)),
             windAngle = vec2DToAngle(headingToVec2D(heading.heading)),
             movementAngle = vec2DToAngle(movement);
 
