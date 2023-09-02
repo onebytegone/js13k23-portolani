@@ -6,6 +6,14 @@ import { System } from './System';
 
 const CAMERA_MARGIN = 4;
 
+function calculateTileSize(viewportWidth: number, viewportHeight: number, containerWidth: number, containerHeight: number, dpr: number): number {
+   const viewportRatio = viewportHeight / viewportWidth,
+         containerRatio = containerHeight / containerWidth,
+         size = (containerRatio > viewportRatio) ? (containerWidth / viewportWidth) : (containerHeight / viewportHeight);
+
+   return Math.floor(dpr * size);
+}
+
 export class RenderSystem extends System {
 
    private _sprites: (ISpriteComponent | undefined)[][] = [];
@@ -89,10 +97,7 @@ export class RenderSystem extends System {
    private _draw(): void {
       const ctx = this._canvas.getContext('2d')!,
             dpr = window.devicePixelRatio,
-            viewportRatio = this._camera.viewportHeight / this._camera.viewportWidth,
-            wrapperRatio = this._container.clientHeight / this._container.clientWidth,
-            [ axis, dimension ] = wrapperRatio > viewportRatio ? [ 'viewportWidth', 'clientWidth' ] as const : [ 'viewportHeight', 'clientHeight' ] as const,
-            tileSize = Math.floor(dpr * this._container[dimension] / this._camera[axis]);
+            tileSize = calculateTileSize(this._camera.viewportWidth, this._camera.viewportHeight, this._container.clientWidth, this._container.clientHeight, dpr);
 
       this._canvas.width = this._container.clientWidth * dpr; // eslint-disable-line id-denylist
       this._canvas.height = this._container.clientHeight * dpr; // eslint-disable-line id-denylist
