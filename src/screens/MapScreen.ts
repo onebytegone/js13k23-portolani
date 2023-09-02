@@ -48,7 +48,7 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
 
       el.className = 'map';
 
-      el.appendChild(createEl('h1', { innerText: 'Voyage Complete!' }));
+      el.appendChild(createEl('h1', { innerText: 'Voyage Complete' }));
       el.appendChild(createEl('div', { className: 'subtitle', innerText: endCondition }));
       el.appendChild(canvas);
 
@@ -158,13 +158,13 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
                   }),
                }),
             ]);
-            alert('Map copied to clipboard!');
+            alert('Map copied to clipboard');
          }));
       }
 
       shareRow.appendChild(makeButton('Copy Stats', async () => {
          await navigator.clipboard.writeText(`${mapInfo}\n${scores}`);
-         alert('Stats copied to clipboard!');
+         alert('Stats copied to clipboard');
       }));
 
       el.appendChild(shareRow);

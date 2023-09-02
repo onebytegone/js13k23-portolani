@@ -16,7 +16,7 @@ export class MovementSystem extends System {
                   terrainEntities = worldState.getEntitiesAtLocation(newLoc, [ ComponentID.Terrain ]);
 
             if (!terrainEntities || !terrainEntities.length) {
-               stats.event = 'Edge of map!';
+               stats.event = 'Edge of map';
                return; // Don't move, new location is off map
             }
 

@@ -299,7 +299,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             playerChanges: {
                [ComponentID.Stats]: {
                   food: { adjust: prng.inRange(5, 20) },
-                  event: { set: 'Fish!' },
+                  event: { set: 'Caught fish' },
                },
             },
          }),
