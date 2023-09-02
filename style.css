@@ -49,6 +49,7 @@ button:hover, a.button:hover {
 
 #s5.intro {
    justify-content: center;
+   gap: 8px;
 }
 
 #s5.intro h1 {

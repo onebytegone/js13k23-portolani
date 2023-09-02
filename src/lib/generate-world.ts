@@ -15,7 +15,7 @@ import { Changes, createEncounterComponent } from '@/components/create-encounter
 import { IStatsComponent, createStatsComponent } from '@/components/create-stats-component';
 
 const MIN_ENCOUNTER_DISTANCE = 6,
-      PIRATE_LOSS_CHANCE = 0.85;
+      PIRATE_LOSS_CHANCE = 0.95;
 
 function createDebugCanvas(mapSize: Vec2D): (x: number, y: number, val: number) => void {
    if (!window.DEBUG) {
@@ -167,9 +167,11 @@ export interface WorldGenOptions {
    kernel: number;
    label?: string;
    mapSize: Vec2D;
+   startingFood: Range;
    portCount: Range;
    fishCount: Range;
    pirateCount: Range;
+   copiesOfBonuses: number;
 }
 
 export function generateWorld(opts: WorldGenOptions): WorldState {
@@ -229,7 +231,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          possiblePortLocations: Vec2D[] = [],
          portCount = prng.inRange(opts.portCount.min, opts.portCount.max),
          pirateCount = prng.inRange(opts.pirateCount.min, opts.pirateCount.max),
-         portBonuses = makePortBonuses(prng, portCount, 2);
+         portBonuses = makePortBonuses(prng, portCount, opts.copiesOfBonuses);
 
    floodFill(entityMap, (entityID, pos, delta) => {
       const [ terrain, sprite ] = worldState.getComponents(entityID, [ ComponentID.Terrain, ComponentID.Sprite ] as const);
@@ -361,7 +363,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
       ...createTagComponent(ComponentID.Input),
       ...createStatsComponent({
          day: 0,
-         food: 31,
+         food: prng.inRange(opts.startingFood.min, opts.startingFood.max),
          portsVisited: [],
          totalPorts: ports.length,
          navLog: false,
