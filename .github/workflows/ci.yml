@@ -22,7 +22,8 @@ jobs:
             with:
                name: minified.zip
                path: .minified/index.zip
-         - run: unzip .minified/index.zip -d .gh-pages
+         - run: cp -r .build .gh-pages
+         - run: unzip .minified/index.zip -d .gh-pages/rr
          -
             uses: actions/upload-pages-artifact@v1
             with:
