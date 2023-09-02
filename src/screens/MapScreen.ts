@@ -4,6 +4,7 @@ import { FogLevel } from '@/components/create-fog-component';
 import { CHARACTER_FONT_STACK, Color, ISpriteComponent, Sprite, SpriteLayer } from '@/components/create-sprite-component';
 import { makeButton } from './elements/make-button';
 import { makeIntroScreen } from './IntroScreen';
+import { createEl } from '@/lib/dom';
 
 const TARGET_WIDTH = 900,
       TEXT_INSET = 20;
@@ -37,10 +38,9 @@ function bresenhamLine(x0: number, y0: number, x1: number, y1: number, draw: (x:
    }
 }
 
-export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
+export function makeMapScreen(worldState: WorldState, endCondition: string): ScreenRenderFn {
    return (el, renderScreen) => {
-      const title = document.createElement('h1'),
-            canvas = document.createElement('canvas'),
+      const canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d')!,
             playerEntityID = worldState.getEntities([ ComponentID.Stats ])[0],
             [ stats ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats ] as const),
@@ -48,8 +48,8 @@ export function makeMapScreen(worldState: WorldState): ScreenRenderFn {
 
       el.className = 'map';
 
-      title.innerText = 'Voyage Complete!';
-      el.appendChild(title);
+      el.appendChild(createEl('h1', { innerText: 'Voyage Complete!' }));
+      el.appendChild(createEl('div', { className: 'subtitle', innerText: endCondition }));
       el.appendChild(canvas);
 
       const mapData = worldState.getEntities([ ComponentID.Position, ComponentID.Sprite ] as const).reduce((memo, entityID) => {

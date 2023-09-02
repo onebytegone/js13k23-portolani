@@ -159,12 +159,19 @@ button:hover, a.button:hover {
 }
 
 #s5.map {
+   text-align: center;
    padding: 8px;
    max-width: 100vw;
+   gap: 8px;
 }
 
-#s5.map {
-   gap: 8px;
+#s5.map h1 {
+   font-size: 3em;
+   margin-bottom: 0;
+}
+
+.subtitle {
+   font-size: 2em;
 }
 
 #s5.map canvas {

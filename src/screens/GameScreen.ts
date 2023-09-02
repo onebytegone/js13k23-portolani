@@ -68,11 +68,13 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
          draw();
 
          const playerEntityID = worldState.getEntities([ ComponentID.Stats ])[0],
-               [ statsComponent ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats ] as const);
+               [ statsComponent ] = worldState.getComponents(playerEntityID, [ ComponentID.Stats ] as const),
+               isOutOfFood = (statsComponent.food <= 0),
+               visitedAllPorts = statsComponent.portsVisited.length === statsComponent.totalPorts;
 
-         if (statsComponent.food <= 0 || statsComponent.portsVisited.length === statsComponent.totalPorts) {
+         if (isOutOfFood || visitedAllPorts) {
             document.removeEventListener('keydown', processKeyboardInput);
-            renderScreen(makeMapScreen(worldState));
+            renderScreen(makeMapScreen(worldState, isOutOfFood ? 'Ran out of food' : 'Explored all ports'));
          }
       }
 
