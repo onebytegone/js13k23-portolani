@@ -14,6 +14,17 @@ const buttons = [
    Heading.SE,
 ];
 
+const headingToKey = {
+   [Heading.NW]: 'q',
+   [Heading.N]: 'w',
+   [Heading.NE]: 'e',
+   [Heading.W]: 'a',
+   [Heading.E]: 'd',
+   [Heading.SW]: 'z',
+   [Heading.S]: 'x',
+   [Heading.SE]: 'c',
+};
+
 export function makeControls(onInput: (heading: HeadingEnum) => void, controlCenterEl?: HTMLElement): HTMLElement {
    const grid = document.createElement('div');
 
@@ -26,6 +37,8 @@ export function makeControls(onInput: (heading: HeadingEnum) => void, controlCen
          const button = makeButton(HEADING_SPRITES[heading], () =>{
             onInput(heading);
          });
+
+         button.title = headingToKey[heading];
          grid.appendChild(button);
       }
    });
