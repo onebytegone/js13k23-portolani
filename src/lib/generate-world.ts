@@ -144,17 +144,24 @@ function createEncounters(prng: PRNG, numberOfEncounters: number, possibleLocati
 }
 
 function makePortBonuses(prng: PRNG, portCount: number, bonusCount: number): Record<number, Changes<IStatsComponent>> {
-   const bonuses = [
-      'navLog',
-      'soundingLine',
-      'localCrew',
-   ];
-
-   return prng.randomElements(seq(portCount), bonusCount * bonuses.length).reduce((memo, portIndex, i) => {
-      memo[portIndex] = {
-         [bonuses[Math.floor(i / bonusCount)]]: { set: true },
-      };
-      return memo;
+   return prng.randomElements(seq(portCount), bonusCount * 3).reduce((memo, portIndex, i) => {
+      switch (Math.floor(i / bonusCount)) {
+         case 0:
+            memo[portIndex] = {
+               navLog: { set: true },
+            };
+            return memo;
+         case 1:
+            memo[portIndex] = {
+               soundingLine: { set: true },
+            };
+            return memo;
+         default:
+            memo[portIndex] = {
+               localCrew: { set: true },
+            };
+            return memo;
+      }
    }, {} as Record<number, Changes<IStatsComponent>>);
 }
 
