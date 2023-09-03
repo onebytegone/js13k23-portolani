@@ -11,6 +11,7 @@ import { WindSystem } from '@/systems/WindSystem';
 import { Heading, HeadingEnum } from '@/lib/math';
 import { makeMapScreen } from './MapScreen';
 import { anyEntity } from '@/lib/WorldState';
+import { createEl } from '@/lib/dom';
 
 // Google Closure Compiler will rename all the keys of any object (and there doesn't seem
 // to be a way to disable this per object). Therefore, create a list of the literal string
@@ -47,21 +48,14 @@ const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
 
 export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn {
    return (el, renderScreen) => {
-      const gamePanel = document.createElement('div'),
-            canvas = document.createElement('canvas'),
+      const canvas = document.createElement('canvas'),
             controlPanel = document.createElement('div'),
-            hud = document.createElement('div'),
+            hud = createEl('div', { className: 'hud' }),
             controlCenter = document.createElement('div'),
             worldState = generateWorld(worldGenOptions),
             inputSystem = new InputSystem(worldState);
 
       el.className = 'game';
-
-      gamePanel.className = 'gamePanel';
-      gamePanel.appendChild(canvas);
-
-      hud.className = 'hud';
-      gamePanel.appendChild(hud);
 
       controlPanel.className = 'controlPanel';
       controlCenter.className = 'center';
@@ -69,7 +63,16 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
 
       controlPanel.appendChild(makeControls(processHeadingInput, controlCenter));
 
-      el.appendChild(gamePanel);
+      const gameFrame = createEl('div', {
+         className: 'gameFrame',
+         childElements: [ canvas, hud ],
+      });
+
+      const statusBar = createEl('div', {
+         className: 'status',
+      });
+
+      el.appendChild(createEl('div', { className: 'gamePanel', childElements: [ gameFrame, statusBar ] }));
       el.appendChild(controlPanel);
 
       const systems = [
@@ -77,8 +80,8 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
          new MovementSystem(),
          new EncounterSystem(),
          new FogSystem(),
-         new HUDSystem(hud, controlCenter),
-         new RenderSystem(canvas, gamePanel),
+         new HUDSystem(hud, statusBar, controlCenter),
+         new RenderSystem(canvas, gameFrame),
          inputSystem,
       ];
 

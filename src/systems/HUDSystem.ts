@@ -9,10 +9,9 @@ export class HUDSystem extends System {
 
    private _foodEl = createEl('span', { className: 'value', title: 'Days of food remaining' });
    private _portEl = createEl('span', { className: 'value', title: 'Number of ports visited' });
-   private _eventEl = createEl('span');
    private _bonusEl = createEl('span');
 
-   public constructor(hudEl: HTMLElement, private _controlCenterEl: HTMLElement) {
+   public constructor(hudEl: HTMLElement, private _statusEl: HTMLElement, private _controlCenterEl: HTMLElement) {
       super();
 
       const portIcon = createEl('span');
@@ -48,18 +47,6 @@ export class HUDSystem extends System {
             this._bonusEl,
          ]
       }));
-
-      hudEl.appendChild(createEl('div', {
-         className: 's',
-         childElements: [
-            createEl('div', {
-               className: 'stat',
-               childElements: [
-                  this._eventEl,
-               ],
-            }),
-         ]
-      }));
    }
 
    // eslint-disable-next-line class-methods-use-this
@@ -70,7 +57,7 @@ export class HUDSystem extends System {
             foodDelta = stats.lastReportedFood !== undefined ? foodLevel - stats.lastReportedFood : undefined;
 
       this._foodEl.innerText = `${foodLevel} days ${foodDelta ? ` (${foodDelta})` : ''}`;
-      this._eventEl.innerText = stats.event || '';
+      this._statusEl.innerText = stats.event || '';
       this._portEl.innerText = `${stats.portsVisited.length}/${stats.totalPorts}`;
       this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
 

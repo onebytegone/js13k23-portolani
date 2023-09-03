@@ -80,16 +80,31 @@ h1 {
 }
 
 .gamePanel {
-   position: relative;
-   aspect-ratio: 4 / 3;
+   display: flex;
+   flex: 1;
+   flex-direction: column;
    border-bottom: 2px dashed #A7987E;
 }
 
-.gamePanel canvas {
+.status {
+   padding: 6px;
+   text-align: center;
+   font-size: 4.5vw;
+   background-color: #E3D8C4;
+   border-top: 2px solid #B9AF9D;
+}
+
+.gameFrame {
+   flex: 1;
+   position: relative;
+   aspect-ratio: 4 / 3;
+}
+
+.gameFrame canvas {
    position: absolute;
 }
 
-.gamePanel .hud {
+.gameFrame .hud {
    display: grid;
    grid-template-columns: 1fr auto;
    grid-template-rows: 1fr auto;
@@ -209,7 +224,7 @@ h1 {
 }
 
 @media (min-width: 480px) {
-   .gamePanel .hud {
+   .gameFrame .hud {
       font-size: 2em;
    }
 }
@@ -228,9 +243,14 @@ h1 {
       flex-direction: row;
    }
    .gamePanel {
-      flex: 1;
       border-bottom: none;
       border-right: 2px dashed #A7987E;
+   }
+   .status {
+      font-size: min(2em, 3vw);
+   }
+   .gameFrame {
+      flex: 1;
       aspect-ratio: unset;
    }
    .controlPanel {
