@@ -95,7 +95,7 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
 
          if (isOutOfFood || visitedAllPorts) {
             document.removeEventListener('keydown', processKeyboardInput);
-            renderScreen(makeMapScreen(worldState, isOutOfFood ? 'Ran out of food' : 'Explored all ports'));
+            renderScreen(makeMapScreen(worldState, isOutOfFood ? `Ran out of food<div class='small'>${statsComponent.event}</div>` : 'Explored all ports'));
          }
       }
 

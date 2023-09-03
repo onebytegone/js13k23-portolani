@@ -45,6 +45,12 @@ h1 {
 
 .subtitle {
    font-size: 2em;
+   font-style: italic;
+}
+
+.small {
+   font-size: 1.5rem;
+   font-style: normal;
 }
 
 #s5 {

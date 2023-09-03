@@ -1,4 +1,4 @@
-export function createEl(tagName: string, params: { className?: string, innerText?: string; title?: string; childElements?: HTMLElement[] } = {}): HTMLElement {
+export function createEl(tagName: string, params: { className?: string; innerHTML?: string; innerText?: string; title?: string; childElements?: HTMLElement[] } = {}): HTMLElement {
    const el = document.createElement(tagName);
 
    if (params.className) {
@@ -7,6 +7,10 @@ export function createEl(tagName: string, params: { className?: string, innerTex
 
    if (params.innerText) {
       el.innerText = params.innerText;
+   }
+
+   if (params.innerHTML) {
+      el.innerHTML = params.innerHTML;
    }
 
    if (params.title) {

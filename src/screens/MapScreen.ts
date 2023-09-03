@@ -48,7 +48,7 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
       el.className = 'map';
 
       el.appendChild(createEl('h1', { innerText: 'Voyage Complete' }));
-      el.appendChild(createEl('div', { className: 'subtitle', innerText: endCondition }));
+      el.appendChild(createEl('div', { className: 'subtitle', innerHTML: endCondition }));
       el.appendChild(canvas);
 
       const mapData = Object.entries(worldState.getEntities([ ComponentID.Position, ComponentID.Sprite ] as const)).reduce((memo, [ entityID, [ loc, sprite ] ]) => {
