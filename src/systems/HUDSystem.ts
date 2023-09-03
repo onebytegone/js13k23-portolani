@@ -2,7 +2,7 @@ import { ComponentID } from '@/shared-types';
 import { System } from './System';
 import { WorldState, anyEntity } from '@/lib/WorldState';
 import { HEADING_SPRITES } from '@/components/create-heading-component';
-import { CHARACTER_FONT_STACK, FISH_SVG_PATH, Sprite } from '@/components/create-sprite-component';
+import { CHARACTER_FONT_STACK, FISH_SVG_HTML, FISH_SVG_PATH, Sprite } from '@/components/create-sprite-component';
 import { createEl, loadHTML } from '@/lib/dom';
 
 export class HUDSystem extends System {
@@ -40,7 +40,7 @@ export class HUDSystem extends System {
             createEl('div', {
                className: 'stat',
                childElements: [
-                  loadHTML(`<svg height="1em" viewBox="0 -20 100 100"><path d="${FISH_SVG_PATH}"/></svg>`),
+                  loadHTML(FISH_SVG_HTML),
                   this._foodEl,
                ],
             }),
@@ -57,7 +57,7 @@ export class HUDSystem extends System {
             foodDelta = stats.lastReportedFood !== undefined ? foodLevel - stats.lastReportedFood : undefined;
 
       this._foodEl.innerText = `${foodLevel} days ${foodDelta ? ` (${foodDelta})` : ''}`;
-      this._statusEl.innerText = stats.event || '';
+      this._statusEl.innerHTML = stats.event || '';
       this._portEl.innerText = `${stats.portsVisited.length}/${stats.totalPorts}`;
       this._controlCenterEl.innerHTML = `${HEADING_SPRITES[heading.heading]}`;
 

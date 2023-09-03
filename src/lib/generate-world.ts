@@ -2,7 +2,7 @@ import { ComponentID, EntityID } from '@/shared-types';
 import { createCameraComponent } from '../components/create-camera-component';
 import { createMovementComponent } from '../components/create-movement-component';
 import { createPositionComponent } from '../components/create-position-component';
-import { Sprite, Color, createSpriteComponent, FISH_SVG_PATH, SpriteLayer, CHARACTER_FONT_STACK } from '../components/create-sprite-component';
+import { Sprite, Color, createSpriteComponent, FISH_SVG_PATH, SpriteLayer, CHARACTER_FONT_STACK, FISH_SVG_HTML } from '../components/create-sprite-component';
 import { Terrain, createTerrainComponent } from '../components/create-terrain-component';
 import { createTagComponent } from '@/components/create-tag-component';
 import { FogLevel, createFogComponent } from '@/components/create-fog-component';
@@ -263,6 +263,15 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
    });
 
    const ports: Vec2D[] = createEncounters(prng, portCount, possiblePortLocations, (pos, i) => {
+      const bonusesForPort = portBonuses[i] || {};
+
+      const bonusMessages = [
+         bonusesForPort.localCrew?.set ? Sprite.LocalCrew : undefined,
+         bonusesForPort.navLog?.set ? Sprite.NavLog : undefined,
+         bonusesForPort.soundingLine?.set ? Sprite.SoundingLine : undefined,
+         `${FISH_SVG_HTML}10`,
+      ];
+
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
          ...createSpriteComponent(Sprite.Port, {
@@ -278,8 +287,8 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
                [ComponentID.Stats]: {
                   food: { adjust: 10 },
                   portsVisited: { push: { x: pos.x, y: pos.y } },
-                  event: { set: 'At Port' },
-                  ...(portBonuses[i] || {}),
+                  event: { set: `At port; Gained ${bonusMessages.filter((v) => { return !!v; }).join(',')}` },
+                  ...bonusesForPort,
                },
             },
             entityChanges: {
@@ -295,6 +304,8 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
    });
 
    createEncounters(prng, prng.inRange(opts.fishCount.min, opts.fishCount.max), possibleOceanEncounterLocations, (pos) => {
+      const foodAdjust = prng.inRange(5, 20);
+
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
          ...createSpriteComponent(FISH_SVG_PATH, {
@@ -307,8 +318,8 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             destroyEntity: true,
             playerChanges: {
                [ComponentID.Stats]: {
-                  food: { adjust: prng.inRange(5, 20) },
-                  event: { set: 'Caught fish' },
+                  food: { adjust: foodAdjust },
+                  event: { set: `Caught fish, gained ${FISH_SVG_HTML}${foodAdjust}` },
                },
             },
          }),
@@ -324,6 +335,8 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          }
       }
 
+      const foodAdjust = prng.inRange(-30, -5);
+
       worldState.createEntity({
          ...createPositionComponent(pos.x, pos.y),
          ...createSpriteComponent(Sprite.Pirate, {
@@ -337,8 +350,8 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             destroyEntity: true,
             playerChanges: {
                [ComponentID.Stats]: {
-                  food: { adjust: prng.inRange(-30, -5) },
-                  event: { set: 'Pirates!' },
+                  food: { adjust: foodAdjust },
+                  event: { set: `Pirate attack, lost ${FISH_SVG_HTML}${foodAdjust}` },
                   navLog: getStatImpact(),
                   soundingLine: getStatImpact(),
                   localCrew: getStatImpact(),

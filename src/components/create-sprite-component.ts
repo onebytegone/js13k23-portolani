@@ -46,6 +46,7 @@ export const Sprite = {
 export const CHARACTER_FONT_STACK = 'Menlo,Segoe UI Symbol,monospace';
 
 export const FISH_SVG_PATH = 'M95 50a40 40 0 0 1-70 6l-20 15l5-21l-5-21l20 15a40 40 0 0 1 70 6zM80 50a6 6 0 1 0-12 0a6 6 0 1 0 12 0z';
+export const FISH_SVG_HTML =`<svg height="1em" viewBox="0 -20 100 100"><path d="${FISH_SVG_PATH}"/></svg>`;
 
 export type SpriteEnum = ValueOf<typeof Sprite>;
 
