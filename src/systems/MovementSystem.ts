@@ -26,8 +26,6 @@ export class MovementSystem extends System {
             pos.x = newLoc.x;
             pos.y = newLoc.y;
             movement.nextMovePossible = Date.now() + 100; // TODO: Speed?
-
-            stats.event = 'At sea';
          }
       });
    }
