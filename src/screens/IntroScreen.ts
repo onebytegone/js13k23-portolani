@@ -1,15 +1,18 @@
 import { ScreenRenderFn } from '@/shared-types';
 import { makeButton } from './elements/make-button';
 import { makeGameScreen } from './GameScreen';
+import { createEl } from '@/lib/dom';
 
 export function makeIntroScreen(): ScreenRenderFn {
    return (el, renderScreen) => {
       el.className = 'intro';
 
-      const title = document.createElement('h1');
-
-      title.innerText = '𝕻𝔬𝔯𝔱𝔬𝔩𝔞𝔫𝔦';
-      el.appendChild(title);
+      el.appendChild(createEl('div', {
+         childElements: [
+            createEl('h1', { innerText: '𝕻𝔬𝔯𝔱𝔬𝔩𝔞𝔫𝔦' }),
+            createEl('div', { className: 'subtitle', innerText: 'A game of exploration and charting' }),
+         ],
+      }));
 
       const generatorVersion = ' a.0';
 
