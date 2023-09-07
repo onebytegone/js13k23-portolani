@@ -42,7 +42,7 @@ export function makeIntroScreen(): ScreenRenderFn {
          if (await isSignedIn()) {
             el.appendChild(makeButton('Sign out of NEAR', signOut));
          } else {
-            el.appendChild(makeButton('Login with NEAR', signIn));
+            el.appendChild(makeButton('Log in with NEAR', signIn));
          }
 
          const leaderboard = await getHighScores(),
