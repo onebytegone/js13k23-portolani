@@ -40,7 +40,7 @@ export const Sprite = {
    W: '←',
    NW: '↖',
    LocalCrew: '⊛',
-   NavLog: '⤱',
+   NavLog: '⇶',
    SoundingLine: '≊',
    Check: '✔︎',
 } as const;
