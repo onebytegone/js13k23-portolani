@@ -7,4 +7,6 @@ function renderScreen(screen: ScreenRenderFn): void {
    screen(s5, renderScreen);
 }
 
-renderScreen(makeIntroScreen());
+window.addEventListener('load', function() {
+   renderScreen(makeIntroScreen());
+});

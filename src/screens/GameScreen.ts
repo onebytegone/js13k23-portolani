@@ -47,7 +47,7 @@ const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
 };
 
 export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn {
-   return (el, renderScreen) => {
+   return async (el, renderScreen) => {
       const canvas = document.createElement('canvas'),
             controlPanel = document.createElement('div'),
             hud = createEl('div', { className: 'hud' }),

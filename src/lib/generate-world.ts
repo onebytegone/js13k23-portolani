@@ -173,6 +173,7 @@ interface Range {
 export interface WorldGenOptions {
    kernel: number;
    label?: string;
+   date?: string;
    mapSize: Vec2D;
    startingFood: Range;
    portCount: Range;
@@ -182,7 +183,7 @@ export interface WorldGenOptions {
 }
 
 export function generateWorld(opts: WorldGenOptions): WorldState {
-   const worldState = new WorldState(opts.label || `${opts.kernel}`),
+   const worldState = new WorldState(opts.label || `${opts.kernel}`, opts.date),
          prng = makePRNG(opts.kernel),
          landGenerator = new Perlin(prng, 10),
          canalGenerator = new Perlin(prng, 20),

@@ -65,4 +65,12 @@ export interface ComponentMap extends Record<ComponentIDEnum, unknown> {
 export type ComponentRegistration<T extends ComponentIDEnum> =  { [K in T]: ComponentMap[T] };
 
 
-export type ScreenRenderFn = (el: HTMLElement, renderScreen: (screen: ScreenRenderFn) => void) => void;
+export type ScreenRenderFn = (el: HTMLElement, renderScreen: (screen: ScreenRenderFn) => void) => Promise<void>;
+
+export interface HighScore {
+   sender: string;
+   date: string;
+   ports: number;
+   tiles: number;
+   days: number;
+}

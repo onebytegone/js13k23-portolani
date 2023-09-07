@@ -15,7 +15,7 @@ export class WorldState {
    private _entitiesByComponentMask: Record<number, number[]> = {};
    private _components: Record<number, Record<number, any>> = {}; // TODO: better types
 
-   constructor(public readonly label: string) {}
+   constructor(public readonly label: string, public readonly date?: string) {}
 
    public createEntity(components: Partial<ComponentMap>): EntityID {
       const entityID = this._entities.length as EntityID,

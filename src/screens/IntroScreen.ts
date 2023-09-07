@@ -2,9 +2,12 @@ import { ScreenRenderFn } from '@/shared-types';
 import { makeButton } from './elements/make-button';
 import { makeGameScreen } from './GameScreen';
 import { createEl } from '@/lib/dom';
+import formatDate from '@/lib/format-date';
+import { getHighScores, getNearAccount, isNearAvailable, isSignedIn, signIn, signOut } from '@/lib/near';
+import renderLeaderboardForDate from '@/lib/render-leaderboard-for-date';
 
 export function makeIntroScreen(): ScreenRenderFn {
-   return (el, renderScreen) => {
+   return async (el, renderScreen) => {
       el.className = 'intro';
 
       el.appendChild(createEl('div', {
@@ -14,12 +17,18 @@ export function makeIntroScreen(): ScreenRenderFn {
          ],
       }));
 
-      const generatorVersion = ' a.0';
+      if (isNearAvailable() && await isSignedIn()) {
+         el.appendChild(createEl('p', { innerText: `Welcome ${await getNearAccount()}!` }));
+      }
+
+      const generatorVersion = ' a.0',
+            now = new Date();
 
       el.appendChild(makeButton('Daily Challenge', () => {
          renderScreen(makeGameScreen({
-            kernel: Math.floor(Date.now() / 1000 / 60 / 60 / 24),
-            label: new Date().toISOString().replace(/T.*/, '') + generatorVersion,
+            kernel: Math.floor(now.getTime() / 1000 / 60 / 60 / 24),
+            label: formatDate(now) + generatorVersion,
+            date: formatDate(now),
             mapSize: { x: 40, y: 30 },
             startingFood: { min: 31, max: 31 },
             portCount: { min: 8, max: 8 },
@@ -31,8 +40,8 @@ export function makeIntroScreen(): ScreenRenderFn {
 
       el.appendChild(makeButton('Mega Map', () => {
          renderScreen(makeGameScreen({
-            kernel: Math.floor(Date.now() / 1000 / 60 / 60 / 24),
-            label: new Date().toISOString().replace(/T.*/, '') + ' MEGA' + generatorVersion,
+            kernel: Math.floor(now.getTime() / 1000 / 60 / 60 / 24),
+            label: formatDate(now) + ' MEGA' + generatorVersion,
             mapSize: { x: 160, y: 120 },
             startingFood: { min: 41, max: 61 },
             portCount: { min: 20, max: 30 },
@@ -41,5 +50,18 @@ export function makeIntroScreen(): ScreenRenderFn {
             copiesOfBonuses: 5,
          }));
       }));
+
+      if (isNearAvailable()) {
+         if (await isSignedIn()) {
+            el.appendChild(makeButton('Sign out of NEAR', signOut));
+         } else {
+            el.appendChild(makeButton('Login with NEAR', signIn));
+         }
+
+         const leaderboard = await getHighScores();
+
+         el.appendChild(renderLeaderboardForDate(leaderboard, formatDate(now), 'today'));
+         el.appendChild(renderLeaderboardForDate(leaderboard, formatDate(new Date(now.getTime() - 24 * 60 * 60 * 1000)), 'yesterday'));
+      }
    };
 }

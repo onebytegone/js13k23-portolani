@@ -5,6 +5,9 @@ import { CHARACTER_FONT_STACK, Color, ISpriteComponent, Sprite, SpriteLayer } fr
 import { makeButton } from './elements/make-button';
 import { makeIntroScreen } from './IntroScreen';
 import { createEl } from '@/lib/dom';
+import { getHighScores, isNearAvailable, isSignedIn, submitScore } from '@/lib/near';
+import renderLeaderboardForDate from '@/lib/render-leaderboard-for-date';
+import sortScores from '@/lib/sort-scores';
 
 const TARGET_WIDTH = 900,
       TEXT_INSET = 20;
@@ -39,7 +42,7 @@ function bresenhamLine(x0: number, y0: number, x1: number, y1: number, draw: (x:
 }
 
 export function makeMapScreen(worldState: WorldState, endCondition: string): ScreenRenderFn {
-   return (el, renderScreen) => {
+   return async (el, renderScreen) => {
       const canvas = document.createElement('canvas'),
             ctx = canvas.getContext('2d')!,
             [ stats ] = anyEntity(worldState.getEntities([ ComponentID.Stats ])),
@@ -132,7 +135,8 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
       ctx.font = `28px ${CHARACTER_FONT_STACK}`;
 
       const mapInfo = `#portolani ${worldState.label}`,
-            scores = `↟${tilesDiscovered} ☀︎${Math.floor(stats.day)} ⚓︎${stats.portsVisited.length}`,
+            score = { ports: stats.portsVisited.length, tiles: tilesDiscovered, days: Math.floor(stats.day) },
+            scores = `↟${score.tiles} ☀︎${score.days} ⚓︎${score.ports}`,
             metrics = ctx.measureText(scores),
             textY = canvas.height - metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
 
@@ -175,6 +179,30 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
       }));
 
       el.appendChild(shareRow);
+
+      if (isNearAvailable() && worldState.date && await isSignedIn()) {
+         const leaderboard = await getHighScores(),
+               mapScores = leaderboard[worldState.date] ?? [],
+               yourScore = { sender: '', date: '', ...score };
+
+         const leaderboardEl = el.appendChild(renderLeaderboardForDate(leaderboard, worldState.date, 'today'));
+
+         mapScores.push(yourScore);
+
+         sortScores(mapScores);
+
+         if (mapScores.indexOf(yourScore) < 13) {
+            const submitButton = el.appendChild(makeButton('Submit high score!', async () => {
+               submitButton.innerText = 'Submitting...';
+               submitButton.onclick = null;
+
+               await submitScore(worldState.date!, score);
+
+               el.replaceChild(renderLeaderboardForDate(await getHighScores(), worldState.date!, 'today'), leaderboardEl);
+               el.removeChild(submitButton);
+            }));
+         }
+      }
 
       el.appendChild(makeButton('Main Menu', () => {
          renderScreen(makeIntroScreen());
