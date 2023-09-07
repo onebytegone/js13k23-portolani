@@ -45,10 +45,14 @@ export function makeIntroScreen(): ScreenRenderFn {
             el.appendChild(makeButton('Login with NEAR', signIn));
          }
 
-         const leaderboard = await getHighScores();
+         const leaderboard = await getHighScores(),
+               yesterday = formatDate(new Date(now.getTime() - 24 * 60 * 60 * 1000));
 
          el.appendChild(renderLeaderboardForDate(leaderboard, formatDate(now), 'today'));
-         el.appendChild(renderLeaderboardForDate(leaderboard, formatDate(new Date(now.getTime() - 24 * 60 * 60 * 1000)), 'yesterday'));
+
+         if (leaderboard[yesterday]) {
+            el.appendChild(renderLeaderboardForDate(leaderboard, yesterday, 'yesterday'));
+         }
       }
    };
 }
