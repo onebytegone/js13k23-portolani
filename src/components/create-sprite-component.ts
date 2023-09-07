@@ -12,6 +12,7 @@ export const Color = {
    Port: '#351D1F',
    PortVisitedBG: '#4E6446',
    PortVisited: '#273223',
+   PortVisitedCheck: '#9AB192',
    PortLineMap: '#813b41',
    LandBG: '#68865E',
    Land: '#41543B',
@@ -41,6 +42,7 @@ export const Sprite = {
    LocalCrew: '⊛',
    NavLog: '⤱',
    SoundingLine: '≊',
+   Check: '✔︎',
 } as const;
 
 export const CHARACTER_FONT_STACK = 'Menlo,Segoe UI Symbol,monospace';
@@ -63,10 +65,12 @@ export type SpriteLayerEnum = ValueOf<typeof SpriteLayer>;
 
 export interface ISpriteComponent {
    sprite: SpriteEnum | string;
+   secondarySprite?: SpriteEnum | string;
    layer: SpriteLayerEnum;
    skew: number;
    size: Vec2D;
    tint?: string;
+   secondaryTint?: string;
    font?: string;
    bg?: string;
 }

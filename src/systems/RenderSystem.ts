@@ -172,6 +172,11 @@ export class RenderSystem extends System {
                ctx.rotate(sprite.skew);
                ctx.scale(sprite.size.x, sprite.size.y);
                ctx.fillText(sprite.sprite, 0, 3);
+               if (sprite.secondarySprite) {
+                  ctx.fillStyle = sprite.secondaryTint ?? ctx.fillStyle;
+                  ctx.font = `${tileSize / 2}px ${sprite.font ? sprite.font : CHARACTER_FONT_STACK}`;
+                  ctx.fillText(sprite.secondarySprite, tileSize / 3.2, -tileSize / 3.5);
+               }
             } else {
                ctx.translate(renderX + x * tileSize, renderY + y * tileSize);
                ctx.scale(tileSize / 100, tileSize / 100);

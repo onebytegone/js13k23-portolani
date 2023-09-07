@@ -295,6 +295,8 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
                [ComponentID.Sprite]: {
                   bg: { set: Color.PortVisitedBG },
                   tint: { set: Color.PortVisited },
+                  secondarySprite: { set: Sprite.Check },
+                  secondaryTint: { set: Color.PortVisitedCheck },
                },
             },
          }),
