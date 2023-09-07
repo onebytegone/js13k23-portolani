@@ -38,19 +38,6 @@ export function makeIntroScreen(): ScreenRenderFn {
          }));
       }));
 
-      el.appendChild(makeButton('Mega Map', () => {
-         renderScreen(makeGameScreen({
-            kernel: Math.floor(now.getTime() / 1000 / 60 / 60 / 24),
-            label: formatDate(now) + ' MEGA' + generatorVersion,
-            mapSize: { x: 160, y: 120 },
-            startingFood: { min: 41, max: 61 },
-            portCount: { min: 20, max: 30 },
-            fishCount: { min: 10, max: 30 },
-            pirateCount: { min: 30, max: 60 },
-            copiesOfBonuses: 5,
-         }));
-      }));
-
       if (isNearAvailable()) {
          if (await isSignedIn()) {
             el.appendChild(makeButton('Sign out of NEAR', signOut));
