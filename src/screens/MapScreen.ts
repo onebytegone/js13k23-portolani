@@ -62,10 +62,8 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
             map[loc.y][loc.x] = [];
          }
 
-         // TODO: Types, `fog` would ideally be possibly undefined
          if (!fog || fog.level === FogLevel.None) {
             map[loc.y][loc.x].push(sprite);
-            memo.tilesDiscovered ++;
          }
 
          if (loc.y >= memo.y) {
@@ -77,9 +75,19 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
          }
 
          return memo;
-      }, { x: 0, y: 0, tilesDiscovered: 0 });
+      }, { x: 0, y: 0 });
 
       const tileSize = Math.round(TARGET_WIDTH / mapData.x);
+
+      const tilesDiscovered = map.reduce((total, row) => {
+         row.forEach((tiles) => {
+            if (tiles.length > 0) {
+               total ++;
+            }
+         });
+
+         return total;
+      }, 0);
 
       canvas.width = mapData.x * tileSize; // eslint-disable-line id-denylist
       canvas.height = mapData.y * tileSize; // eslint-disable-line id-denylist
@@ -124,7 +132,7 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
       ctx.font = `28px ${CHARACTER_FONT_STACK}`;
 
       const mapInfo = `#portolani ${worldState.label}`,
-            scores = `↟${mapData.tilesDiscovered} ☀︎${Math.floor(stats.day)} ⚓︎${stats.portsVisited.length}`,
+            scores = `↟${tilesDiscovered} ☀︎${Math.floor(stats.day)} ⚓︎${stats.portsVisited.length}`,
             metrics = ctx.measureText(scores),
             textY = canvas.height - metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
 
