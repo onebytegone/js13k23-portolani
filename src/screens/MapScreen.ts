@@ -186,7 +186,7 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
 
       el.appendChild(shareRow);
 
-      if (isNearAvailable() && worldState.date && await isSignedIn()) {
+      if (isNearAvailable() && worldState.date) {
          const leaderboard = await getHighScores(),
                mapScores = leaderboard[worldState.date] ?? [],
                yourScore = { sender: '', date: '', ...score };
@@ -197,7 +197,7 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
 
          sortScores(mapScores);
 
-         if (mapScores.indexOf(yourScore) < 13) {
+         if (await isSignedIn() && mapScores.indexOf(yourScore) < 13) {
             const submitButton = el.appendChild(makeButton('Submit high score!', async () => {
                submitButton.innerText = 'Submitting...';
                submitButton.onclick = null;
