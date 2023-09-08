@@ -124,7 +124,7 @@ function floodFill<T>(map: T[][], iteratee: (v: T, pos: Vec2D, delta: Vec2D) => 
 function createEncounters(prng: PRNG, numberOfEncounters: number, possibleLocations: Vec2D[], generateFn: (pos: Vec2D, index: number) => void): Vec2D[] {
    const encounters: Vec2D[] = [];
 
-   while (encounters.length < numberOfEncounters) {
+   while (encounters.length < numberOfEncounters && possibleLocations.length >= 1) {
       const [ pos ] = possibleLocations.splice(prng.inRange(0, possibleLocations.length - 1), 1);
 
       const distToClosest = encounters.reduce((memo, encounter) => {
