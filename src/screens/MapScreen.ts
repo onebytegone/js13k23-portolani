@@ -113,18 +113,24 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
                return;
             }
 
-            if ((sprite.layer === SpriteLayer.Land || sprite.layer === SpriteLayer.Port) && sprite.sprite !== Sprite.Land) {
-               ctx.fillStyle = Color.CoastMap;
+            if (sprite.layer <= SpriteLayer.Port) {
+               ctx.fillStyle = sprite.bg ?? Color.DefaultBG;
                ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
          });
       });
 
-      ctx.fillStyle = Color.PortLineMap;
+      ctx.fillStyle = Color.Default;
 
       stats.portsVisited.slice(1).reduce((src, dest) => {
          bresenhamLine(src.x, src.y, dest.x, dest.y, (x, y) => {
-            ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+            if (src.x === x && src.y === y || dest.x === x && dest.y === y) {
+               ctx.beginPath();
+               ctx.arc(x * tileSize + tileSize / 2, y * tileSize + tileSize / 2, tileSize / 3, 0, 2 * Math.PI);
+               ctx.fill();
+            } else {
+               ctx.fillRect(x * tileSize + tileSize / 4, y * tileSize + tileSize / 4, tileSize / 2, tileSize / 2);
+            }
          });
 
          return dest;
