@@ -40,14 +40,10 @@ jobs:
             uses: actions/download-artifact@v3
             with:
                name: minified
-         - run: unzip index.zip
+         - run: unzip index.zip -d dist
          - run: ls -R
          -
-            uses: anantaramdas/ipfs-pinata-deploy-action@v1.6.4
+            uses: aquiladev/ipfs-action@v0.3.1
             with:
-               pin-name: js13k23-portolani
-               path: index.html
-               remove-old: true
-               verbose: false
-               pinata-api-key: ${{ secrets.PINATA_API_KEY }}
-               pinata-secret-api-key: ${{ secrets.PINATA_SECRET_API_KEY }}
+               path: dist
+               pinName: js13k23-portolani
