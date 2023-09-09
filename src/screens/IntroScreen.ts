@@ -3,9 +3,9 @@ import { makeButton } from './elements/make-button';
 import { makeGameScreen } from './GameScreen';
 import { createEl } from '@/lib/dom';
 import formatDate from '@/lib/format-date';
-import { getHighScores, getNearAccount, isNearAvailable, isSignedIn, signIn, signOut } from '@/lib/near';
+import { NEAR_CONSENT_KEY, getHighScores, getNearAccount, isNearAvailable, isSignedIn, loadNear, signIn, signOut } from '@/lib/near';
 import renderLeaderboardForDate from '@/lib/render-leaderboard-for-date';
-import { LocalStorageKey, getItem } from '@/lib/local-storage';
+import { LocalStorageKey, getItem, putItem } from '@/lib/local-storage';
 import { makeIslandGenerator } from '@/lib/generators/land-islands';
 
 const DAILY_CHALLENGE = 'Daily Challenge';
@@ -20,10 +20,6 @@ export function makeIntroScreen(): ScreenRenderFn {
             createEl('div', { className: 'subtitle', innerText: 'A game of exploration and charting' }),
          ],
       }));
-
-      if (isNearAvailable() && await isSignedIn()) {
-         el.appendChild(createEl('p', { innerText: `Welcome ${await getNearAccount()}!` }));
-      }
 
       const generatorVersion = ' a.0',
             now = new Date(),
@@ -78,10 +74,12 @@ export function makeIntroScreen(): ScreenRenderFn {
          }));
       }
 
-      if (isNearAvailable()) {
+      async function loadNearUI(): Promise<void> {
          const signedIn = await isSignedIn();
 
-         if (!signedIn) {
+         if (signedIn) {
+            el.appendChild(createEl('p', { innerText: `Welcome ${await getNearAccount()}!` }));
+         } else {
             el.appendChild(makeButton('Log in with NEAR', signIn));
          }
 
@@ -94,15 +92,26 @@ export function makeIntroScreen(): ScreenRenderFn {
             el.appendChild(renderLeaderboardForDate(leaderboard, yesterday, 'yesterday'));
          }
 
-         if (signedIn) {
-            const link = document.createElement('a');
+         const disconnect = document.createElement('a');
 
-            link.className = 'signOut';
-            link.innerText = 'Sign out of NEAR';
-            link.href = '#';
-            link.onclick = signOut;
-            el.appendChild(link);
-         }
+         disconnect.className = 'signOut';
+         disconnect.innerText = signedIn
+            ? 'Sign out of NEAR and disconnect from external resources'
+            : 'Disconnect from external resources';
+         disconnect.href = '#';
+         disconnect.onclick = signOut;
+         el.appendChild(disconnect);
+      }
+
+      // TODO: Can NEAR be auto-loaded when the user has granted consent on a prior page load?
+      if (isNearAvailable()) {
+         await loadNearUI();
+      } else {
+         const loadNearButton = el.appendChild(makeButton('Connect to NEAR Leaderboard<div class="disclaimer">(will download external resources)</div>', () => {
+            putItem(NEAR_CONSENT_KEY, true);
+            el.removeChild(loadNearButton);
+            loadNear().then(loadNearUI);
+         }));
       }
    };
 }

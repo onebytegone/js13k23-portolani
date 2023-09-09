@@ -20,11 +20,13 @@ body {
 
 .signOut, .signOut:visited {
    color: #32291E;
+   margin: 2em;
 }
 
 button, a.button {
    all: unset;
    display: inline-flex;
+   flex-direction: column;
    align-items: center;
    justify-content: center;
    min-width: 44px;
@@ -45,6 +47,10 @@ button:hover, a.button:hover {
 
 h1 {
    margin: 0;
+}
+
+.disclaimer {
+   font-size: 0.8em;
 }
 
 .subtitle {
@@ -84,6 +90,10 @@ h1 {
    font-size: 1.5em;
 }
 
+#s5.intro p {
+   margin-bottom: 0;
+}
+
 .leaderboard {
    display: grid;
    grid-template-columns: auto auto 1fr;
@@ -98,7 +108,15 @@ h1 {
    flex-direction: column;
    align-items: center;
    width: 100%;
-   margin-bottom: 2em;
+   margin: 1em 0;
+}
+
+.leaderboardWrap h2 {
+   margin-top: 0;
+}
+
+.map .leaderboardWrap {
+   margin: 2em 0;
 }
 
 .score {

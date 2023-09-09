@@ -1,6 +1,8 @@
 import { HighScore } from '@/shared-types';
 import sortScores from './sort-scores';
-import { LOCAL_STORAGE_NAMESPACE } from './local-storage';
+import { LOCAL_STORAGE_NAMESPACE, getItem, removeItem } from './local-storage';
+
+export const NEAR_CONSENT_KEY = 'useNear';
 
 const CONTRACT_ID = 'js13k23-portolani.testnet';
 
@@ -47,6 +49,22 @@ export function isNearAvailable(): boolean {
    return (window as any)['nearApi'];
 }
 
+export async function loadNear(): Promise<boolean> {
+   if (!getItem(NEAR_CONSENT_KEY, false)) {
+      return false;
+   }
+
+   return new Promise((resolve) => {
+      const el = document.createElement('script');
+
+      el.src = 'https://cdn.jsdelivr.net/npm/near-api-js@2.1.4/dist/near-api-js.js';
+      el.addEventListener('load', () => {
+         resolve(true);
+      });
+      document.body.appendChild(el);
+   });
+}
+
 function getNearClient(): Promise<any> {
    return nearApi[NK.connect]({
       [NK.nodeUrl]: 'https://rpc.testnet.near.org',
@@ -82,6 +100,8 @@ export async function getNearAccount(): Promise<string> {
 }
 
 export async function signOut(): Promise<void> {
+   removeItem(NEAR_CONSENT_KEY);
+
    if (!isNearAvailable()) {
       return;
    }
