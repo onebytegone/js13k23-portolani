@@ -27,11 +27,12 @@ export function makeIntroScreen(): ScreenRenderFn {
       const generatorVersion = ' a.0',
             now = new Date(),
             todayFormatted = formatDate(now),
-            tomorrow = Math.floor(now.getTime() / 1000 / 60 / 60 / 24 + 1) * 86400;
+            tomorrow = Math.floor(now.getTime() / 1000 / 60 / 60 / 24 + 1) * 86400,
+            kernel = Math.floor(now.getTime() / 1000 / 60 / 60 / 24);
 
       const dailyChallengeEl = el.appendChild(makeButton(DAILY_CHALLENGE, () => {
          renderScreen(makeGameScreen({
-            kernel: Math.floor(now.getTime() / 1000 / 60 / 60 / 24),
+            kernel,
             label: todayFormatted + generatorVersion,
             date: todayFormatted,
             mapSize: { x: 40, y: 30 },
@@ -59,6 +60,19 @@ export function makeIntroScreen(): ScreenRenderFn {
 
          updateClock();
          setInterval(updateClock, 1000);
+
+         el.appendChild(makeButton('Mega Map', () => {
+            renderScreen(makeGameScreen({
+               kernel,
+               label: formatDate(now) + ' MEGA' + generatorVersion,
+               mapSize: { x: 160, y: 120 },
+               startingFood: { min: 41, max: 61 },
+               portCount: { min: 20, max: 30 },
+               fishCount: { min: 10, max: 30 },
+               pirateCount: { min: 30, max: 60 },
+               copiesOfBonuses: 5,
+            }));
+         }));
       }
 
       if (isNearAvailable()) {
