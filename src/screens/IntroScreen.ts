@@ -33,7 +33,7 @@ export function makeIntroScreen(): ScreenRenderFn {
             startingFood: { min: 31, max: 31 },
             portCount: { min: 8, max: 8 },
             fishCount: { min: 3, max: 6 },
-            pirateCount: { min: 10, max: 15 },
+            pirateCount: { min: 8, max: 12 },
             copiesOfBonuses: 2,
          }));
       }));
