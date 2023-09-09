@@ -1,5 +1,6 @@
-import { HighScore } from "@/shared-types";
-import sortScores from "./sort-scores";
+import { HighScore } from '@/shared-types';
+import sortScores from './sort-scores';
+import { LOCAL_STORAGE_NAMESPACE } from './local-storage';
 
 const CONTRACT_ID = 'js13k23-portolani.testnet';
 
@@ -52,12 +53,12 @@ function getNearClient(): Promise<any> {
       [NK.walletUrl]: 'https://testnet.mynearwallet.com',
       [NK.explorerUrl]: 'https://explorer.testnet.near.org',
       [NK.networkId]: 'testnet',
-      [NK.keyStore]: new nearApi[NK.keyStores][NK.BrowserLocalStorageKeyStore](window.localStorage, 'portolani')
+      [NK.keyStore]: new nearApi[NK.keyStores][NK.BrowserLocalStorageKeyStore](window.localStorage, LOCAL_STORAGE_NAMESPACE)
    });
 }
 
 async function getWalletConnection(): Promise<any> {
-   return new nearApi[NK.WalletConnection](await getNearClient(), 'portolani');
+   return new nearApi[NK.WalletConnection](await getNearClient(), LOCAL_STORAGE_NAMESPACE);
 }
 
 export async function isSignedIn(): Promise<boolean> {

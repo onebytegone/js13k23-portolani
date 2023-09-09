@@ -5,6 +5,9 @@ import { createEl } from '@/lib/dom';
 import formatDate from '@/lib/format-date';
 import { getHighScores, getNearAccount, isNearAvailable, isSignedIn, signIn, signOut } from '@/lib/near';
 import renderLeaderboardForDate from '@/lib/render-leaderboard-for-date';
+import { LocalStorageKey, getItem } from '@/lib/local-storage';
+
+const DAILY_CHALLENGE = 'Daily Challenge';
 
 export function makeIntroScreen(): ScreenRenderFn {
    return async (el, renderScreen) => {
@@ -22,13 +25,15 @@ export function makeIntroScreen(): ScreenRenderFn {
       }
 
       const generatorVersion = ' a.0',
-            now = new Date();
+            now = new Date(),
+            todayFormatted = formatDate(now),
+            tomorrow = Math.floor(now.getTime() / 1000 / 60 / 60 / 24 + 1) * 86400;
 
-      el.appendChild(makeButton('Daily Challenge', () => {
+      const dailyChallengeEl = el.appendChild(makeButton(DAILY_CHALLENGE, () => {
          renderScreen(makeGameScreen({
             kernel: Math.floor(now.getTime() / 1000 / 60 / 60 / 24),
-            label: formatDate(now) + generatorVersion,
-            date: formatDate(now),
+            label: todayFormatted + generatorVersion,
+            date: todayFormatted,
             mapSize: { x: 40, y: 30 },
             startingFood: { min: 31, max: 31 },
             portCount: { min: 8, max: 8 },
@@ -37,6 +42,24 @@ export function makeIntroScreen(): ScreenRenderFn {
             copiesOfBonuses: 2,
          }));
       }));
+
+      if (getItem(LocalStorageKey.LastPlayed, false) === todayFormatted) {
+         function updateClock() {
+            const remaining = tomorrow - Math.floor(new Date().getTime() / 1000),
+                  hours = Math.floor((remaining % 86400) / (3600)),
+                  minutes = Math.floor((remaining % 3600) / (60)),
+                  seconds = remaining % 60;
+
+            function pad(v: number): string {
+               return `${v}`.padStart(2, '0');
+            }
+
+            dailyChallengeEl.innerText = `${DAILY_CHALLENGE} (Next ${pad(hours)}:${pad(minutes)}:${pad(seconds)})`;
+         }
+
+         updateClock();
+         setInterval(updateClock, 1000);
+      }
 
       if (isNearAvailable()) {
          const signedIn = await isSignedIn();

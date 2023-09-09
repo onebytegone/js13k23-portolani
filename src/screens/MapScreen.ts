@@ -8,6 +8,7 @@ import { createEl } from '@/lib/dom';
 import { getHighScores, isNearAvailable, isSignedIn, submitScore } from '@/lib/near';
 import renderLeaderboardForDate from '@/lib/render-leaderboard-for-date';
 import sortScores from '@/lib/sort-scores';
+import { LocalStorageKey, putItem } from '@/lib/local-storage';
 
 const TARGET_WIDTH = 900,
       TEXT_INSET = 20;
@@ -213,5 +214,9 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
       el.appendChild(makeButton('Main Menu', () => {
          renderScreen(makeIntroScreen());
       }));
+
+      if (worldState.date) {
+         putItem(LocalStorageKey.LastPlayed, worldState.date);
+      }
    };
 }
