@@ -9,7 +9,7 @@ import { FogLevel, createFogComponent } from '@/components/create-fog-component'
 import Perlin from './Perlin';
 import { WorldState } from './WorldState';
 import { PRNG, makePRNG } from './make-prng';
-import { HeadingEnum, Vec2D, adjustRange, binaryThreshold, wrap } from './math';
+import { HeadingEnum, Vec2D, adjustRange, wrap } from './math';
 import { HEADING_SPRITES, createHeadingComponent } from '@/components/create-heading-component';
 import { Changes, createEncounterComponent } from '@/components/create-encounter-component';
 import { IStatsComponent, createStatsComponent } from '@/components/create-stats-component';
@@ -77,19 +77,6 @@ function seq(count: number): number[] {
       .map((_, i) => {
          return i;
       });
-}
-
-function circleCutoff(mapSize: Vec2D, x: number, y: number): number {
-   return Math.max(
-      Math.pow(Math.sin(Math.PI / 1.02 * (x / mapSize.x + 0.01)), 0.4)
-      * Math.pow(Math.sin(Math.PI / 1.02 * (y / mapSize.y + 0.01)), 0.4)
-      - 0.2,
-      0
-   );
-}
-
-function sCurve(val: number): number {
-   return 2 / (1 + Math.pow(Math.E, -5 * val)) - 1;
 }
 
 function floodFill<T>(map: T[][], iteratee: (v: T, pos: Vec2D, delta: Vec2D) => boolean): void {
@@ -174,6 +161,7 @@ export interface WorldGenOptions {
    kernel: number;
    label?: string;
    date?: string;
+   makeLandGeneratorFn: (prng: PRNG, mapSize: Vec2D) => ((pos: Vec2D) => boolean);
    mapSize: Vec2D;
    startingFood: Range;
    portCount: Range;
@@ -185,8 +173,7 @@ export interface WorldGenOptions {
 export function generateWorld(opts: WorldGenOptions): WorldState {
    const worldState = new WorldState(opts.label || `${opts.kernel}`, opts.date),
          prng = makePRNG(opts.kernel),
-         landGenerator = new Perlin(prng, 10),
-         canalGenerator = new Perlin(prng, 20),
+         landGeneratorFn = opts.makeLandGeneratorFn(prng, opts.mapSize),
          windGenerator = new Perlin(prng, 20);
 
    const windDebug = createDebugCanvas(opts.mapSize),
@@ -202,9 +189,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
       entityMap[y] = [];
 
       for (let x = 0; x < opts.mapSize.x; x++) {
-         const landNoise = landGenerator.get(x, y) * circleCutoff(opts.mapSize, x, y),
-               canalNoise = binaryThreshold(sCurve(Math.abs(canalGenerator.get(x, y))), 0.2),
-               isLand = !!(binaryThreshold(landNoise, 0.04) * canalNoise);
+         const isLand = landGeneratorFn({ x, y });
 
          if (isLand) {
             entityMap[y][x] = worldState.createEntity({

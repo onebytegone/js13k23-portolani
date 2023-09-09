@@ -6,6 +6,7 @@ import formatDate from '@/lib/format-date';
 import { getHighScores, getNearAccount, isNearAvailable, isSignedIn, signIn, signOut } from '@/lib/near';
 import renderLeaderboardForDate from '@/lib/render-leaderboard-for-date';
 import { LocalStorageKey, getItem } from '@/lib/local-storage';
+import { makeIslandGenerator } from '@/lib/generators/land-islands';
 
 const DAILY_CHALLENGE = 'Daily Challenge';
 
@@ -36,6 +37,7 @@ export function makeIntroScreen(): ScreenRenderFn {
             label: todayFormatted + generatorVersion,
             date: todayFormatted,
             mapSize: { x: 40, y: 30 },
+            makeLandGeneratorFn: makeIslandGenerator,
             startingFood: { min: 31, max: 31 },
             portCount: { min: 8, max: 8 },
             fishCount: { min: 3, max: 6 },
@@ -66,6 +68,7 @@ export function makeIntroScreen(): ScreenRenderFn {
                kernel,
                label: formatDate(now) + ' MEGA' + generatorVersion,
                mapSize: { x: 160, y: 120 },
+               makeLandGeneratorFn: makeIslandGenerator,
                startingFood: { min: 41, max: 61 },
                portCount: { min: 20, max: 30 },
                fishCount: { min: 10, max: 30 },
