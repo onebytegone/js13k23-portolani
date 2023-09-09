@@ -22,8 +22,7 @@ export function makeIntroScreen(): ScreenRenderFn {
          ],
       }));
 
-      const generatorVersion = ' a.0',
-            now = new Date(),
+      const now = new Date(),
             todayFormatted = formatDate(now),
             tomorrow = Math.floor(now.getTime() / 1000 / 60 / 60 / 24 + 1) * 86400,
             kernel = Math.floor(now.getTime() / 1000 / 60 / 60 / 24);
@@ -31,7 +30,7 @@ export function makeIntroScreen(): ScreenRenderFn {
       const dailyChallengeEl = el.appendChild(makeButton(DAILY_CHALLENGE, () => {
          renderScreen(makeGameScreen({
             kernel,
-            label: todayFormatted + generatorVersion,
+            label: todayFormatted,
             date: todayFormatted,
             mapSize: { x: 40, y: 30 },
             makeLandGeneratorFn: makeIslandGenerator,
@@ -63,7 +62,7 @@ export function makeIntroScreen(): ScreenRenderFn {
          el.appendChild(makeButton('Mega Map', () => {
             renderScreen(makeGameScreen({
                kernel,
-               label: formatDate(now) + ' MEGA' + generatorVersion,
+               label: formatDate(now) + ' MEGA',
                mapSize: { x: 160, y: 120 },
                makeLandGeneratorFn: makeIslandGenerator,
                startingFood: { min: 41, max: 61 },
