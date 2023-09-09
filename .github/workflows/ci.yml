@@ -36,3 +36,12 @@ jobs:
          id-token: write
       steps:
          - uses: actions/deploy-pages@v2
+         -
+            uses: anantaramdas/ipfs-pinata-deploy-action@v1.6.4
+            with:
+               pin-name: js13k23-portolani
+               path: '.minified/index.html'
+               remove-old: true
+               verbose: false
+               pinata-api-key: ${{ secrets.PINATA_API_KEY }}
+               pinata-secret-api-key: ${{ secrets.PINATA_SECRET_API_KEY }}
