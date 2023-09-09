@@ -18,6 +18,10 @@ body {
    box-sizing: border-box;
 }
 
+.signOut, .signOut:visited {
+   color: #32291E;
+}
+
 button, a.button {
    all: unset;
    display: inline-flex;
@@ -67,6 +71,7 @@ h1 {
    padding-right: 8px;
    gap: 8px;
    text-align: center;
+   margin-bottom: 2em;
 }
 
 #s5.intro h1 {

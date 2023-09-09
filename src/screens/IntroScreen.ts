@@ -39,9 +39,9 @@ export function makeIntroScreen(): ScreenRenderFn {
       }));
 
       if (isNearAvailable()) {
-         if (await isSignedIn()) {
-            el.appendChild(makeButton('Sign out of NEAR', signOut));
-         } else {
+         const signedIn = await isSignedIn();
+
+         if (!signedIn) {
             el.appendChild(makeButton('Log in with NEAR', signIn));
          }
 
@@ -52,6 +52,16 @@ export function makeIntroScreen(): ScreenRenderFn {
 
          if (leaderboard[yesterday]) {
             el.appendChild(renderLeaderboardForDate(leaderboard, yesterday, 'yesterday'));
+         }
+
+         if (signedIn) {
+            const link = document.createElement('a');
+
+            link.className = 'signOut';
+            link.innerText = 'Sign out of NEAR';
+            link.href = '#';
+            link.onclick = signOut;
+            el.appendChild(link);
          }
       }
    };
