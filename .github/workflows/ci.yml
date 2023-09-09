@@ -40,10 +40,3 @@ jobs:
             uses: actions/download-artifact@v3
             with:
                name: minified
-         - run: unzip index.zip -d dist
-         - run: ls -R
-         -
-            uses: aquiladev/ipfs-action@v0.3.1
-            with:
-               path: dist
-               pinName: js13k23-portolani
