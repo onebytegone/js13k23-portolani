@@ -20,7 +20,7 @@ jobs:
          -
             uses: actions/upload-artifact@v3
             with:
-               name: minified.zip
+               name: minified
                path: .minified/index.zip
          - run: unzip .minified/index.zip -d .gh-pages
          -
@@ -37,10 +37,16 @@ jobs:
       steps:
          - uses: actions/deploy-pages@v2
          -
+            uses: actions/download-artifact@v3
+            with:
+               name: minified
+         - run: unzip index.zip
+         - run: ls -R
+         -
             uses: anantaramdas/ipfs-pinata-deploy-action@v1.6.4
             with:
                pin-name: js13k23-portolani
-               path: '.minified/index.html'
+               path: index.html
                remove-old: true
                verbose: false
                pinata-api-key: ${{ secrets.PINATA_API_KEY }}
