@@ -76,3 +76,7 @@ function smootherstep(x: number): number {
 export function interp(x: number, a: number, b: number): number {
    return a + smootherstep(x) * (b - a);
 }
+
+export function sCurve(val: number): number {
+   return 2 / (1 + Math.pow(Math.E, -5 * val)) - 1;
+}

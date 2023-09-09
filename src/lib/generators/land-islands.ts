@@ -1,6 +1,6 @@
 import Perlin from '../Perlin';
 import { PRNG } from '../make-prng';
-import { Vec2D, binaryThreshold } from '../math';
+import { Vec2D, binaryThreshold, sCurve } from '../math';
 
 function circleCutoff(mapSize: Vec2D, x: number, y: number): number {
    return Math.max(
@@ -11,17 +11,13 @@ function circleCutoff(mapSize: Vec2D, x: number, y: number): number {
    );
 }
 
-function sCurve(val: number): number {
-   return 2 / (1 + Math.pow(Math.E, -5 * val)) - 1;
-}
-
 export function makeIslandGenerator(prng: PRNG, mapSize: Vec2D): (pos: Vec2D) => boolean {
    const landGenerator = new Perlin(prng, 10),
          canalGenerator = new Perlin(prng, 20);
 
    return ({ x, y }: Vec2D) => {
-   const landNoise = landGenerator.get(x, y) * circleCutoff(mapSize, x, y),
-         canalNoise = binaryThreshold(sCurve(Math.abs(canalGenerator.get(x, y))), 0.2);
+      const landNoise = landGenerator.get(x, y) * circleCutoff(mapSize, x, y),
+            canalNoise = binaryThreshold(sCurve(Math.abs(canalGenerator.get(x, y))), 0.2);
 
       return !!(binaryThreshold(landNoise, 0.04) * canalNoise);
 

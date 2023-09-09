@@ -7,6 +7,7 @@ import { NEAR_CONSENT_KEY, getHighScores, getNearAccount, isNearAvailable, isSig
 import renderLeaderboardForDate from '@/lib/render-leaderboard-for-date';
 import { LocalStorageKey, getItem, putItem } from '@/lib/local-storage';
 import { makeIslandGenerator } from '@/lib/generators/land-islands';
+import { makeRiverGenerator } from '@/lib/generators/land-rivers';
 
 const DAILY_CHALLENGE = 'Daily Challenge';
 
@@ -68,6 +69,20 @@ export function makeIntroScreen(): ScreenRenderFn {
                startingFood: { min: 41, max: 61 },
                portCount: { min: 20, max: 30 },
                fishCount: { min: 10, max: 30 },
+               pirateCount: { min: 30, max: 60 },
+               copiesOfBonuses: 5,
+            }));
+         }));
+
+         el.appendChild(makeButton('Rivers and Streams', () => {
+            renderScreen(makeGameScreen({
+               kernel,
+               label: formatDate(now) + ' RIVER',
+               mapSize: { x: 160, y: 120 },
+               makeLandGeneratorFn: makeRiverGenerator,
+               startingFood: { min: 41, max: 61 },
+               portCount: { min: 20, max: 30 },
+               fishCount: { min: 30, max: 90 },
                pirateCount: { min: 30, max: 60 },
                copiesOfBonuses: 5,
             }));
