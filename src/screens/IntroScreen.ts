@@ -59,7 +59,7 @@ export function makeIntroScreen(): ScreenRenderFn {
          updateClock();
          setInterval(updateClock, 1000);
 
-         el.appendChild(makeButton('Mega Map', () => {
+         el.appendChild(makeButton('BONUS: Mega Map', () => {
             renderScreen(makeGameScreen({
                kernel,
                label: formatDate(now) + ' MEGA',
@@ -73,7 +73,7 @@ export function makeIntroScreen(): ScreenRenderFn {
             }));
          }));
 
-         el.appendChild(makeButton('Rivers and Streams', () => {
+         el.appendChild(makeButton('BONUS: Rivers and Streams', () => {
             renderScreen(makeGameScreen({
                kernel,
                label: formatDate(now) + ' RIVER',
