@@ -145,6 +145,10 @@ h1 {
    border-top: 2px solid #B9AF9D;
 }
 
+.status svg {
+   margin-top: -1em;
+}
+
 .gameFrame {
    flex: 1;
    position: relative;
