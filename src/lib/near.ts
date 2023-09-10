@@ -54,6 +54,10 @@ export async function loadNear(): Promise<boolean> {
       return false;
    }
 
+   if (isNearAvailable()) {
+      return true;
+   }
+
    return new Promise((resolve) => {
       const el = document.createElement('script');
 

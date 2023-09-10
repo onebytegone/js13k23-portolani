@@ -3,7 +3,7 @@ import { makeButton } from './elements/make-button';
 import { makeGameScreen } from './GameScreen';
 import { createEl } from '@/lib/dom';
 import formatDate from '@/lib/format-date';
-import { NEAR_CONSENT_KEY, getHighScores, getNearAccount, isNearAvailable, isSignedIn, loadNear, signIn, signOut } from '@/lib/near';
+import { NEAR_CONSENT_KEY, getHighScores, getNearAccount, isSignedIn, loadNear, signIn, signOut } from '@/lib/near';
 import renderLeaderboardForDate from '@/lib/render-leaderboard-for-date';
 import { LocalStorageKey, getItem, putItem } from '@/lib/local-storage';
 import { makeIslandGenerator } from '@/lib/generators/land-islands';
@@ -117,8 +117,7 @@ export function makeIntroScreen(): ScreenRenderFn {
          el.appendChild(disconnect);
       }
 
-      // TODO: Can NEAR be auto-loaded when the user has granted consent on a prior page load?
-      if (isNearAvailable()) {
+      if (await loadNear()) {
          await loadNearUI();
       } else {
          const loadNearButton = el.appendChild(makeButton('Connect to NEAR Leaderboard<div class="disclaimer">(will download external resources)</div>', () => {
