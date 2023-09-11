@@ -17,60 +17,6 @@ import { IStatsComponent, createStatsComponent } from '@/components/create-stats
 const MIN_ENCOUNTER_DISTANCE = 6,
       PIRATE_LOSS_CHANCE = 0.95;
 
-function createDebugCanvas(mapSize: Vec2D): (x: number, y: number, val: number) => void {
-   if (!window.DEBUG) {
-      return () => {};
-   }
-
-   const canvas = document.createElement('canvas') as HTMLCanvasElement,
-         TILE_SIZE = 3;
-
-   canvas.width = mapSize.x * TILE_SIZE; // eslint-disable-line id-denylist
-   canvas.height = mapSize.y * TILE_SIZE; // eslint-disable-line id-denylist
-   canvas.style.width = '100%'; // eslint-disable-line id-denylist
-   canvas.style.imageRendering = 'pixelated';
-   document.body.appendChild(canvas);
-
-   const ctx = canvas.getContext('2d')!;
-
-   return (x: number, y: number, val: number) => {
-      ctx.fillStyle = hsl(val * 180, 0.8, 0.4);
-      ctx.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-   };
-}
-
-// eslint-disable-next-line unused-imports/no-unused-vars
-function renderHistogram(values: number[]): void {
-   if (!window.DEBUG) {
-      return;
-   }
-
-   const canvas = document.createElement('canvas') as HTMLCanvasElement,
-         COLUMN_SIZE = 0.2,
-         COLUMN_WIDTH = 3;
-
-   canvas.width = values.length * COLUMN_WIDTH; // eslint-disable-line id-denylist
-   canvas.height = values.reduce((m, v) => { return v > m ? v : m;}, 0) * COLUMN_SIZE; // eslint-disable-line id-denylist
-   canvas.style.width = '100%'; // eslint-disable-line id-denylist
-   canvas.style.imageRendering = 'pixelated';
-   document.body.appendChild(canvas);
-
-   const ctx = canvas.getContext('2d')!;
-
-   ctx.fillStyle = hsl(0, 0, 1);
-   ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-
-   ctx.fillStyle = hsl(0.2, 0.8, 0.4);
-   values.forEach((v, x) => {
-      ctx.fillRect(x * COLUMN_WIDTH, canvas.height - v * COLUMN_SIZE, COLUMN_WIDTH, v * COLUMN_SIZE);
-   });
-}
-
-function hsl(h: number, s: number, l: number): string {
-   return `hsl(${h},${(s*100).toPrecision(2)}%,${(l*100).toPrecision(2)}%)`;
-}
-
 function seq(count: number): number[] {
    return new Array(count)
       .fill(1)
@@ -176,9 +122,6 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          landGeneratorFn = opts.makeLandGeneratorFn(prng, opts.mapSize),
          windGenerator = new Perlin(prng, 20);
 
-   const windDebug = createDebugCanvas(opts.mapSize),
-         encounterDebug = createDebugCanvas(opts.mapSize);
-
    worldState.createEntity({
       ...createCameraComponent({ x: 0, y: 0, viewportWidth: 15, viewportHeight: 10 }),
    });
@@ -202,8 +145,6 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             const windHeading = Math.floor(wrap(adjustRange(windGenerator.get(x, y), {
                fromMin: -1, fromMax: 1, toMin: 0, toMax: 1440,
             }), 360) / 45) as HeadingEnum;
-
-            windDebug(x, y, windHeading / 8);
 
             entityMap[y][x] = worldState.createEntity({
                ...createPositionComponent(x, y),
@@ -239,8 +180,6 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          sprite.bg = Color.CoastBG;
          sprite.tint = Color.Coast;
       }
-
-      encounterDebug(pos.x, pos.y, 0.2);
 
       if (delta.x === 0 || delta.y === 0) {
          possiblePortLocations.push(pos);
@@ -287,8 +226,6 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             },
          }),
       });
-
-      encounterDebug(pos.x, pos.y, 0.5);
    });
 
    createEncounters(prng, prng.inRange(opts.fishCount.min, opts.fishCount.max), possibleOceanEncounterLocations, (pos) => {
@@ -312,8 +249,6 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             },
          }),
       });
-
-      encounterDebug(pos.x, pos.y, 0.25);
    });
 
    createEncounters(prng, pirateCount, possibleOceanEncounterLocations, (pos) => {
@@ -347,8 +282,6 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             },
          }),
       });
-
-      encounterDebug(pos.x, pos.y, 0.45);
    });
 
    const startingPort = prng.randomElement(ports),
@@ -385,8 +318,6 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          localCrew: false,
       }),
    });
-
-   encounterDebug(startingPoint.x, startingPoint.y, 1);
 
    return worldState;
 }
