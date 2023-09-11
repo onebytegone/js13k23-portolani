@@ -1,3 +1,4 @@
+import { createEl } from './lib/dom';
 import { CHORD, Sequencer } from './lib/music';
 import { makeIntroScreen } from './screens/IntroScreen';
 import { ScreenRenderFn } from './shared-types';
@@ -8,10 +9,13 @@ declare global {
 
 window.isMusicPlaying = false;
 
-
 function renderScreen(screen: ScreenRenderFn): void {
-   s5.innerHTML = '';
-   s5.className = '';
+   const s5 = createEl('div');
+
+   s5.id = 's5';
+   page.innerHTML = '';
+   page.appendChild(s5);
+
    screen(s5, renderScreen);
 }
 
