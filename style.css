@@ -23,8 +23,8 @@ body {
    display: flex;
    align-items: center;
    position: absolute;
-   top: 0;
-   right: 0;
+   top: env(safe-area-inset-top);
+   right: env(safe-area-inset-right);
    padding: 4px;
    fill: #2A261F;
    font-size: 4em;
@@ -50,6 +50,8 @@ body {
 }
 
 #s5.game .music {
+   top: 0;
+   right: 0;
    font-size: 2em;
 }
 
