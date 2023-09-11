@@ -5,7 +5,7 @@ const MUTED_SVG_PATH = 'M68 36 l 8 8 l 8 -8 l 4 4 l -8 8 l 8 8 l -4 4 l -8 -8 l 
 export function makeMusicToggle(): HTMLElement {
    const musicButton = document.createElement('a');
 
-   musicButton.className = 'music';
+   musicButton.className = 'music off';
 
    function updateButtonText() {
       const extra = window.isMusicPlaying ? PLAYING_SVG_PATH : MUTED_SVG_PATH;
@@ -17,6 +17,7 @@ export function makeMusicToggle(): HTMLElement {
    musicButton.href = '#';
    musicButton.onclick = (evt) => {
       evt.preventDefault();
+      musicButton.className = 'music';
       window.dispatchEvent(new Event('toggleMusic'));
       updateButtonText();
    };

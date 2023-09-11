@@ -19,6 +19,9 @@ body {
 }
 
 .music {
+   text-decoration: none;
+   display: flex;
+   align-items: center;
    position: absolute;
    top: 0;
    right: 0;
@@ -27,13 +30,26 @@ body {
    font-size: 4em;
 }
 
+#s5.intro .music.off::before {
+   font-size: 0.3em;
+   color: #32291E;
+   display: inline-block;
+   content: "Enable audio → ";
+   animation: shake 1s ease-in-out;
+   animation-iteration-count: infinite;
+}
+
+@keyframes shake {
+   0% { transform: translateX(-4px) }
+   50% { transform: translateX(0px) }
+   100% { transform: translateX(-4px) }
+}
+
 #s5.map .music {
    font-size: 3em;
 }
 
 #s5.game .music {
-   top: initial;
-   bottom: 0;
    font-size: 2em;
 }
 
