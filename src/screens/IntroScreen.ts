@@ -8,6 +8,7 @@ import renderLeaderboardForDate from '@/lib/render-leaderboard-for-date';
 import { LocalStorageKey, getItem, putItem } from '@/lib/local-storage';
 import { makeIslandGenerator } from '@/lib/generators/land-islands';
 import { makeRiverGenerator } from '@/lib/generators/land-rivers';
+import { makeMusicToggle } from './elements/make-music-toggle';
 
 const DAILY_CHALLENGE = 'Daily Challenge';
 
@@ -17,6 +18,7 @@ export function makeIntroScreen(): ScreenRenderFn {
 
       el.appendChild(createEl('div', {
          childElements: [
+            makeMusicToggle(),
             createEl('h1', { innerText: '𝕻𝔬𝔯𝔱𝔬𝔩𝔞𝔫𝔦' }),
             createEl('div', { className: 'subtitle', innerText: 'A game of exploration and charting' }),
          ],

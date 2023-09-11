@@ -3,6 +3,7 @@
    "version": "0.1.0",
    "devDependencies": {
       "@rollup/plugin-typescript": "11.1.2",
+      "@types/audioworklet": "0.0.50",
       "@typescript-eslint/eslint-plugin": "5.52.0",
       "@typescript-eslint/parser": "5.52.0",
       "clean-css": "5.3.1",

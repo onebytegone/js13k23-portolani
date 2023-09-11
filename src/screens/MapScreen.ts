@@ -9,6 +9,7 @@ import { getHighScores, isNearAvailable, isSignedIn, submitScore } from '@/lib/n
 import renderLeaderboardForDate from '@/lib/render-leaderboard-for-date';
 import sortScores from '@/lib/sort-scores';
 import { LocalStorageKey, putItem } from '@/lib/local-storage';
+import { makeMusicToggle } from './elements/make-music-toggle';
 
 const TARGET_WIDTH = 900,
       TEXT_INSET = 20;
@@ -51,6 +52,7 @@ export function makeMapScreen(worldState: WorldState, endCondition: string): Scr
 
       el.className = 'map';
 
+      el.appendChild(makeMusicToggle());
       el.appendChild(createEl('h1', { innerText: 'Voyage Complete' }));
       el.appendChild(createEl('div', { className: 'subtitle', innerHTML: endCondition }));
       el.appendChild(canvas);

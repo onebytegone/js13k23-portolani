@@ -12,6 +12,7 @@ import { Heading, HeadingEnum } from '@/lib/math';
 import { makeMapScreen } from './MapScreen';
 import { anyEntity } from '@/lib/WorldState';
 import { createEl } from '@/lib/dom';
+import { makeMusicToggle } from './elements/make-music-toggle';
 
 // Google Closure Compiler will rename all the keys of any object (and there doesn't seem
 // to be a way to disable this per object). Therefore, create a list of the literal string
@@ -61,6 +62,7 @@ export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn
       controlCenter.className = 'center';
       controlCenter.title = 'Current wind heading';
 
+      controlPanel.appendChild(makeMusicToggle());
       controlPanel.appendChild(makeControls(processHeadingInput, controlCenter));
 
       const gameFrame = createEl('div', {
