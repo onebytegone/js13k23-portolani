@@ -45,7 +45,15 @@ export const Sprite = {
    Check: '✔︎',
 } as const;
 
-export const CHARACTER_FONT_STACK = 'Menlo,Segoe UI Symbol,monospace';
+export const TARGET_SIZE = {
+   Port: 0.6,
+   Land: 0.55,
+   Heading: 0.55,
+   HeadingAngled: 0.43,
+   Pirate: 0.55,
+};
+
+export const CHARACTER_FONT_STACK = 'Menlo,Segoe UI Symbol,Noto Emoji,monospace';
 
 export const FISH_SVG_PATH = 'M95 50a40 40 0 0 1-70 6l-20 15l5-21l-5-21l20 15a40 40 0 0 1 70 6zM80 50a6 6 0 1 0-12 0a6 6 0 1 0 12 0z';
 export const FISH_SVG_HTML =`<svg height="1em" viewBox="0 -20 100 100"><path d="${FISH_SVG_PATH}"/></svg>`;
@@ -73,9 +81,10 @@ export interface ISpriteComponent {
    secondaryTint?: string;
    font?: string;
    bg?: string;
+   targetSize?: number;
 }
 
-type SpriteOptions = Partial<Pick<ISpriteComponent, 'layer' | 'tint' | 'font' |'bg'>>;
+type SpriteOptions = Partial<Pick<ISpriteComponent, 'layer' | 'tint' | 'font' | 'bg' | 'targetSize'>>;
 
 export function createSpriteComponent(sprite: SpriteEnum | string, opts: SpriteOptions = {}): ComponentRegistration<typeof ComponentID.Sprite> {
    return {

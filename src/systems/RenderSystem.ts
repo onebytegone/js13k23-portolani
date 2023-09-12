@@ -3,6 +3,7 @@ import { CHARACTER_FONT_STACK, Color, ISpriteComponent, Sprite } from '@/compone
 import { WorldState, anyEntity, makeEntityID } from '@/lib/WorldState';
 import { ComponentID } from '@/shared-types';
 import { System } from './System';
+import { Vec2D } from '@/lib/math';
 
 const CAMERA_MARGIN = 4;
 
@@ -12,6 +13,16 @@ function calculateTileSize(viewportWidth: number, viewportHeight: number, contai
          size = (containerRatio > viewportRatio) ? (containerWidth / viewportWidth) : (containerHeight / viewportHeight);
 
    return Math.floor(dpr * size);
+}
+
+function calculateFontSize(ctx: CanvasRenderingContext2D, text: string, font: string, targetSize: Vec2D): number {
+   ctx.font = `10px ${font}`;
+
+   const metrics = ctx.measureText(text),
+         x = metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight,
+         y = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+
+   return Math.min(Math.floor(targetSize.x / x * 10), Math.floor(targetSize.y / y * 10));
 }
 
 export class RenderSystem extends System {
@@ -165,16 +176,19 @@ export class RenderSystem extends System {
                   'z',
                ].join(' ')));
             } else if ((Object.values(Sprite) as string[]).includes(sprite.sprite)) {
+               const fontFace = sprite.font ? sprite.font : CHARACTER_FONT_STACK,
+                     fontSize = sprite.targetSize ? calculateFontSize(ctx, sprite.sprite, fontFace, { x: tileSize * sprite.targetSize, y: tileSize * sprite.targetSize }) : tileSize;
+
                ctx.textBaseline = 'middle';
                ctx.textAlign = 'center';
-               ctx.font = `${tileSize}px ${sprite.font ? sprite.font : CHARACTER_FONT_STACK}`;
+               ctx.font = `${fontSize}px ${fontFace}`;
                ctx.translate(renderX + x * tileSize + tileSize / 2, renderY + y * tileSize + tileSize / 2);
                ctx.rotate(sprite.skew);
                ctx.scale(sprite.size.x, sprite.size.y);
                ctx.fillText(sprite.sprite, 0, 3);
                if (sprite.secondarySprite) {
                   ctx.fillStyle = sprite.secondaryTint ?? ctx.fillStyle;
-                  ctx.font = `${tileSize / 2}px ${sprite.font ? sprite.font : CHARACTER_FONT_STACK}`;
+                  ctx.font = `${calculateFontSize(ctx, sprite.secondarySprite, fontFace, { x: tileSize / 4, y: tileSize / 4 })}px ${fontFace}`;
                   ctx.fillText(sprite.secondarySprite, tileSize / 3.2, -tileSize / 3.5);
                }
             } else {

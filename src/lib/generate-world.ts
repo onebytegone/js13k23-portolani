@@ -2,14 +2,14 @@ import { ComponentID, EntityID } from '@/shared-types';
 import { createCameraComponent } from '../components/create-camera-component';
 import { createMovementComponent } from '../components/create-movement-component';
 import { createPositionComponent } from '../components/create-position-component';
-import { Sprite, Color, createSpriteComponent, FISH_SVG_PATH, SpriteLayer, CHARACTER_FONT_STACK, FISH_SVG_HTML } from '../components/create-sprite-component';
+import { Sprite, Color, createSpriteComponent, FISH_SVG_PATH, SpriteLayer, CHARACTER_FONT_STACK, FISH_SVG_HTML, TARGET_SIZE } from '../components/create-sprite-component';
 import { Terrain, createTerrainComponent } from '../components/create-terrain-component';
 import { createTagComponent } from '@/components/create-tag-component';
 import { FogLevel, createFogComponent } from '@/components/create-fog-component';
 import Perlin from './Perlin';
 import { WorldState } from './WorldState';
 import { PRNG, makePRNG } from './make-prng';
-import { HeadingEnum, Vec2D, adjustRange, wrap } from './math';
+import { Heading, HeadingEnum, Vec2D, adjustRange, wrap } from './math';
 import { HEADING_SPRITES, createHeadingComponent } from '@/components/create-heading-component';
 import { Changes, createEncounterComponent } from '@/components/create-encounter-component';
 import { IStatsComponent, createStatsComponent } from '@/components/create-stats-component';
@@ -137,7 +137,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          if (isLand) {
             entityMap[y][x] = worldState.createEntity({
                ...createPositionComponent(x, y),
-               ...createSpriteComponent(Sprite.Land, { layer: SpriteLayer.Land, bg: Color.LandBG, tint: Color.Land }),
+               ...createSpriteComponent(Sprite.Land, { layer: SpriteLayer.Land, bg: Color.LandBG, tint: Color.Land, targetSize: TARGET_SIZE.Land }),
                ...createTerrainComponent(Terrain.Impassable),
                ...createFogComponent(FogLevel.Full),
             });
@@ -146,6 +146,8 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
                fromMin: -1, fromMax: 1, toMin: 0, toMax: 1440,
             }), 360) / 45) as HeadingEnum;
 
+            const cardinalHeadings: HeadingEnum[] = [ Heading.N, Heading.S, Heading.E, Heading.W ];
+
             entityMap[y][x] = worldState.createEntity({
                ...createPositionComponent(x, y),
                ...createHeadingComponent(windHeading),
@@ -153,6 +155,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
                   layer: SpriteLayer.Wind,
                   bg: Color.OceanBG,
                   tint: Color.Wind,
+                  targetSize: cardinalHeadings.includes(windHeading) ? TARGET_SIZE.Heading : TARGET_SIZE.HeadingAngled,
                }),
                ...createTerrainComponent(Terrain.Passable),
                ...createFogComponent(FogLevel.Full),
@@ -179,6 +182,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
          sprite.sprite = Sprite.Coast;
          sprite.bg = Color.CoastBG;
          sprite.tint = Color.Coast;
+         sprite.targetSize = undefined;
       }
 
       if (delta.x === 0 || delta.y === 0) {
@@ -204,6 +208,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             bg: Color.PortBG,
             tint: Color.Port,
             font: CHARACTER_FONT_STACK,
+            targetSize: TARGET_SIZE.Port,
          }),
          ...createTerrainComponent(Terrain.Impassable),
          ...createFogComponent(FogLevel.Full),
@@ -267,6 +272,7 @@ export function generateWorld(opts: WorldGenOptions): WorldState {
             bg: Color.OceanBG,
             tint: Color.Fog,
             font: CHARACTER_FONT_STACK,
+            targetSize: TARGET_SIZE.Pirate,
          }),
          ...createFogComponent(FogLevel.Full),
          ...createEncounterComponent({
