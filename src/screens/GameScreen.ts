@@ -30,21 +30,37 @@ const KeyCode = {
    X: 'KeyX',
    Down: 'ArrowDown',
    C: 'KeyC',
-}
+   Numpad1: 'Numpad1',
+   Numpad2: 'Numpad2',
+   Numpad3: 'Numpad3',
+   Numpad4: 'Numpad4',
+   Numpad6: 'Numpad6',
+   Numpad7: 'Numpad7',
+   Numpad8: 'Numpad8',
+   Numpad9: 'Numpad9',
+};
 
 const KEY_HEADING_MAP: Record<string, HeadingEnum | undefined> = {
    [KeyCode.Q]: Heading.NW,
+   [KeyCode.Numpad7]: Heading.NW,
    [KeyCode.W]: Heading.N,
    [KeyCode.Up]: Heading.N,
+   [KeyCode.Numpad8]: Heading.N,
    [KeyCode.E]: Heading.NE,
+   [KeyCode.Numpad9]: Heading.NE,
    [KeyCode.A]: Heading.W,
    [KeyCode.Left]: Heading.W,
+   [KeyCode.Numpad4]: Heading.W,
    [KeyCode.D]: Heading.E,
    [KeyCode.Right]: Heading.E,
+   [KeyCode.Numpad6]: Heading.E,
    [KeyCode.Z]: Heading.SW,
+   [KeyCode.Numpad1]: Heading.SW,
    [KeyCode.X]: Heading.S,
    [KeyCode.Down]: Heading.S,
+   [KeyCode.Numpad2]: Heading.S,
    [KeyCode.C]: Heading.SE,
+   [KeyCode.Numpad3]: Heading.SE,
 };
 
 export function makeGameScreen(worldGenOptions: WorldGenOptions): ScreenRenderFn {
